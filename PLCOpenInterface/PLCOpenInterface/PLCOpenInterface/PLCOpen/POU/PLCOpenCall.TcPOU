@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="PLCOpenCall" Id="{16877e71-b30e-4975-8b7d-5ec1774f2055}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenCall IMPLEMENTS IPLCOpenCall 
+VAR_INPUT
+	Execute : BOOL;
+	Command : IPLCOpenCommand;
+	Fallback: PLCOPENSTATUSBASE;
+END_VAR
+VAR_OUTPUT
+	Status: PLCOPENSTATUSBASE;
+	Busy : BOOL;
+	Done : BOOL;
+	Error : BOOL;
+	CommandAborted : BOOL;
+END_VAR
+VAR
+	i_PLCOpenCallInternal : PLCOpenCallInternal;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Call();]]></ST>
+    </Implementation>
+    <Folder Name="API" Id="{81b669e9-53d1-43c3-adb5-dd314cabfeda}" />
+    <Folder Name="internal" Id="{3ca49896-8361-42f2-89ba-941a123d684d}" />
+    <Method Name="Aborted" Id="{d852b156-0dcb-4482-b2e7-1df0a5df8a63}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD Aborted : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[i_PLCOpenCallInternal._abort := true;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Call" Id="{678db6c7-a95b-4103-a6a7-438e03861a08}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD Call : BOOL
+VAR
+	_break : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[	//Capture edges
+	IF NOT Execute THEN
+		i_PLCOpenCallInternal._execute := FALSE;
+	END_IF
+
+	//Start a new command on edge
+	IF( Execute AND NOT i_PLCOpenCallInternal._execute)THEN
+		i_PLCOpenCallInternal._execute := TRUE;
+		i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_NEW_COMMAND;
+	END_IF
+	
+	//If we get aborted, handle it
+	IF( i_PLCOpenCallInternal._abort )THEN
+		i_PLCOpenCallInternal._abort := 0;
+		i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_ABORTED;
+	END_IF
+
+	i_PLCOpenCallInternal._self := THIS^;
+	
+	//We use a while not break so that we can do multiple passes at the state machine to do as much as possible in a single call	
+	_break := FALSE;
+	WHILE _break = FALSE DO
+		CASE ( i_PLCOpenCallInternal._state ) OF
+			//IDLE
+			PLCOpenCallState.ATN_PLCOPEN_FUB_IDLE:
+				Status := PLCOpenStatusBase.NOT_ENABLED;
+				Busy := FALSE;
+				Done := FALSE;
+				Error := FALSE;
+				CommandAborted := FALSE;
+				_break := TRUE;
+				
+			//Start a new command by getting it
+			PLCOpenCallState.ATN_PLCOPEN_FUB_NEW_COMMAND:
+				Status := PLCOpenStatusBase.BUSY;
+				i_PLCOpenCallInternal._RemoteStatus := PLCOpenStatusBase.BUSY;
+				Busy := TRUE;
+				Done := FALSE;
+				Error := FALSE;
+				CommandAborted := FALSE;			
+
+				//If we are the current command:
+				//1. we don't care about feedback
+				//2. we don't want ourselves to get the abort
+				//so remove this fub before calling abort previous
+				IF i_PLCOpenCallInternal._Command <> 0 THEN
+					IF i_PLCOpenCallInternal._Command.Remote = i_PLCOpenCallInternal._self THEN
+						i_PLCOpenCallInternal._Command.Remote := 0; 
+					END_IF
+				END_IF 
+
+				//Get the new command
+				i_PLCOpenCallInternal._command := Command;
+	
+				IF i_PLCOpenCallInternal._Command <> 0 THEN
+					i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_ABORT_OLD;
+					//No break;
+				ELSE
+					i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_WORKING;
+					i_PLCOpenCallInternal._RemoteStatus := Fallback;				
+					_break := TRUE;
+				END_IF
+
+				//No break;
+			
+			//Abort any commands that was active using the same PLCOpen state
+			PLCOpenCallState.ATN_PLCOPEN_FUB_ABORT_OLD:
+				//This will 
+				i_PLCOpenCallInternal._Command.AbortPreviousCommands(i_PLCOpenCallInternal._Command);
+
+				i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_SET_COMMAND;
+				//no break;
+				
+			//Start the command
+			PLCOpenCallState.ATN_PLCOPEN_FUB_SET_COMMAND:
+				i_PLCOpenCallInternal._Command.Execute := TRUE;			
+				i_PLCOpenCallInternal._Command.Remote := THIS^;			
+			
+				Busy := TRUE;
+				i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_WORKING;
+				// no break
+	
+			//Wait for the command to be finished
+			PLCOpenCallState.ATN_PLCOPEN_FUB_WORKING:
+				Busy := TRUE;
+				//No Break
+	
+				IF( i_PLCOpenCallInternal._RemoteStatus <> PLCOpenStatusBase.BUSY AND i_PLCOpenCallInternal._RemoteStatus <> PLCOpenStatusBase.ENABLED_WAITING ) THEN
+					Status := i_PLCOpenCallInternal._RemoteStatus;
+					Busy := FALSE;
+					IF( Status = 0 ) THEN
+						Done := TRUE;
+					
+					ELSE
+						Error := TRUE;		
+					END_IF
+					i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_CLEANUP;
+					//no break;
+				ELSE 
+					_break := TRUE;
+				END_IF
+			
+			//cleanup
+			PLCOpenCallState.ATN_PLCOPEN_FUB_CLEANUP:
+				//Remove self from the source command
+				IF i_PLCOpenCallInternal._Command <> 0 THEN
+					i_PLCOpenCallInternal._Command.Remote := 0;			
+					i_PLCOpenCallInternal._Command := 0;
+				END_IF
+					
+				i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_DONE;
+				//Break to force at least 1 cycle with statuses
+				_break := TRUE;
+
+			//done
+			PLCOpenCallState.ATN_PLCOPEN_FUB_DONE:
+	
+				IF( NOT Execute )THEN
+					i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_IDLE;
+					Status := PLCOpenStatusBase.NOT_ENABLED;
+					Busy := FALSE;
+					Done := FALSE;
+					Error := FALSE;
+					CommandAborted := FALSE;				
+				END_IF
+				_break := TRUE;
+	
+			//aborted
+			PLCOpenCallState.ATN_PLCOPEN_FUB_ABORTED:
+				Status := PLCOpenStatusBase.ABORTED;
+				Busy := FALSE;
+				Done := FALSE;
+				Error := FALSE;
+				CommandAborted := TRUE;
+				i_PLCOpenCallInternal._command := 0;
+				i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_DONE;
+				_break := TRUE;
+					
+		END_CASE
+	END_WHILE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Clear" Id="{5ea1194b-610a-4d48-bac7-dee9cee2d7d6}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD Clear : PLCOpenStatusBase
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.Execute := FALSE;
+THIS^.i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_CLEANUP;
+//One call to cleanup
+THIS^.Call();
+//Second call to clear
+THIS^.Call();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Errored" Id="{01a1ddfd-7791-443d-a60a-4fecd77dd437}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD Errored : BOOL
+VAR_INPUT
+	ID : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE ID OF
+	//Any of these statuses are invalid to return as an error.
+	//Override to error
+	PLCOPENSTATUSBASE.BUSY,
+	PLCOPENSTATUSBASE.ENABLED_WAITING,
+	PLCOPENSTATUSBASE.ERR_OK:
+		i_PLCOpenCallInternal._RemoteStatus := PLCOPENSTATUSBASE.ERROR;
+ELSE
+	//Any other status can be passed through
+	i_PLCOpenCallInternal._RemoteStatus := ID;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Exec" Id="{e15badc6-3209-4aba-84cb-107a0ef3c14b}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD Exec : PLCOpenStatusBase
+VAR_INPUT
+	Command : IPLCOpenCommand;	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Abort the previous command if it exists
+IF THIS^.Command <> Command THEN
+	Command.Execute := FALSE;
+	THIS^.Call();
+END_IF
+
+THIS^.Command := Command;
+THIS^.Execute := TRUE;
+THIS^.Call();
+Exec := THIS^.Status;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Finished" Id="{f01f5879-6af5-40cc-8d64-3d5824931435}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD Finished : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[i_PLCOpenCallInternal._RemoteStatus := PLCOpenStatusBase.ERR_OK;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Start" Id="{b16dfd08-c0f6-43db-a57d-608fa4a860b4}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD Start : BOOL
+VAR_INPUT
+	Command : IPLCOpenCommand;	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.Exec(Command);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <Itf Name="IPLCOpenCall" Id="{6aa201bf-eb14-40e6-82eb-dedd5645dc58}">
+    <Declaration><![CDATA[INTERFACE IPLCOpenCall
+]]></Declaration>
+    <Method Name="Aborted" Id="{86840f40-10b0-4de0-ab69-6c5eb8f761fb}">
+      <Declaration><![CDATA[METHOD Aborted : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="Errored" Id="{6b8dd4a3-2d32-4590-a313-c41aaa663229}">
+      <Declaration><![CDATA[METHOD Errored : BOOL
+VAR_INPUT
+	ID : INT;
+END_VAR]]></Declaration>
+    </Method>
+    <Method Name="Finished" Id="{bd57ce11-7e84-4c4a-bfa9-527eee6bb14e}">
+      <Declaration><![CDATA[METHOD Finished : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="Start" Id="{01dee355-ca51-4d77-a6f2-e38c0d6e5deb}">
+      <Declaration><![CDATA[METHOD Start : BOOL
+VAR_INPUT
+	Command : IPLCOpenCommand;	
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

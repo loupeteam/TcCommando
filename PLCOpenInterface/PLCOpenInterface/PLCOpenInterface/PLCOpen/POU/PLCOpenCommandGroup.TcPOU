@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="PLCOpenCommandGroup" Id="{a76b1f90-0a80-460a-90df-c4011f390707}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'call_after_init'}
+FUNCTION_BLOCK PLCOpenCommandGroup IMPLEMENTS IPLCOpenGroup
+VAR_INPUT
+	commands : ARRAY[0..19] OF  IPLCOpenCommand;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="AbortPreviousCommands" Id="{4d65389e-e404-419c-8d9a-839278ec3b86}">
+      <Declaration><![CDATA[METHOD AbortPreviousCommands : BOOL
+VAR_INPUT
+	newCommand : IPLCOpenCommand;
+END_VAR
+
+VAR
+	i: INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i:=0 TO 19 DO
+
+	IF commands[i] <> 0 AND commands[i] <> newCommand THEN
+
+		commands[i].Aborted();
+
+	END_IF	
+
+END_FOR
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="registerCommands" Id="{0e4d6210-f4c5-4680-bac6-f30527be8c7f}">
+      <Declaration><![CDATA[{attribute 'call_after_init'}
+METHOD registerCommands : BOOL
+VAR
+	i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[ADSLOGSTR(
+	msgCtrlMask := ADSLOG_MSGTYPE_ERROR, 
+	msgFmtStr   := 'Initing command group', 
+	strArg      := '');  
+
+FOR i:=0 TO 19 DO
+	
+	IF commands[i] <> 0 THEN
+
+		commands[i].registerGroup(THIS^);
+	
+	END_IF
+	
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

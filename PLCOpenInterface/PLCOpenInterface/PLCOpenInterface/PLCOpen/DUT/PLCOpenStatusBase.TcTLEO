@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <EnumerationTextList Name="PLCOpenStatusBase" Id="{affdcb97-526e-49da-8e66-616feef77d1f}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+TYPE PLCOpenStatusBase :
+(
+	ERR_OK := 0,
+	ERROR := 1,	
+	ABORTED := 2,	
+	ENABLED_WAITING := 65533,	
+	NOT_ENABLED := 65534,	
+	BUSY := 65535	
+);
+END_TYPE
+]]></Declaration>
+    <XmlArchive>
+      <Data>
+        <o xml:space="preserve" t="TextListEnumerationTextListObject">
+          <l n="TextList" t="ArrayList" cet="TextListRow">
+            <o>
+              <v n="TextID">"ERR_OK"</v>
+              <v n="TextDefault">"0"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ERROR"</v>
+              <v n="TextDefault">"1"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ABORTED"</v>
+              <v n="TextDefault">"2"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ENABLED_WAITING"</v>
+              <v n="TextDefault">"65533"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"NOT_ENABLED"</v>
+              <v n="TextDefault">"65534"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"BUSY"</v>
+              <v n="TextDefault">"65535"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">""</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+          </l>
+          <l n="Languages" t="ArrayList" />
+          <v n="GuidInit">{210ab1f4-d6c5-4c67-87b3-4acd39171e04}</v>
+          <v n="GuidReInit">{54ea839e-cd79-47ed-b6c8-0a37eb0b178e}</v>
+          <v n="GuidExitX">{5f30f80d-1f50-4853-b829-8b7c7611424a}</v>
+        </o>
+      </Data>
+      <TypeList>
+        <Type n="ArrayList">System.Collections.ArrayList</Type>
+        <Type n="Guid">System.Guid</Type>
+        <Type n="String">System.String</Type>
+        <Type n="TextListEnumerationTextListObject">{4b60233c-f940-4beb-b331-82133b520151}</Type>
+        <Type n="TextListRow">{53da1be7-ad25-47c3-b0e8-e26286dad2e0}</Type>
+      </TypeList>
+    </XmlArchive>
+  </EnumerationTextList>
+</TcPlcObject>

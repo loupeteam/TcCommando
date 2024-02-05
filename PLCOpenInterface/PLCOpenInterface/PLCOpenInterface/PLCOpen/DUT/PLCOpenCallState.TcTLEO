@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <EnumerationTextList Name="PLCOpenCallState" Id="{3ae6e054-32d2-4fc8-9116-cc770a82905a}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE PLCOpenCallState :
+(
+	ATN_PLCOPEN_FUB_IDLE := 0,
+	ATN_PLCOPEN_FUB_NEW_COMMAND,
+	ATN_PLCOPEN_FUB_ABORTED,
+	ATN_PLCOPEN_FUB_ABORT_OLD,
+	ATN_PLCOPEN_FUB_STATUS,
+	ATN_PLCOPEN_FUB_WRITE_PAR,
+	ATN_PLCOPEN_FUB_SET_COMMAND,
+	ATN_PLCOPEN_FUB_WORKING,
+	ATN_PLCOPEN_FUB_CLEANUP,
+	ATN_PLCOPEN_FUB_DONE
+);
+END_TYPE
+]]></Declaration>
+    <XmlArchive>
+      <Data>
+        <o xml:space="preserve" t="TextListEnumerationTextListObject">
+          <l n="TextList" t="ArrayList" cet="TextListRow">
+            <o>
+              <v n="TextID">"ATN_PLCOPEN_FUB_IDLE"</v>
+              <v n="TextDefault">"0"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ATN_PLCOPEN_FUB_NEW_COMMAND"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ATN_PLCOPEN_FUB_ABORTED"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ATN_PLCOPEN_FUB_ABORT_OLD"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ATN_PLCOPEN_FUB_STATUS"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ATN_PLCOPEN_FUB_WRITE_PAR"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ATN_PLCOPEN_FUB_SET_COMMAND"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ATN_PLCOPEN_FUB_WORKING"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ATN_PLCOPEN_FUB_CLEANUP"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"ATN_PLCOPEN_FUB_DONE"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">""</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+          </l>
+          <l n="Languages" t="ArrayList" />
+          <v n="GuidInit">{104dfc8f-44a8-4070-941c-035f54c08c90}</v>
+          <v n="GuidReInit">{df7e1f7e-2ca0-4d2f-a79c-52ec50e08ea1}</v>
+          <v n="GuidExitX">{a2e99c83-e82c-4004-ac45-de6fa734f654}</v>
+        </o>
+      </Data>
+      <TypeList>
+        <Type n="ArrayList">System.Collections.ArrayList</Type>
+        <Type n="Guid">System.Guid</Type>
+        <Type n="String">System.String</Type>
+        <Type n="TextListEnumerationTextListObject">{4b60233c-f940-4beb-b331-82133b520151}</Type>
+        <Type n="TextListRow">{53da1be7-ad25-47c3-b0e8-e26286dad2e0}</Type>
+      </TypeList>
+    </XmlArchive>
+  </EnumerationTextList>
+</TcPlcObject>

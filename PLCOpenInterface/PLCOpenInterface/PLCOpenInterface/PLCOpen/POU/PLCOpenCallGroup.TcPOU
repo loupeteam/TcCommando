@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="PLCOpenCallGroup" Id="{cba9c738-238a-4f8b-b4d1-3486de669f1d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenCallGroup IMPLEMENTS IPLCOpenCall
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	i_callgroup : PLCOpenCallGroupType;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="PLCOpenCaller" Id="{b4b03af3-7533-4298-bf9d-09121bd9eae9}" />
+    <Method Name="Aborted" Id="{88516a3e-7cba-4182-ba66-c0dd75064666}" FolderPath="PLCOpenCaller\">
+      <Declaration><![CDATA[METHOD Aborted : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[i_callgroup._syncAbort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="checkStatus" Id="{69b5b758-9323-4002-906a-f59304b6dbf8}">
+      <Declaration><![CDATA[METHOD PRIVATE checkStatus : BOOL
+VAR
+	_commandIndex : INT;
+	_anyAbort : BOOL;
+	_anyBusy : BOOL;
+	_anyError : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//If it's not in the list
+FOR _commandIndex :=0 TO 19 DO (*TODO: Fix 19*)
+	IF i_callgroup._commands[_commandIndex].Command <> 0 THEN
+		i_callgroup._commands[_commandIndex]();
+		IF i_callgroup._commands[_commandIndex].CommandAborted THEN		
+			_anyAbort := TRUE;
+		ELSIF i_callgroup._commands[_commandIndex].Error THEN		
+			_anyError := TRUE;
+		ELSIF i_callgroup._commands[_commandIndex].Busy THEN		
+			_anyBusy := TRUE;
+		ELSE
+			i_callgroup._commands[_commandIndex].Command := 0;	
+		END_IF
+	END_IF
+END_FOR
+
+i_callgroup._isError := FALSE;
+i_callgroup._isAbort := FALSE;
+i_callgroup._isDone := FALSE;
+
+IF _anyError OR i_callgroup._syncError THEN
+	i_callgroup._isError := TRUE;
+ELSIF _anyAbort OR i_callgroup._syncAbort THEN
+	i_callgroup._isAbort := TRUE;
+ELSIF NOT _anyBusy THEN
+	i_callgroup._isDone := TRUE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Errored" Id="{2a110df0-07b9-4922-ba19-6e9f76e5caa7}" FolderPath="PLCOpenCaller\">
+      <Declaration><![CDATA[METHOD Errored : BOOL
+VAR_INPUT
+	ID	: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[i_callgroup._syncError := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Finished" Id="{a2282568-2a57-49ba-abc9-a320ea291002}" FolderPath="PLCOpenCaller\">
+      <Declaration><![CDATA[METHOD Finished : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[i_callgroup._syncDone := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="isAbort" Id="{96e569b0-457f-4c6e-bec1-643c895a8b9c}">
+      <Declaration><![CDATA[PROPERTY isAbort : BOOL]]></Declaration>
+      <Get Name="Get" Id="{17cd4830-83fc-4522-8782-e508fda2b93d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[checkStatus();
+isAbort := i_callgroup._isAbort;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="isDone" Id="{c890f33c-6dc4-4031-a7ae-121d8a0f3c09}">
+      <Declaration><![CDATA[PROPERTY isDone : BOOL]]></Declaration>
+      <Get Name="Get" Id="{c8d0c1b7-b1e0-412a-9a10-7c15d2555f02}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[checkStatus();
+
+//Check if we are done
+isDone := i_callgroup._isDone;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="isError" Id="{28f1d1b2-fabc-44c9-968e-b0937bbe9074}">
+      <Declaration><![CDATA[PROPERTY isError : BOOL]]></Declaration>
+      <Get Name="Get" Id="{24b146e6-8584-4378-a902-a6d936d8a944}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[checkStatus();
+
+isError := i_callgroup._isError;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="PLCOpenCall" Id="{e899a63b-d12d-476a-8450-473b6110f918}">
+      <Declaration><![CDATA[{warning 'add method implementation '}
+METHOD PLCOpenCall : PLCOpenStatusBase
+VAR_INPUT
+	Command	: IPLCOpenCommand;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="resetCommands" Id="{cd896665-6c8b-4e15-8c06-75a5a8e469f2}">
+      <Declaration><![CDATA[METHOD resetCommands : BOOL
+VAR
+	_commandIndex : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//If it's not in the list
+FOR  _commandIndex :=0 TO 19 DO (*TODO: Fix 19*)
+	i_callgroup._commands[_commandIndex].Clear();
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Start" Id="{df0ebf2c-61b1-498a-bcc4-44d1e2466b24}" FolderPath="PLCOpenCaller\">
+      <Declaration><![CDATA[METHOD Start : BOOL
+VAR_INPUT
+	Command	: IPLCOpenCommand;
+END_VAR
+VAR
+	_commandIndex : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Check if it's already in the list
+FOR _commandIndex :=0 TO 19 DO (*TODO: Fix 19*)
+	IF i_callgroup._commands[_commandIndex].Command = Command THEN
+		i_callgroup._commands[_commandIndex].Exec(Command);
+		Start := TRUE;
+		RETURN;
+	END_IF
+END_FOR
+
+//If it's not in the list
+FOR _commandIndex :=0 TO 19 DO (*TODO: Fix 19*)
+	IF i_callgroup._commands[_commandIndex].Command = 0 THEN
+		i_callgroup._commands[_commandIndex].Exec(Command);
+		Start := TRUE;
+		RETURN;
+	END_IF
+END_FOR
+
+Start := FALSE;
+
+//TODO: All out of commands.. Throw an error]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
