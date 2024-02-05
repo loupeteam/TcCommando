@@ -9,7 +9,6 @@ STRUCT
 	_remote : IPLCOpenCall;
 	_nullRemote : PLCOpenNullRemote;
 	_commandGroups : ARRAY[0..19] OF IPLCOpenGroup;
-	_parameterReader : CopyPV;
 END_STRUCT
 END_TYPE
 ]]></Declaration>

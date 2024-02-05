@@ -9,7 +9,7 @@
 			</Tasks>
 		</System>
 		<Plc>
-			<Project File="PLCOpenInterface.xti"/>
+			<Project File="TcCommando.xti"/>
 		</Plc>
 	</Project>
 </TcSmProject>
