@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="PLCOpenCommand" Id="{1ef37826-7fac-4345-b9dc-ffeb92b64305}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenCommand IMPLEMENTS IPLCOpenCommand
+VAR	
+	i_PLCOpenCommand : PLCOpenCommandInternal;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF i_PLCOpenCommand._status <> PLCOpenStatusBase.BUSY AND NOT Execute THEN
+	i_PLCOpenCommand._status := PLCOpenStatusBase.NOT_ENABLED;
+END_IF	
+]]></ST>
+    </Implementation>
+    <Folder Name="API" Id="{0587c0fb-5387-4c8e-ab33-b65a12ba1fe4}" />
+    <Folder Name="internal" Id="{49c08f52-caae-4692-bd2e-016738f72df3}" />
+    <Method Name="Aborted" Id="{d2af0695-906b-4a1e-be1b-8d6698087918}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD Aborted : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[i_PLCOpenCommand._status := PLCOpenStatusBase.ABORTED;
+
+Remote.Aborted();
+Remote := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AbortPreviousCommands" Id="{72a4612a-7755-4ff4-a80f-b8e7a7020c17}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD AbortPreviousCommands : BOOL
+VAR_INPUT
+	newCommand : IPLCOpenCommand;
+END_VAR
+VAR
+	i: INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//If there is a remote, abort it here
+//Don't use this^.abort() because we don't want about ourselves
+Remote.Aborted();
+Remote := 0;
+
+//Abort any related commands
+FOR i:=0 TO 19 DO
+	IF i_PLCOpenCommand._commandGroups[i] <> 0 THEN
+		i_PLCOpenCommand._commandGroups[i].AbortPreviousCommands(newCommand);
+	END_IF
+END_FOR
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="baseSize" Id="{68c25b13-c5d3-4fd8-80c7-c8d81abff00e}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD FINAL baseSize : ULINT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[baseSize := SIZEOF(THIS^);]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Consume" Id="{2ef92d9e-be31-4204-86c4-dd6ebc3c6354}" FolderPath="API\">
+      <Declaration><![CDATA[PROPERTY Consume : BOOL]]></Declaration>
+      <Get Name="Get" Id="{48f7ff29-f664-4620-8fbe-665cd82855fe}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Consume := i_PLCOpenCommand._Execute;
+
+IF i_PLCOpenCommand._Execute THEN	
+//	THIS^.AbortPreviousCommands( THIS^ );//This is meant to abort if the command comes locally
+	i_PLCOpenCommand._status := PLCOpenStatusBase.BUSY;	
+END_IF
+
+i_PLCOpenCommand._Execute := FALSE;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="Errored" Id="{e4afdd7d-e3d4-4bb8-9a5c-f28bb8c767d0}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD Errored : BOOL
+VAR_INPUT
+	ID : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE ID OF
+	//Any of these statuses are invalid to return as an error.
+	//Override to error
+	PLCOPENSTATUSBASE.BUSY,
+	PLCOPENSTATUSBASE.ENABLED_WAITING,
+	PLCOPENSTATUSBASE.ERR_OK:
+		i_PLCOpenCommand._status := PLCOpenStatusBase.ERROR;
+ELSE
+	//Any other status can be passed through
+	i_PLCOpenCommand._status := ID;
+END_CASE
+
+Remote.Errored(ID);	
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Execute" Id="{cf9e92fe-da22-4c8e-b19d-8971f1bd24dd}" FolderPath="API\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Execute : BOOL]]></Declaration>
+      <Get Name="Get" Id="{15e0faeb-edb9-48e1-b660-f89f647245cb}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Execute := i_PLCOpenCommand._Execute;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{a312909e-3f1e-413f-a5a5-82ae3ecc3633}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[//We are already executing
+IF i_PLCOpenCommand._Trig = TRUE AND Execute = TRUE THEN
+
+;	//Do nothing
+//Trigger an execute
+ELSIF i_PLCOpenCommand._Trig = FALSE AND Execute = TRUE THEN	
+	i_PLCOpenCommand._status := PLCOpenStatusBase.ENABLED_WAITING;
+	i_PLCOpenCommand._Execute := TRUE;
+
+	THIS^.AbortPreviousCommands( THIS^ );//This is meant to abort if the command comes locally	
+
+// We were executing, but resetting it to false;
+// Just resetting execute to false all the time is OK
+ELSIF Execute = FALSE THEN
+	i_PLCOpenCommand._Execute := FALSE;
+END_IF
+
+
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="FB_init" Id="{b4349aad-b544-4b1e-a56d-39ff17892797}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[i_PLCOpenCommand._status := PLCOpenStatusBase.NOT_ENABLED;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Finished" Id="{bd7fbae3-272f-4620-a9e2-ef86e3120b6b}" FolderPath="API\">
+      <Declaration><![CDATA[{warning 'add method implementation '}
+METHOD Finished : BOOL
+VAR_INST
+	derived : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF i_PLCOpenCommand._status = PLCOpenStatusBase.BUSY THEN
+	i_PLCOpenCommand._status := PLCOpenStatusBase.ERR_OK;
+END_IF
+
+Remote.Finished();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetSize" Id="{6be4e2c5-cb6a-4977-9596-4ad7ba831831}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD GetSize : ULINT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetSize := SIZEOF(THIS^);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="getThis" Id="{12291a40-cea3-4f5e-bd41-1dabff99abc5}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD getThis : ULINT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[getThis := THIS;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="registerGroup" Id="{cb5ff1a4-1084-4750-a268-4c2294c40278}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD registerGroup : BOOL
+VAR_INPUT
+	group	: IPLCOpenGroup;
+END_VAR
+
+VAR
+	i: INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i:=0 TO 19 DO
+	IF i_PLCOpenCommand._commandGroups[i] = 0 THEN
+		i_PLCOpenCommand._commandGroups[i] := group;
+		EXIT;
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Remote" Id="{db1da67f-8a2d-451e-9ac8-181a6de631fa}" FolderPath="internal\">
+      <Declaration><![CDATA[PROPERTY Remote : IPLCOpenCall
+]]></Declaration>
+      <Get Name="Get" Id="{144c094c-479d-406d-b7b8-b66e9e7db9d4}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF i_PLCOpenCommand._remote <> 0 THEN
+	Remote := i_PLCOpenCommand._remote;
+ELSE
+	Remote := i_PLCOpenCommand._nullRemote;	
+END_IF]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{ccf43fee-53f8-4d05-987a-04726b9b683d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[i_PLCOpenCommand._remote := Remote;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="status" Id="{3390b090-03b4-43fa-b62c-451c749fc114}" FolderPath="API\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY status : PLCOpenStatusBase]]></Declaration>
+      <Get Name="Get" Id="{d49175ec-85a1-4e46-9ed1-546dc054337a}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[status := i_PLCOpenCommand._status;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>
