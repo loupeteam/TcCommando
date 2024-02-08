@@ -41,7 +41,7 @@ END_VAR
 	
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
 	
-	AssertTrue(Condition := command.Consume, Message := 'Peek Should start as true after abort');
+	AssertTrue(Condition := command.Consume, Message := 'Consume Should start as true after abort');
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
 	
 	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
