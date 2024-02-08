@@ -80,8 +80,6 @@
     <Folder Include="GVLs" />
     <Folder Include="Interfaces" />
     <Folder Include="Test" />
-    <Folder Include="PLCOpen" />
-    <Folder Include="PLCOpen\POU" />
     <Folder Include="POUs" />
   </ItemGroup>
   <ItemGroup>
