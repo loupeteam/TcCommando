@@ -35,8 +35,6 @@ END_VAR
 	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
 	
-	
-	
 	command.Execute := TRUE;
 	
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
@@ -55,8 +53,6 @@ END_VAR
 	
 	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
 	
-	command.Execute := FALSE;
-
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
@@ -92,8 +88,6 @@ END_VAR]]></Declaration>
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled if it happens after error');
 	
 	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
-	
-	command.Execute := FALSE;
 
 TEST_FINISHED();]]></ST>
       </Implementation>
@@ -123,9 +117,7 @@ END_VAR]]></Declaration>
 	command();
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
 	
-	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
-	
-	command.Execute := FALSE;
+	AssertFalse(Condition := command.Consume, Message := 'Consume should auto reset');
 
 TEST_FINISHED();]]></ST>
       </Implementation>
