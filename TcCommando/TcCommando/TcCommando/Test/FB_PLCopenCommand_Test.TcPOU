@@ -7,128 +7,127 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-	localCommand : PLCOpenCommand();
-	remoteCommand : PLCOpenCommand();
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[TEST('LocalCallSuccess');
-	TestLocalCall_Success(localCommand);
-TEST_FINISHED();
-
-TEST('LocalCallAbort');
-	TestLocalCall_Abort(localCommand);
-TEST_FINISHED();
-
-TEST('LocalCallError');
-	TestLocalCall_Error(localCommand);
-TEST_FINISHED();]]></ST>
+      <ST><![CDATA[TestLocalCall_Success();
+TestLocalCall_Abort();
+TestLocalCall_Error();]]></ST>
     </Implementation>
     <Method Name="TestLocalCall_Abort" Id="{411b9336-d620-4448-b02d-c7622c01b45e}">
       <Declaration><![CDATA[METHOD TestLocalCall_Abort
 VAR
-	localCommand : PLCOpenCommand();
-	remoteCommand : PLCOpenCommand();
+	command : PLCOpenCommand();
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should start false');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+        <ST><![CDATA[TEST('LocalCallAbort');
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should start false');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+	
+	command.Execute := TRUE;
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+	
+	AssertTrue(Condition := command.Consume, Message := 'Consume Should start as true');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	
+	
+	command.Execute := TRUE;
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+	
+	AssertTrue(Condition := command.Consume, Message := 'Peek Should start as true after abort');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	command.Finished();
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'Status should be OK after finish');
+	command();
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	
+	command.Execute := FALSE;
 
-testCommand.Execute := TRUE;
-
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
-
-AssertTrue(Condition := testCommand.Consume, Message := 'Consume Should start as true');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
-
-AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
-
-
-
-
-testCommand.Execute := TRUE;
-
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
-
-AssertTrue(Condition := testCommand.Consume, Message := 'Peek Should start as true after abort');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
-
-AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
-
-testCommand.Finished();
-
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'Status should be OK after finish');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
-
-AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
-
-testCommand.Execute := FALSE;]]></ST>
+TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
     <Method Name="TestLocalCall_Error" Id="{1a56507b-64b6-4d10-a688-45cc5b0dc888}">
       <Declaration><![CDATA[METHOD TestLocalCall_Error
 VAR
-	testCommand : PLCOpenCommand();
+	command : PLCOpenCommand();
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should start false');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+        <ST><![CDATA[TEST('LocalCallError');
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should start false');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+	
+	command.Execute := TRUE;
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+	
+	AssertTrue(Condition := command.Consume, Message := 'Consume Should start as true');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	command.Errored(PLCOpenStatusBase.ERROR);
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should be false');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ERROR, Message := 'Status should be error');
+	command();
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
+	
+	command.Finished();
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled if it happens after error');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	
+	command.Execute := FALSE;
 
-testCommand.Execute := TRUE;
-
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
-
-AssertTrue(Condition := testCommand.Consume, Message := 'Consume Should start as true');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
-
-AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
-
-testCommand.Errored(1337);
-
-AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should be false');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ERROR, Message := 'Status should be error');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
-
-testCommand.Finished();
-
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled if it happens after error');
-
-AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
-
-testCommand.Execute := FALSE;]]></ST>
+TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
     <Method Name="TestLocalCall_Success" Id="{25b22591-3533-478f-bf71-aa6877370f35}">
       <Declaration><![CDATA[METHOD TestLocalCall_Success
 VAR
-	testCommand : PLCOpenCommand();
+	command : PLCOpenCommand();
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should start false');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+        <ST><![CDATA[TEST('LocalCallSuccess');
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should start false');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+	
+	command.Execute := TRUE;
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+	
+	AssertTrue(Condition := command.Consume, Message := 'Consume Should start as true');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	command.Finished();
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'Status should be OK after finish');
+	command();
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	
+	command.Execute := FALSE;
 
-testCommand.Execute := TRUE;
-
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
-
-AssertTrue(Condition := testCommand.Consume, Message := 'Consume Should start as true');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
-
-AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
-
-testCommand.Finished();
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'Status should be OK after finish');
-AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
-
-AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
-
-testCommand.Execute := FALSE;
-]]></ST>
+TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
   </POU>
