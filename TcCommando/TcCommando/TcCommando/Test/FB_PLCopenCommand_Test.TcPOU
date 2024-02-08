@@ -1,0 +1,503 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_PLCopenCommand_Test" Id="{0f0750ea-d1ee-4a18-8aa2-27762e9d8df2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PLCopenCommand_Test EXTENDS  TcUnit.FB_TestSuite
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[TestLocalCall();
+TestRemoteCall_Success();
+TestRemoteCall_Error();
+TestRemoteCall_LocalAbort();
+]]></ST>
+    </Implementation>
+    <Method Name="TestLocalCall" Id="{4ac2716a-efed-4296-a47a-1e3e22a4fa88}">
+      <Declaration><![CDATA[METHOD TestLocalCall
+VAR
+	ActiveCommand : IPLCOpenCommand;	
+	localCommand : PLCOpenCommand(ActiveCommand);
+	remoteCommand : PLCOpenCommand(ActiveCommand);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('LocalCallSuccess');
+	TestLocalCall_Success(localCommand);
+TEST_FINISHED();
+
+TEST('LocalCallAbort');
+	TestLocalCall_Abort(localCommand);
+TEST_FINISHED();
+
+TEST('LocalCallError');
+	TestLocalCall_Error(localCommand);
+TEST_FINISHED();
+
+TEST('RemoteCallSuccess');
+	TestLocalCall_Success(RemoteCommand);
+TEST_FINISHED();
+
+TEST('RemoteCallAbort');
+	TestLocalCall_Abort(RemoteCommand);
+TEST_FINISHED();
+
+TEST('RemoteCallError');
+	TestLocalCall_Error(RemoteCommand);	
+TEST_FINISHED();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestLocalCall_Abort" Id="{411b9336-d620-4448-b02d-c7622c01b45e}">
+      <Declaration><![CDATA[METHOD TestLocalCall_Abort
+VAR_INPUT
+		testCommand : IPLCOpenCommand;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should start false');
+AssertFalse(Condition := testCommand.Peek, Message := 'Peek Should start false');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+
+testCommand.Execute := TRUE;
+
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should start true');
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should stay true');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+
+AssertTrue(Condition := testCommand.Consume, Message := 'Consume Should start as true');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+
+testCommand.Execute := TRUE;
+
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should start true after abort');
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should stay  true after abort');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+
+AssertTrue(Condition := testCommand.Consume, Message := 'Peek Should start as true after abort');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+
+testCommand.Finished();
+
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'Status should be OK after finish');
+AssertEquals_DINT(Actual := testCommand.statusRetain, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'StatusRetain should be OK after finish');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
+AssertEquals_DINT(Actual := testCommand.statusRetain, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'StatusRetain should be Retained until the next call');
+
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
+
+testCommand.Execute := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestLocalCall_Error" Id="{1a56507b-64b6-4d10-a688-45cc5b0dc888}">
+      <Declaration><![CDATA[METHOD TestLocalCall_Error
+VAR_INPUT
+		testCommand : IPLCOpenCommand;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should start false');
+AssertFalse(Condition := testCommand.Peek, Message := 'Peek Should start false');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+
+testCommand.Execute := TRUE;
+
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should start true');
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should stay true');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+
+AssertTrue(Condition := testCommand.Consume, Message := 'Consume Should start as true');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+
+testCommand.Errored();
+
+AssertFalse(Condition := testCommand.Peek, Message := 'Consume Should false');
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should be false');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ERROR, Message := 'Status should be error');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
+AssertEquals_DINT(Actual := testCommand.statusRetain, Expected:= PLCOpenStatusBase.ERROR, Message := 'Status retain should remain');
+AssertEquals_DINT(Actual := testCommand.statusRetain, Expected:= PLCOpenStatusBase.ERROR, Message := 'Status retain should remain');
+
+testCommand.Finished();
+
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled if it happens after error');
+AssertEquals_DINT(Actual := testCommand.statusRetain, Expected:= PLCOpenStatusBase.ERROR, Message := 'StatusRetain should be remain error after finish');
+
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
+
+testCommand.Execute := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestLocalCall_Success" Id="{25b22591-3533-478f-bf71-aa6877370f35}">
+      <Declaration><![CDATA[METHOD TestLocalCall_Success
+VAR_INPUT
+		testCommand : IPLCOpenCommand;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should start false');
+AssertFalse(Condition := testCommand.Peek, Message := 'Peek Should start false');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+
+testCommand.Execute := TRUE;
+
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should start true');
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should stay true');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+
+AssertTrue(Condition := testCommand.Consume, Message := 'Consume Should start as true');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+
+testCommand.Finished();
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'Status should be OK after finish');
+AssertEquals_DINT(Actual := testCommand.statusRetain, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'StatusRetain should be OK after finish');
+AssertEquals_DINT(Actual := testCommand.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
+AssertEquals_DINT(Actual := testCommand.statusRetain, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'StatusRetain should be Retained until the next call');
+
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset');
+
+testCommand.Execute := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestRemoteCall_Error" Id="{e598aeaa-9235-4a0e-b350-9c1b7ac0ff73}">
+      <Declaration><![CDATA[METHOD TestRemoteCall_Error
+VAR_INPUT
+END_VAR
+
+VAR
+	ActiveCommand : IPLCOpenCommand;	
+	testCommand: PLCOpenCommandRemote(ActiveCommand);
+	testRemoteCommand: PLCOpenCall;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('RemoteCall Error');
+
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should start false');
+AssertFalse(Condition := testCommand.Peek, Message := 'Peek Should start false');
+
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy should start false');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done should start false');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error should start false');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted should start false');
+
+//First call should set statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy 1');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done 1');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error 1');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted 1');
+
+//First call should not change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy 2');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done 2');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error 2');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted 2');
+
+
+//Sub system checks the commands
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should start true 3');
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should stay true 3');
+
+//Peak should not not change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy 4');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done 4');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error 4');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted 4');
+
+//Sub system consumes the commands
+AssertTrue(Condition := testCommand.Consume, Message := 'Consume Should start as true 5');
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset 5');
+
+//Consume should not change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy consume');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done consume');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error consume');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted consume');
+
+//sub system finishes the command
+testCommand.Errored();
+
+//Finish should change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy error');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done  error');
+AssertTrue(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error  error');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted  success');
+
+//Finish should change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+//Statuses should be unchanged
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy unchanged');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done unchanged');
+AssertTrue(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error unchanged');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted unchanged');
+
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := FALSE;
+testRemoteCommand();
+
+//Statuses should be reset
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy reset');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done reset');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error reset');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted reset');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestRemoteCall_LocalAbort" Id="{a2c1d19d-ac92-4583-9413-eb797f58ad19}">
+      <Declaration><![CDATA[METHOD TestRemoteCall_LocalAbort
+VAR_INPUT
+END_VAR
+
+VAR
+	ActiveCommand : IPLCOpenCommand;	
+	testCommand: PLCOpenCommandRemote(ActiveCommand);
+	testRemoteCommand: PLCOpenCall;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('RemoteCall Local Abort');
+
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should start false');
+AssertFalse(Condition := testCommand.Peek, Message := 'Peek Should start false');
+
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy should start false');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done should start false');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error should start false');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted should start false');
+
+//First call should set statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy 1');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done 1');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error 1');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted 1');
+
+//First call should not change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy 2');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done 2');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error 2');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted 2');
+
+
+//Sub system checks the commands
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should start true 3');
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should stay true 3');
+
+//Peak should not not change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy 4');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done 4');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error 4');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted 4');
+
+//Sub system consumes the commands
+AssertTrue(Condition := testCommand.Consume, Message := 'Consume Should start as true 5');
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset 5');
+
+//Consume should not change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy consume');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done consume');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error consume');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted consume');
+
+//sub system aborts the command
+testCommand.Execute := TRUE;
+
+//Abort should change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy error');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done  error');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error  error');
+AssertTrue(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted  success');
+
+//Finish should change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+//Statuses should be unchanged
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy unchanged');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done unchanged');
+AssertTrue(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error unchanged');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted unchanged');
+
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := FALSE;
+testRemoteCommand();
+
+//Statuses should be reset
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy reset');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done reset');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error reset');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted reset');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestRemoteCall_Success" Id="{9f21ea30-eca6-4d16-a9ac-2a2d73ac3dcf}">
+      <Declaration><![CDATA[METHOD TestRemoteCall_Success
+VAR_INPUT
+END_VAR
+
+VAR
+	ActiveCommand : IPLCOpenCommand;
+	testCommand: PLCOpenCommandRemote(ActiveCommand);
+	testRemoteCommand: PLCOpenCall;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('RemoteCall Success');
+
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should start false');
+AssertFalse(Condition := testCommand.Peek, Message := 'Peek Should start false');
+
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy should start false');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done should start false');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error should start false');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted should start false');
+
+//First call should set statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy 1');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done 1');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error 1');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted 1');
+
+//First call should not change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy 2');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done 2');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error 2');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted 2');
+
+
+//Sub system checks the commands
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should start true 3');
+AssertTrue(Condition := testCommand.Peek, Message := 'Peek Should stay true 3');
+
+//Peak should not not change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy 4');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done 4');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error 4');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted 4');
+
+//Sub system consumes the commands
+AssertTrue(Condition := testCommand.Consume, Message := 'Consume Should start as true 5');
+AssertFalse(Condition := testCommand.Consume, Message := 'Consume Should auto reset 5');
+
+//Consume should not change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertTrue(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy consume');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done consume');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error consume');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted consume');
+
+//sub system finishes the command
+testCommand.Finished();
+
+//Finish should change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy success');
+AssertTrue(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done  success');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error  success');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted  success');
+
+//Finish should change the statuses
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := TRUE;
+testRemoteCommand();
+
+//Statuses should be unchanged
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy unchanged');
+AssertTrue(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done unchanged');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error unchanged');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted unchanged');
+
+testRemoteCommand.Command := testCommand;
+testRemoteCommand.Execute := FALSE;
+testRemoteCommand();
+
+//Statuses should be reset
+AssertFalse(Condition := testRemoteCommand.Busy, Message := 'testRemoteCommand.Busy reset');
+AssertFalse(Condition := testRemoteCommand.Done, Message := 'testRemoteCommand.Done reset');
+AssertFalse(Condition := testRemoteCommand.Error, Message := 'testRemoteCommand.Error reset');
+AssertFalse(Condition := testRemoteCommand.CommandAborted, Message := 'testRemoteCommand.CommandAborted reset');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
