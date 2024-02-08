@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
-  <POU Name="FB_PLCopenCommand_Test" Id="{0f0750ea-d1ee-4a18-8aa2-27762e9d8df2}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_PLCopenCommand_Test EXTENDS  TcUnit.FB_TestSuite
+  <POU Name="FB_PLCOpenCommand_Test" Id="{0f0750ea-d1ee-4a18-8aa2-27762e9d8df2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PLCOpenCommand_Test EXTENDS  TcUnit.FB_TestSuite
 VAR_INPUT
 END_VAR
 VAR_OUTPUT
@@ -10,10 +10,27 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[CallSuccess();
+      <ST><![CDATA[CallFinished();
 CallAbort();
-CallError();]]></ST>
+CallError();
+AbortPrevious();]]></ST>
     </Implementation>
+    <Method Name="AbortPrevious" Id="{5caf9c09-4d16-4f97-b4a8-afa5a2f2097d}">
+      <Declaration><![CDATA[METHOD AbortPrevious
+VAR
+	command : PLCOpenCommand();
+	newCommand : PLCOpenCommand();
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('AbortPrevious');
+	command.Execute := TRUE;
+	command();
+	command.AbortPreviousCommands(newCommand);
+	AssertEquals_INT(Expected := PLCOpenStatusBase.ABORTED, Actual := command.status, Message := 'Initial command should be aborted');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="CallAbort" Id="{411b9336-d620-4448-b02d-c7622c01b45e}">
       <Declaration><![CDATA[METHOD CallAbort
 VAR
