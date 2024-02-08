@@ -21,7 +21,7 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('LocalCallAbort');
+        <ST><![CDATA[TEST('CallAbort');
 	AssertFalse(Condition := command.Consume, Message := 'Consume Should start false');
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
 	
@@ -62,7 +62,8 @@ VAR
 	command : PLCOpenCommand();
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('LocalCallError');
+        <ST><![CDATA[TEST('CallError');
+
 	AssertFalse(Condition := command.Consume, Message := 'Consume Should start false');
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
 	
@@ -106,10 +107,10 @@ END_VAR]]></Declaration>
 	
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
 	
-	AssertTrue(Condition := command.Consume, Message := 'Consume Should start as true');
+	AssertTrue(Condition := command.Consume, Message := 'Consume should start as true');
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
 	
-	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	AssertFalse(Condition := command.Consume, Message := 'Consume should auto reset');
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
 	
 	command.Finished();
