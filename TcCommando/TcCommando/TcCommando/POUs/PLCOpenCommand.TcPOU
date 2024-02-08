@@ -156,8 +156,7 @@ VAR_INST
 	derived : BOOL;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
-IF i_PLCOpenCommand._status = PLCOpenStatusBase.BUSY THEN
+        <ST><![CDATA[IF i_PLCOpenCommand._status = PLCOpenStatusBase.BUSY THEN
 	i_PLCOpenCommand._status := PLCOpenStatusBase.ERR_OK;
 END_IF
 
@@ -209,7 +208,7 @@ END_VAR
           <ST><![CDATA[IF i_PLCOpenCommand._remote <> 0 THEN
 	Remote := i_PLCOpenCommand._remote;
 ELSE
-	Remote := i_PLCOpenCommand._nullRemote;	
+	Remote := i_PLCOpenCommand._nullRemote;
 END_IF]]></ST>
         </Implementation>
       </Get>
