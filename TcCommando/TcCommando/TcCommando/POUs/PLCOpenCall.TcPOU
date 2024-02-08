@@ -238,7 +238,7 @@ Exec := THIS^.Status;]]></ST>
       </Implementation>
     </Method>
     <Method Name="Start" Id="{b16dfd08-c0f6-43db-a57d-608fa4a860b4}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Start : BOOL
+      <Declaration><![CDATA[METHOD Start
 VAR_INPUT
 	Command : IPLCOpenCommand;	
 END_VAR
