@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_PLCOpenCall_Test" Id="{11b00080-9eb7-435e-b91b-311812c3e08c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PLCOpenCall_Test EXTENDS FB_TestSuite
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Clear();]]></ST>
+    </Implementation>
+    <Method Name="Clear" Id="{2f219140-8639-4442-9636-f58c99c41e5b}">
+      <Declaration><![CDATA[METHOD Clear
+VAR
+	call : PLCOpenCall();
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('Clear');
+	call.Execute := TRUE;
+	call.Clear();
+	AssertFalse(call.Execute, Message := 'Execute should not be true');
+	AssertEquals_INT(Expected := PLCOpenCallState.ATN_PLCOPEN_FUB_CLEANUP, Actual := call.i_PLCOpenCallInternal._state, Message := 'Status should be Cleanup');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Exec" Id="{ee4d2b03-8c4b-4975-8443-00a2021a958d}">
+      <Declaration><![CDATA[METHOD Exec
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Start" Id="{33b29bc8-44e1-4a1e-b951-c14b8679d46f}">
+      <Declaration><![CDATA[METHOD Start
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
