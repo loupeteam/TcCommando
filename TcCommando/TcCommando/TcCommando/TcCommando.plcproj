@@ -68,10 +68,13 @@
     <Compile Include="POUs\PLCOpenNullRemote.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Test\FB_PLCOpenCall_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Test\TESTPRG.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Test\FB_PLCopenCommand_Test.TcPOU">
+    <Compile Include="Test\FB_PLCOpenCommand_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
