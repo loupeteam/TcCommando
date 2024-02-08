@@ -7,7 +7,7 @@ STRUCT
 	_Command: IPLCOpenCommand;
 	_abort: BOOL;
 	_execute: BOOL;
-	_break:BOOL;
+	_break: BOOL;
 	_RemoteStatus: PLCOPENSTATUSBASE;
 	_self :IPLCOpenCall;
 END_STRUCT
