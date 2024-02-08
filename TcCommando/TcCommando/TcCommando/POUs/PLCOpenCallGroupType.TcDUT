@@ -13,7 +13,7 @@ STRUCT
 	_isError : BOOL;
 	_statusChecked : BOOL;
 	_numberActiveCommands : INT;
-	_commands : ARRAY[0..19] OF PLCOpenCall;
+	_commands : ARRAY[0..PLCOpenCommand.maxRelatedGroups] OF PLCOpenCall;
 	_syncAbort : BOOL;
 	_syncError : BOOL;
 	_syncDone : BOOL;

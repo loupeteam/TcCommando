@@ -8,7 +8,7 @@ STRUCT
 	_status : PLCOpenStatusBase;
 	_remote : IPLCOpenCall;
 	_nullRemote : PLCOpenNullRemote;
-	_commandGroups : ARRAY[0..19] OF IPLCOpenGroup;
+	_commandGroups : ARRAY[0..PLCOpenCommand.maxRelatedGroups] OF IPLCOpenGroup;
 END_STRUCT
 END_TYPE
 ]]></Declaration>

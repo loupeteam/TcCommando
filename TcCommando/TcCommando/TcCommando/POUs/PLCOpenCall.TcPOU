@@ -17,6 +17,9 @@ END_VAR
 VAR
 	i_PLCOpenCallInternal : PLCOpenCallInternal;
 END_VAR
+VAR CONSTANT
+	maxRelatedGroups : USINT := 19; // TODO evaluate this
+END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[Call();]]></ST>

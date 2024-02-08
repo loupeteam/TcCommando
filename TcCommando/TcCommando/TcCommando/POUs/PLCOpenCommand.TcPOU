@@ -2,8 +2,11 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="PLCOpenCommand" Id="{1ef37826-7fac-4345-b9dc-ffeb92b64305}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenCommand IMPLEMENTS IPLCOpenCommand
-VAR	
+VAR
 	i_PLCOpenCommand : PLCOpenCommandInternal;
+END_VAR
+VAR CONSTANT
+	maxRelatedGroups : USINT := 19; // TODO evaluate this
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -33,7 +36,6 @@ VAR_INPUT
 END_VAR
 VAR
 	i: USINT;
-	maxRelatedGroups : USINT := 19; // TODO evaluate this
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[//If there is a remote, abort it here
@@ -190,7 +192,7 @@ VAR
 	i: INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[FOR i:=0 TO 19 DO
+        <ST><![CDATA[FOR i:=0 TO maxRelatedGroups DO
 	IF i_PLCOpenCommand._commandGroups[i] = 0 THEN
 		i_PLCOpenCommand._commandGroups[i] := group;
 		EXIT;
