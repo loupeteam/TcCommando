@@ -27,7 +27,7 @@ END_VAR
 	command.Execute := TRUE;
 	command();
 	command.AbortPreviousCommands(newCommand);
-	AssertEquals_INT(Expected := PLCOpenStatusBase.ABORTED, Actual := command.status, Message := 'Initial command should be aborted');
+	AssertEquals_DINT(Expected := PLCOpenStatusBase.ABORTED, Actual := command.status, Message := 'Initial command should be aborted');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
