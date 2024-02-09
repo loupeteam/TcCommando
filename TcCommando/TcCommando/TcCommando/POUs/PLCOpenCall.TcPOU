@@ -191,6 +191,7 @@ THIS^.i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_CLEANUP;
 THIS^.Call();
 //Second call to clear
 THIS^.Call();
+Clear := THIS^.Status;
 ]]></ST>
       </Implementation>
     </Method>
