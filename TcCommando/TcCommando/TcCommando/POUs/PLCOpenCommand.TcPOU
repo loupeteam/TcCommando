@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1">
   <POU Name="PLCOpenCommand" Id="{1ef37826-7fac-4345-b9dc-ffeb92b64305}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenCommand IMPLEMENTS IPLCOpenCommand
 VAR

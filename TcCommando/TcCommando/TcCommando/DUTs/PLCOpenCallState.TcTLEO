@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1">
   <EnumerationTextList Name="PLCOpenCallState" Id="{3ae6e054-32d2-4fc8-9116-cc770a82905a}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 {attribute 'strict'}
