@@ -47,13 +47,13 @@ END_VAR]]></Declaration>
 	//Start a new command on edge
 	IF( Execute AND NOT i_PLCOpenCallInternal._execute)THEN
 		i_PLCOpenCallInternal._execute := TRUE;
-		i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_NEW_COMMAND;
+		i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_NEW_COMMAND;
 	END_IF
 	
 	//If we get aborted, handle it
 	IF( i_PLCOpenCallInternal._abort )THEN
 		i_PLCOpenCallInternal._abort := 0;
-		i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_ABORTED;
+		i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_ABORTED;
 	END_IF
 
 	i_PLCOpenCallInternal._self := THIS^;
@@ -63,7 +63,7 @@ END_VAR]]></Declaration>
 	WHILE _break = FALSE DO
 		CASE ( i_PLCOpenCallInternal._state ) OF
 			//IDLE
-			PLCOpenCallState.ATN_PLCOPEN_FUB_IDLE:
+			PLCOpenCallState.PLCOPEN_FUB_IDLE:
 				Status := PLCOpenStatusBase.NOT_ENABLED;
 				Busy := FALSE;
 				Done := FALSE;
@@ -72,7 +72,7 @@ END_VAR]]></Declaration>
 				_break := TRUE;
 				
 			//Start a new command by getting it
-			PLCOpenCallState.ATN_PLCOPEN_FUB_NEW_COMMAND:
+			PLCOpenCallState.PLCOPEN_FUB_NEW_COMMAND:
 				Status := PLCOpenStatusBase.BUSY;
 				i_PLCOpenCallInternal._RemoteStatus := PLCOpenStatusBase.BUSY;
 				Busy := TRUE;
@@ -94,10 +94,10 @@ END_VAR]]></Declaration>
 				i_PLCOpenCallInternal._command := Command;
 	
 				IF i_PLCOpenCallInternal._Command <> 0 THEN
-					i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_ABORT_OLD;
+					i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_ABORT_OLD;
 					//No break;
 				ELSE
-					i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_WORKING;
+					i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_WORKING;
 					i_PLCOpenCallInternal._RemoteStatus := Fallback;				
 					_break := TRUE;
 				END_IF
@@ -105,24 +105,24 @@ END_VAR]]></Declaration>
 				//No break;
 			
 			//Abort any commands that was active using the same PLCOpen state
-			PLCOpenCallState.ATN_PLCOPEN_FUB_ABORT_OLD:
+			PLCOpenCallState.PLCOPEN_FUB_ABORT_OLD:
 				//This will 
 				i_PLCOpenCallInternal._Command.AbortPreviousCommands(i_PLCOpenCallInternal._Command);
 
-				i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_SET_COMMAND;
+				i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_SET_COMMAND;
 				//no break;
 				
 			//Start the command
-			PLCOpenCallState.ATN_PLCOPEN_FUB_SET_COMMAND:
+			PLCOpenCallState.PLCOPEN_FUB_SET_COMMAND:
 				i_PLCOpenCallInternal._Command.Execute := TRUE;			
 				i_PLCOpenCallInternal._Command.Remote := THIS^;			
 			
 				Busy := TRUE;
-				i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_WORKING;
+				i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_WORKING;
 				// no break
 	
 			//Wait for the command to be finished
-			PLCOpenCallState.ATN_PLCOPEN_FUB_WORKING:
+			PLCOpenCallState.PLCOPEN_FUB_WORKING:
 				Busy := TRUE;
 				//No Break
 	
@@ -135,29 +135,29 @@ END_VAR]]></Declaration>
 					ELSE
 						Error := TRUE;		
 					END_IF
-					i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_CLEANUP;
+					i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_CLEANUP;
 					//no break;
 				ELSE 
 					_break := TRUE;
 				END_IF
 			
 			//cleanup
-			PLCOpenCallState.ATN_PLCOPEN_FUB_CLEANUP:
+			PLCOpenCallState.PLCOPEN_FUB_CLEANUP:
 				//Remove self from the source command
 				IF i_PLCOpenCallInternal._Command <> 0 THEN
 					i_PLCOpenCallInternal._Command.Remote := 0;			
 					i_PLCOpenCallInternal._Command := 0;
 				END_IF
 					
-				i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_DONE;
+				i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_DONE;
 				//Break to force at least 1 cycle with statuses
 				_break := TRUE;
 
 			//done
-			PLCOpenCallState.ATN_PLCOPEN_FUB_DONE:
+			PLCOpenCallState.PLCOPEN_FUB_DONE:
 	
 				IF( NOT Execute )THEN
-					i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_IDLE;
+					i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_IDLE;
 					Status := PLCOpenStatusBase.NOT_ENABLED;
 					Busy := FALSE;
 					Done := FALSE;
@@ -167,14 +167,14 @@ END_VAR]]></Declaration>
 				_break := TRUE;
 	
 			//aborted
-			PLCOpenCallState.ATN_PLCOPEN_FUB_ABORTED:
+			PLCOpenCallState.PLCOPEN_FUB_ABORTED:
 				Status := PLCOpenStatusBase.ABORTED;
 				Busy := FALSE;
 				Done := FALSE;
 				Error := FALSE;
 				CommandAborted := TRUE;
 				i_PLCOpenCallInternal._command := 0;
-				i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_DONE;
+				i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_DONE;
 				_break := TRUE;
 					
 		END_CASE
@@ -186,7 +186,7 @@ END_VAR]]></Declaration>
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[THIS^.Execute := FALSE;
-THIS^.i_PLCOpenCallInternal._state := PLCOpenCallState.ATN_PLCOPEN_FUB_CLEANUP;
+THIS^.i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_CLEANUP;
 //One call to cleanup
 THIS^.Call();
 //Second call to clear

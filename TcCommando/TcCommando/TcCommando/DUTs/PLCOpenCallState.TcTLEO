@@ -5,16 +5,16 @@
 {attribute 'strict'}
 TYPE PLCOpenCallState :
 (
-	ATN_PLCOPEN_FUB_IDLE := 0,
-	ATN_PLCOPEN_FUB_NEW_COMMAND,
-	ATN_PLCOPEN_FUB_ABORTED,
-	ATN_PLCOPEN_FUB_ABORT_OLD,
-	ATN_PLCOPEN_FUB_STATUS,
-	ATN_PLCOPEN_FUB_WRITE_PAR,
-	ATN_PLCOPEN_FUB_SET_COMMAND,
-	ATN_PLCOPEN_FUB_WORKING,
-	ATN_PLCOPEN_FUB_CLEANUP,
-	ATN_PLCOPEN_FUB_DONE
+	PLCOPEN_FUB_IDLE := 0,
+	PLCOPEN_FUB_NEW_COMMAND,
+	PLCOPEN_FUB_ABORTED,
+	PLCOPEN_FUB_ABORT_OLD,
+	PLCOPEN_FUB_STATUS,
+	PLCOPEN_FUB_WRITE_PAR,
+	PLCOPEN_FUB_SET_COMMAND,
+	PLCOPEN_FUB_WORKING,
+	PLCOPEN_FUB_CLEANUP,
+	PLCOPEN_FUB_DONE
 );
 END_TYPE
 ]]></Declaration>
@@ -23,52 +23,52 @@ END_TYPE
         <o xml:space="preserve" t="TextListEnumerationTextListObject">
           <l n="TextList" t="ArrayList" cet="TextListRow">
             <o>
-              <v n="TextID">"ATN_PLCOPEN_FUB_IDLE"</v>
+              <v n="TextID">"PLCOPEN_FUB_IDLE"</v>
               <v n="TextDefault">"0"</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
-              <v n="TextID">"ATN_PLCOPEN_FUB_NEW_COMMAND"</v>
+              <v n="TextID">"PLCOPEN_FUB_NEW_COMMAND"</v>
               <v n="TextDefault">""</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
-              <v n="TextID">"ATN_PLCOPEN_FUB_ABORTED"</v>
+              <v n="TextID">"PLCOPEN_FUB_ABORTED"</v>
               <v n="TextDefault">""</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
-              <v n="TextID">"ATN_PLCOPEN_FUB_ABORT_OLD"</v>
+              <v n="TextID">"PLCOPEN_FUB_ABORT_OLD"</v>
               <v n="TextDefault">""</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
-              <v n="TextID">"ATN_PLCOPEN_FUB_STATUS"</v>
+              <v n="TextID">"PLCOPEN_FUB_STATUS"</v>
               <v n="TextDefault">""</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
-              <v n="TextID">"ATN_PLCOPEN_FUB_WRITE_PAR"</v>
+              <v n="TextID">"PLCOPEN_FUB_WRITE_PAR"</v>
               <v n="TextDefault">""</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
-              <v n="TextID">"ATN_PLCOPEN_FUB_SET_COMMAND"</v>
+              <v n="TextID">"PLCOPEN_FUB_SET_COMMAND"</v>
               <v n="TextDefault">""</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
-              <v n="TextID">"ATN_PLCOPEN_FUB_WORKING"</v>
+              <v n="TextID">"PLCOPEN_FUB_WORKING"</v>
               <v n="TextDefault">""</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
-              <v n="TextID">"ATN_PLCOPEN_FUB_CLEANUP"</v>
+              <v n="TextID">"PLCOPEN_FUB_CLEANUP"</v>
               <v n="TextDefault">""</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
-              <v n="TextID">"ATN_PLCOPEN_FUB_DONE"</v>
+              <v n="TextID">"PLCOPEN_FUB_DONE"</v>
               <v n="TextDefault">""</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
