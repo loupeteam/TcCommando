@@ -3,7 +3,8 @@
   <POU Name="TESTPRG" Id="{da7b43c9-38b1-4c6f-a60e-db64ccc086f5}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM TESTPRG
 VAR
-	plcOpenCommandTest : FB_PLCopenCommand_Test;
+	plcOpenCommandTest : FB_PLCOpenCommand_Test;
+	plcOpenCallTest : FB_PLCOpenCall_Test;
 END_VAR
 ]]></Declaration>
     <Implementation>
