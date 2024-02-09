@@ -21,6 +21,7 @@
     <Title>TcCommando</Title>
     <ProjectVersion>0.0.1</ProjectVersion>
     <Author>Loupe</Author>
+    <CombineIds>true</CombineIds>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DUTs\PLCOpenCallInternal.TcDUT">
