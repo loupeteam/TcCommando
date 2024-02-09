@@ -44,13 +44,13 @@ END_VAR]]></Declaration>
 		i_PLCOpenCallInternal._execute := FALSE;
 	END_IF
 
-	//Start a new command on edge
+	// Start a new command on edge
 	IF( Execute AND NOT i_PLCOpenCallInternal._execute)THEN
 		i_PLCOpenCallInternal._execute := TRUE;
 		i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_NEW_COMMAND;
 	END_IF
 	
-	//If we get aborted, handle it
+	// If this call get aborted, handle it
 	IF( i_PLCOpenCallInternal._abort )THEN
 		i_PLCOpenCallInternal._abort := 0;
 		i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_ABORTED;
@@ -58,11 +58,13 @@ END_VAR]]></Declaration>
 
 	i_PLCOpenCallInternal._self := THIS^;
 	
-	//We use a while not break so that we can do multiple passes at the state machine to do as much as possible in a single call	
+	// Use a "while not break" to enable multiple passes on the state machine,
+	// to do as much as possible in a single call	
 	_break := FALSE;
 	WHILE _break = FALSE DO
 		CASE ( i_PLCOpenCallInternal._state ) OF
-			//IDLE
+			
+			// IDLE
 			PLCOpenCallState.PLCOPEN_FUB_IDLE:
 				Status := PLCOpenStatusBase.NOT_ENABLED;
 				Busy := FALSE;
@@ -71,7 +73,7 @@ END_VAR]]></Declaration>
 				CommandAborted := FALSE;
 				_break := TRUE;
 				
-			//Start a new command by getting it
+			// Start a new command
 			PLCOpenCallState.PLCOPEN_FUB_NEW_COMMAND:
 				Status := PLCOpenStatusBase.BUSY;
 				i_PLCOpenCallInternal._RemoteStatus := PLCOpenStatusBase.BUSY;
@@ -80,51 +82,49 @@ END_VAR]]></Declaration>
 				Error := FALSE;
 				CommandAborted := FALSE;	
 
-				//If we are the current command:
-				//1. we don't care about feedback
-				//2. we don't want ourselves to get the abort
-				//so remove this fub before calling abort previous
+				// If this call is the current command:
+				// 1. don't need feedback (TODO why? because it is being aborted?)
+				// 2. this call doesn't get the abort
+				// so remove this FUB before calling abort previous
 				IF i_PLCOpenCallInternal._Command <> 0 THEN
 					IF i_PLCOpenCallInternal._Command.Remote = i_PLCOpenCallInternal._self THEN
 						i_PLCOpenCallInternal._Command.Remote := 0; 
 					END_IF
 				END_IF 
 
-				//Get the new command
+				// Get the new command
 				i_PLCOpenCallInternal._command := Command;
 	
 				IF i_PLCOpenCallInternal._Command <> 0 THEN
 					i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_ABORT_OLD;
-					//No break;
+					// No _break
 				ELSE
 					i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_WORKING;
 					i_PLCOpenCallInternal._RemoteStatus := Fallback;				
 					_break := TRUE;
 				END_IF
-
-				//No break;
+				// No _break
 			
-			//Abort any commands that was active using the same PLCOpen state
+			// Abort any commands that were active using the same PLCOpen state
 			PLCOpenCallState.PLCOPEN_FUB_ABORT_OLD:
-				//This will 
 				i_PLCOpenCallInternal._Command.AbortPreviousCommands(i_PLCOpenCallInternal._Command);
 
 				i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_SET_COMMAND;
 				//no break;
 				
-			//Start the command
+			// Start the command
 			PLCOpenCallState.PLCOPEN_FUB_SET_COMMAND:
 				i_PLCOpenCallInternal._Command.Execute := TRUE;			
 				i_PLCOpenCallInternal._Command.Remote := THIS^;			
 			
 				Busy := TRUE;
 				i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_WORKING;
-				// no break
+				// No _break
 	
 			//Wait for the command to be finished
 			PLCOpenCallState.PLCOPEN_FUB_WORKING:
 				Busy := TRUE;
-				//No Break
+				// No _break
 	
 				IF( i_PLCOpenCallInternal._RemoteStatus <> PLCOpenStatusBase.BUSY AND i_PLCOpenCallInternal._RemoteStatus <> PLCOpenStatusBase.ENABLED_WAITING ) THEN
 					Status := i_PLCOpenCallInternal._RemoteStatus;
@@ -136,24 +136,22 @@ END_VAR]]></Declaration>
 						Error := TRUE;		
 					END_IF
 					i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_CLEANUP;
-					//no break;
+					// No _break
 				ELSE 
 					_break := TRUE;
 				END_IF
 			
-			//cleanup
 			PLCOpenCallState.PLCOPEN_FUB_CLEANUP:
-				//Remove self from the source command
+				// Remove self from the source command
 				IF i_PLCOpenCallInternal._Command <> 0 THEN
 					i_PLCOpenCallInternal._Command.Remote := 0;			
 					i_PLCOpenCallInternal._Command := 0;
 				END_IF
 					
 				i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_DONE;
-				//Break to force at least 1 cycle with statuses
+				// Break to force at least 1 cycle with statuses
 				_break := TRUE;
 
-			//done
 			PLCOpenCallState.PLCOPEN_FUB_DONE:
 	
 				IF( NOT Execute )THEN
@@ -166,7 +164,6 @@ END_VAR]]></Declaration>
 				END_IF
 				_break := TRUE;
 	
-			//aborted
 			PLCOpenCallState.PLCOPEN_FUB_ABORTED:
 				Status := PLCOpenStatusBase.ABORTED;
 				Busy := FALSE;
