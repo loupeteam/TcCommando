@@ -25,7 +25,7 @@ END_VAR
 	call.Execute := TRUE;
 	call.Clear();
 	AssertFalse(call.Execute, Message := 'Execute should not be true');
-	AssertEquals_INT(Expected := PLCOpenCallState.ATN_PLCOPEN_FUB_CLEANUP, Actual := call.i_PLCOpenCallInternal._state, Message := 'Status should be Cleanup');
+	AssertEquals_INT(Expected := PLCOpenCallState.PLCOPEN_FUB_CLEANUP, Actual := call.i_PLCOpenCallInternal._state, Message := 'Status should be Cleanup');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
