@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PLCOpenCommand_Test" Id="{0f0750ea-d1ee-4a18-8aa2-27762e9d8df2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PLCOpenCommand_Test EXTENDS  TcUnit.FB_TestSuite
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CallFinished();
+CallAbort();
+CallError();
+AbortPrevious();]]></ST>
+    </Implementation>
+    <Method Name="AbortPrevious" Id="{5caf9c09-4d16-4f97-b4a8-afa5a2f2097d}">
+      <Declaration><![CDATA[METHOD AbortPrevious
+VAR
+	command : PLCOpenCommand();
+	newCommand : PLCOpenCommand();
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('AbortPrevious');
+	command.Execute := TRUE;
+	command();
+	command.AbortPreviousCommands(newCommand);
+	AssertEquals_DINT(Expected := PLCOpenStatusBase.ABORTED, Actual := command.status, Message := 'Initial command should be aborted');
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CallAbort" Id="{411b9336-d620-4448-b02d-c7622c01b45e}">
+      <Declaration><![CDATA[METHOD CallAbort
+VAR
+	command : PLCOpenCommand();
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('CallAbort');
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should start false');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+	
+	command.Execute := TRUE;
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+	
+	AssertTrue(Condition := command.Consume, Message := 'Consume Should start as true');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	command.Execute := TRUE;
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+	
+	AssertTrue(Condition := command.Consume, Message := 'Consume Should start as true after abort');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	command.Finished();
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'Status should be OK after finish');
+	command();
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CallError" Id="{1a56507b-64b6-4d10-a688-45cc5b0dc888}">
+      <Declaration><![CDATA[METHOD CallError
+VAR
+	command : PLCOpenCommand();
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('CallError');
+
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should start false');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+	
+	command.Execute := TRUE;
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+	
+	AssertTrue(Condition := command.Consume, Message := 'Consume Should start as true');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	command.Errored(PLCOpenStatusBase.ERROR);
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should be false');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ERROR, Message := 'Status should be error');
+	command();
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
+	
+	command.Finished();
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled if it happens after error');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume Should auto reset');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CallFinished" Id="{25b22591-3533-478f-bf71-aa6877370f35}">
+      <Declaration><![CDATA[METHOD CallFinished
+VAR
+	command : PLCOpenCommand();
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('CallFinished');
+	AssertFalse(Condition := command.Consume, Message := 'Consume should start false');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+	
+	command.Execute := TRUE;
+	
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ENABLED_WAITING, Message := 'Status should be waiting');
+	
+	AssertTrue(Condition := command.Consume, Message := 'Consume should start as true');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume should auto reset');
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.BUSY, Message := 'Status should be busy');
+	
+	command.Finished();
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.ERR_OK, Message := 'Status should be OK after finish');
+	command();
+	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should auto reset');
+	
+	AssertFalse(Condition := command.Consume, Message := 'Consume should auto reset');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1">
   <DUT Name="PLCOpenCommandInternal" Id="{2586c15f-1927-4933-a282-856f73a5f588}">
     <Declaration><![CDATA[TYPE PLCOpenCommandInternal :
 STRUCT
@@ -8,7 +8,7 @@ STRUCT
 	_status : PLCOpenStatusBase;
 	_remote : IPLCOpenCall;
 	_nullRemote : PLCOpenNullRemote;
-	_commandGroups : ARRAY[0..19] OF IPLCOpenGroup;
+	_commandGroups : ARRAY[0..PLCOpenCommand.maxRelatedGroups] OF IPLCOpenGroup;
 END_STRUCT
 END_TYPE
 ]]></Declaration>

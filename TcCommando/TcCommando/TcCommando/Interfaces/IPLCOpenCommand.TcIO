@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1">
   <Itf Name="IPLCOpenCommand" Id="{b8a2e96e-644a-4a58-85de-dacd7b91c166}">
     <Declaration><![CDATA[INTERFACE IPLCOpenCommand
 ]]></Declaration>

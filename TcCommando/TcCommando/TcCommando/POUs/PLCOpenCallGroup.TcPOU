@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1">
   <POU Name="PLCOpenCallGroup" Id="{cba9c738-238a-4f8b-b4d1-3486de669f1d}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenCallGroup IMPLEMENTS IPLCOpenCall
 VAR_INPUT
@@ -31,7 +31,7 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[//If it's not in the list
-FOR _commandIndex :=0 TO 19 DO (*TODO: Fix 19*)
+FOR _commandIndex := 0 TO PLCOpenCommand.maxRelatedGroups DO
 	IF i_callgroup._commands[_commandIndex].Command <> 0 THEN
 		i_callgroup._commands[_commandIndex]();
 		IF i_callgroup._commands[_commandIndex].CommandAborted THEN		
@@ -132,7 +132,7 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[//If it's not in the list
-FOR  _commandIndex :=0 TO 19 DO (*TODO: Fix 19*)
+FOR  _commandIndex :=0 TO PLCOpenCommand.maxRelatedGroups DO
 	i_callgroup._commands[_commandIndex].Clear();
 END_FOR
 ]]></ST>
@@ -148,7 +148,7 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Check if it's already in the list
-FOR _commandIndex :=0 TO 19 DO (*TODO: Fix 19*)
+FOR _commandIndex :=0 TO maxRelatedGroups DO
 	IF i_callgroup._commands[_commandIndex].Command = Command THEN
 		i_callgroup._commands[_commandIndex].Exec(Command);
 		Start := TRUE;
@@ -157,7 +157,7 @@ FOR _commandIndex :=0 TO 19 DO (*TODO: Fix 19*)
 END_FOR
 
 //If it's not in the list
-FOR _commandIndex :=0 TO 19 DO (*TODO: Fix 19*)
+FOR _commandIndex :=0 TO maxRelatedGroups DO
 	IF i_callgroup._commands[_commandIndex].Command = 0 THEN
 		i_callgroup._commands[_commandIndex].Exec(Command);
 		Start := TRUE;

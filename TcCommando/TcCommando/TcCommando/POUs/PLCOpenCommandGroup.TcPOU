@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1">
   <POU Name="PLCOpenCommandGroup" Id="{a76b1f90-0a80-460a-90df-c4011f390707}" SpecialFunc="None">
     <Declaration><![CDATA[{attribute 'call_after_init'}
 FUNCTION_BLOCK PLCOpenCommandGroup IMPLEMENTS IPLCOpenGroup
 VAR_INPUT
-	commands : ARRAY[0..19] OF  IPLCOpenCommand;
+	commands : ARRAY[0..PLCOpenCommand.maxRelatedGroups] OF IPLCOpenCommand;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
@@ -19,7 +19,7 @@ VAR
 	i: INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[FOR i:=0 TO 19 DO
+        <ST><![CDATA[FOR i:=0 TO PLCOpenCommand.maxRelatedGroups DO
 
 	IF commands[i] <> 0 AND commands[i] <> newCommand THEN
 
@@ -44,7 +44,7 @@ END_VAR]]></Declaration>
 	msgFmtStr   := 'Initing command group', 
 	strArg      := '');  
 
-FOR i:=0 TO 19 DO
+FOR i:=0 TO PLCOpenCommand.maxRelatedGroups DO
 	
 	IF commands[i] <> 0 THEN
 
