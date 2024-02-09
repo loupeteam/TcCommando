@@ -22,7 +22,7 @@ END_VAR
 ]]></Declaration>
     </Method>
     <Method Name="Start" Id="{01dee355-ca51-4d77-a6f2-e38c0d6e5deb}">
-      <Declaration><![CDATA[METHOD Start : BOOL
+      <Declaration><![CDATA[METHOD Start
 VAR_INPUT
 	Command : IPLCOpenCommand;	
 END_VAR
