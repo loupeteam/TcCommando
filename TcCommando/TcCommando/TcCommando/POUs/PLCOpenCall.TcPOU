@@ -78,7 +78,7 @@ END_VAR]]></Declaration>
 				Busy := TRUE;
 				Done := FALSE;
 				Error := FALSE;
-				CommandAborted := FALSE;			
+				CommandAborted := FALSE;	
 
 				//If we are the current command:
 				//1. we don't care about feedback
