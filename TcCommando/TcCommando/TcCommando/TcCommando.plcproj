@@ -6,7 +6,7 @@
     <ProjectGuid>{3785667b-2606-4fa7-ae66-5af1db07a4bb}</ProjectGuid>
     <SubObjectsSortedByName>True</SubObjectsSortedByName>
     <DownloadApplicationInfo>true</DownloadApplicationInfo>
-    <WriteProductVersion>true</WriteProductVersion>
+    <WriteProductVersion>false</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
     <Name>TcCommando</Name>
     <ProgramVersion>3.1.4024.0</ProgramVersion>
