@@ -5,9 +5,6 @@
 VAR
 	i_PLCOpenCommand : PLCOpenCommandInternal;
 END_VAR
-VAR CONSTANT
-	maxRelatedGroups : USINT := 19; // TODO evaluate this
-END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF i_PLCOpenCommand._status <> PLCOpenStatusBase.BUSY AND NOT Execute THEN
@@ -44,7 +41,7 @@ Remote.Aborted();
 Remote := 0;
 
 //Abort any related commands
-FOR i:=0 TO maxRelatedGroups DO
+FOR i:=0 TO GVL.maxRelatedGroups DO
 	IF i_PLCOpenCommand._commandGroups[i] <> 0 THEN
 		i_PLCOpenCommand._commandGroups[i].AbortPreviousCommands(newCommand);
 	END_IF
@@ -192,7 +189,7 @@ VAR
 	i: INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[FOR i:=0 TO maxRelatedGroups DO
+        <ST><![CDATA[FOR i:=0 TO GVL.maxRelatedGroups DO
 	IF i_PLCOpenCommand._commandGroups[i] = 0 THEN
 		i_PLCOpenCommand._commandGroups[i] := group;
 		EXIT;
