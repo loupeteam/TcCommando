@@ -46,6 +46,10 @@
     <Compile Include="DUTs\PLCOpenStatusBase.TcTLEO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GVLs\GVL.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
     <Compile Include="Interfaces\IPLCOpenBase.TcIO">
       <SubType>Code</SubType>
     </Compile>
