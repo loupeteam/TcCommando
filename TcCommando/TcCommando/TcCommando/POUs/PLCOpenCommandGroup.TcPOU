@@ -4,7 +4,7 @@
     <Declaration><![CDATA[{attribute 'call_after_init'}
 FUNCTION_BLOCK PLCOpenCommandGroup IMPLEMENTS IPLCOpenGroup
 VAR_INPUT
-	commands : ARRAY[0..PLCOpenCommand.maxRelatedGroups] OF IPLCOpenCommand;
+	commands : ARRAY[0..GVL.maxRelatedGroups] OF IPLCOpenCommand;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>

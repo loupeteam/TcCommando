@@ -31,7 +31,7 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[//If it's not in the list
-FOR _commandIndex := 0 TO PLCOpenCommand.maxRelatedGroups DO
+FOR _commandIndex := 0 TO GVL.maxRelatedGroups DO
 	IF i_callgroup._commands[_commandIndex].Command <> 0 THEN
 		i_callgroup._commands[_commandIndex]();
 		IF i_callgroup._commands[_commandIndex].CommandAborted THEN		
@@ -148,7 +148,7 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Check if it's already in the list
-FOR _commandIndex :=0 TO maxRelatedGroups DO
+FOR _commandIndex :=0 TO GVL.maxRelatedGroups DO
 	IF i_callgroup._commands[_commandIndex].Command = Command THEN
 		i_callgroup._commands[_commandIndex].Exec(Command);
 		Start := TRUE;
@@ -157,7 +157,7 @@ FOR _commandIndex :=0 TO maxRelatedGroups DO
 END_FOR
 
 //If it's not in the list
-FOR _commandIndex :=0 TO maxRelatedGroups DO
+FOR _commandIndex :=0 TO GVL.maxRelatedGroups DO
 	IF i_callgroup._commands[_commandIndex].Command = 0 THEN
 		i_callgroup._commands[_commandIndex].Exec(Command);
 		Start := TRUE;
