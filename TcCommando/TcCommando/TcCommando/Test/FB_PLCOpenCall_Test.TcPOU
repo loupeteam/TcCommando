@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="FB_PLCOpenCall_Test" Id="{11b00080-9eb7-435e-b91b-311812c3e08c}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_PLCOpenCall_Test EXTENDS FB_TestSuite
+  <POU Name="FB_PLCopenCall_Test" Id="{11b00080-9eb7-435e-b91b-311812c3e08c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PLCopenCall_Test EXTENDS FB_TestSuite
 VAR_INPUT
 END_VAR
 VAR_OUTPUT
@@ -20,15 +20,15 @@ Start();]]></ST>
     <Method Name="Call" Id="{191016cf-95da-4fad-aea1-2f6fad08115d}">
       <Declaration><![CDATA[METHOD Call
 VAR
-    call : PLCOpenCall;
-    command : PLCOpenCommand;
+    call : PLCopenCall;
+    command : PLCopenCommand;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 (*STweep.Disable*)
 
-TEST('PLCOpenCallIdle');
+TEST('PLCopenCallIdle');
 
 
 	AssertFalse(Condition := call.Busy, Message := 'Busy should be false as default');
@@ -39,7 +39,7 @@ TEST('PLCOpenCallIdle');
 	AssertTrue(Condition := call.Busy, Message := 'Busy should be true after first exec');
 	AssertFalse(Condition := call.Done, Message := 'Done should be false after first exec');
 	AssertFalse(Condition := call.Error, Message := 'Error should be false as default');
-	AssertEquals_DINT(Expected := PLCOpenStatusBase.BUSY, Actual := call.Status, Message := 'Status should be FUB Working');
+	AssertEquals_DINT(Expected := PLCopenStatusBase.BUSY, Actual := call.Status, Message := 'Status should be FUB Working');
 
 // new command
 
@@ -60,8 +60,8 @@ TEST_FINISHED();]]></ST>
     <Method Name="Clear" Id="{2f219140-8639-4442-9636-f58c99c41e5b}">
       <Declaration><![CDATA[METHOD Clear
 VAR
-    call : PLCOpenCall();
-    status : PLCOpenStatusBase;
+    call : PLCopenCall();
+    status : PLCopenStatusBase;
 END_VAR
 ]]></Declaration>
       <Implementation>
@@ -74,7 +74,7 @@ TEST('Clear');
 	call();
 	status := call.Clear();
 	AssertFalse(call.Execute, Message := 'Execute should not be true');
-	AssertEquals_INT(Expected := PLCOpenStatusBase.NOT_ENABLED, Actual := status, Message := 'Call status should be not enabled');
+	AssertEquals_INT(Expected := PLCopenStatusBase.NOT_ENABLED, Actual := status, Message := 'Call status should be not enabled');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
@@ -94,9 +94,9 @@ END_VAR
     <Method Name="Exec" Id="{ee4d2b03-8c4b-4975-8443-00a2021a958d}">
       <Declaration><![CDATA[METHOD Exec
 VAR
-    call : PLCOpenCall();
-    command1 : PLCOpenCommand();
-    command2 : PLCOpenCommand();
+    call : PLCopenCall();
+    command1 : PLCopenCommand();
+    command2 : PLCopenCommand();
 END_VAR
 ]]></Declaration>
       <Implementation>
@@ -117,9 +117,9 @@ TEST_FINISHED();]]></ST>
     <Method Name="Start" Id="{33b29bc8-44e1-4a1e-b951-c14b8679d46f}">
       <Declaration><![CDATA[METHOD Start
 VAR
-    call : PLCOpenCall();
-    command1 : PLCOpenCommand();
-    command2 : PLCOpenCommand();
+    call : PLCopenCall();
+    command1 : PLCopenCommand();
+    command2 : PLCopenCommand();
 END_VAR
 ]]></Declaration>
       <Implementation>

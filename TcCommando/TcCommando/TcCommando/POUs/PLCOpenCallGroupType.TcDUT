@@ -1,24 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <DUT Name="PLCOpenCallGroupType" Id="{d3dcb7f9-fdae-4639-b5ca-cb80fdcb3095}">
-    <Declaration><![CDATA[TYPE
-    PLCOpenCallGroupType :
-    STRUCT
-        _startStep : ENUM; //The step when doStep was called
-        _currentStep : ENUM;
-        _lastRequestNumber : DINT;
-        _onEntry : BOOL;
-        _onExit : BOOL;
-        _isDone : BOOL;
-        _isAbort : BOOL;
-        _isError : BOOL;
-        _statusChecked : BOOL;
-        _numberActiveCommands : INT;
-        _commands : ARRAY[0..PLCOpenCommand.maxRelatedGroups] OF PLCOpenCall;
-        _syncAbort : BOOL;
-        _syncError : BOOL;
-        _syncDone : BOOL;
-    END_STRUCT
+  <DUT Name="PLCopenCallGroupType" Id="{d3dcb7f9-fdae-4639-b5ca-cb80fdcb3095}">
+    <Declaration><![CDATA[TYPE PLCopenCallGroupType :
+STRUCT
+	_startStep : ENUM;  //The step when doStep was called
+	_currentStep :ENUM;
+	_lastRequestNumber : DINT;
+	_onEntry : BOOL;
+	_onExit : BOOL;
+	_isDone : BOOL;
+	_isAbort : BOOL;
+	_isError : BOOL;
+	_statusChecked : BOOL;
+	_numberActiveCommands : INT;
+	_commands : ARRAY[0..GVL.MAX_RELATED_GROUPS] OF PLCopenCall;
+	_syncAbort : BOOL;
+	_syncError : BOOL;
+	_syncDone : BOOL;
+END_STRUCT
 END_TYPE
 ]]></Declaration>
   </DUT>

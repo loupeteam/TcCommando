@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <Itf Name="IPLCOpenCommand" Id="{b8a2e96e-644a-4a58-85de-dacd7b91c166}">
+  <Itf Name="IPLCopenCommand" Id="{b8a2e96e-644a-4a58-85de-dacd7b91c166}">
     <Declaration><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-INTERFACE IPLCOpenCommand
+INTERFACE IPLCopenCommand
 ]]></Declaration>
     <Method Name="Aborted" Id="{9d6d52ef-ef78-446b-8945-f54bce7d4c7d}">
       <Declaration><![CDATA[METHOD Aborted : BOOL
@@ -14,7 +14,7 @@ END_VAR
     <Method Name="AbortPreviousCommands" Id="{118dd5ed-57aa-4c07-ad44-4088eeac9e5c}">
       <Declaration><![CDATA[METHOD AbortPreviousCommands : BOOL
 VAR_INPUT
-    newCommand : IPLCOpenCommand;
+    newCommand : IPLCopenCommand;
 END_VAR
 ]]></Declaration>
     </Method>
@@ -43,16 +43,16 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
     </Method>
-    <Method Name="registerGroup" Id="{75eeace0-1636-4dbc-8de2-8401cd2ef881}">
-      <Declaration><![CDATA[METHOD registerGroup : BOOL
+    <Method Name="RegisterGroup" Id="{75eeace0-1636-4dbc-8de2-8401cd2ef881}">
+      <Declaration><![CDATA[METHOD RegisterGroup : BOOL
 VAR_INPUT
-    group : IPLCOpenGroup;
+    group : IPLCopenGroup;
 END_VAR
 ]]></Declaration>
     </Method>
     <Property Name="Remote" Id="{57e041e0-47dd-412b-8e3f-60bcf4f3351e}">
       <Declaration><![CDATA[{warning 'add property implementation'}
-PROPERTY Remote : IPLCOpenCall
+PROPERTY Remote : IPLCopenCall
 ]]></Declaration>
       <Get Name="Get" Id="{d280f6d0-bd45-4d6a-bf59-884213c7b933}">
         <Declaration><![CDATA[]]></Declaration>
@@ -61,8 +61,8 @@ PROPERTY Remote : IPLCOpenCall
         <Declaration><![CDATA[]]></Declaration>
       </Set>
     </Property>
-    <Property Name="status" Id="{19a8f19b-6eef-4123-af85-596f1682d840}">
-      <Declaration><![CDATA[PROPERTY status : PLCOpenStatusBase]]></Declaration>
+    <Property Name="Status" Id="{19a8f19b-6eef-4123-af85-596f1682d840}">
+      <Declaration><![CDATA[PROPERTY Status : PLCopenStatusBase]]></Declaration>
       <Get Name="Get" Id="{4d51c448-5bf2-40e3-9b67-57a69f90d56b}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>

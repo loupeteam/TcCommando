@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <EnumerationTextList Name="PLCOpenStatusBase" Id="{affdcb97-526e-49da-8e66-616feef77d1f}">
+  <EnumerationTextList Name="PLCopenStatusBase" Id="{affdcb97-526e-49da-8e66-616feef77d1f}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
-TYPE PLCOpenStatusBase :
+TYPE PLCopenStatusBase :
 (
 	ERR_OK := 0,
 	ERROR := 1,	

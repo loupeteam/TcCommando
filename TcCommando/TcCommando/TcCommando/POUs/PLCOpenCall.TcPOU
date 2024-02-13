@@ -1,24 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="PLCOpenCall" Id="{16877e71-b30e-4975-8b7d-5ec1774f2055}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenCall IMPLEMENTS IPLCOpenCall
+  <POU Name="PLCopenCall" Id="{16877e71-b30e-4975-8b7d-5ec1774f2055}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCall IMPLEMENTS IPLCopenCall 
 VAR_INPUT
-    Execute : BOOL;
-    Command : IPLCOpenCommand;
-    Fallback : PLCOPENSTATUSBASE;
+	Execute : BOOL;
+	Command : IPLCopenCommand;
+	Fallback: PLCopenStatusBase;
 END_VAR
 VAR_OUTPUT
-    Status : PLCOPENSTATUSBASE;
-    Busy : BOOL;
-    Done : BOOL;
-    Error : BOOL;
-    CommandAborted : BOOL;
+	Status: PLCopenStatusBase;
+	Busy : BOOL;
+	Done : BOOL;
+	Error : BOOL;
+	CommandAborted : BOOL;
 END_VAR
 VAR
-    i_PLCOpenCallInternal : PLCOpenCallInternal;
+	i_PLCopenCallInternal : PLCopenCallInternal;
 END_VAR
 VAR CONSTANT
-    maxRelatedGroups : USINT := 19; // TODO evaluate this
+	MAX_RELATED_GROUPS : USINT := 19; // TODO evaluate this
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -34,169 +34,164 @@ Call();]]></ST>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-i_PLCOpenCallInternal._abort := true;]]></ST>
+i_PLCopenCallInternal._abort := true;]]></ST>
       </Implementation>
     </Method>
     <Method Name="Call" Id="{678db6c7-a95b-4103-a6a7-438e03861a08}" FolderPath="internal\">
       <Declaration><![CDATA[METHOD Call : BOOL
 VAR
-    _break : BOOL;
+	_break : BOOL;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-//Capture edges
-IF NOT Execute THEN
-    i_PLCOpenCallInternal._execute := FALSE;
-END_IF
+	//Capture edges
+	IF NOT Execute THEN
+		i_PLCopenCallInternal._execute := FALSE;
+	END_IF
 
-// Start a new command on edge
-IF (Execute AND NOT i_PLCOpenCallInternal._execute) THEN
-    i_PLCOpenCallInternal._execute := TRUE;
-    i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_NEW_COMMAND;
-END_IF
+	// Start a new command on edge
+	IF( Execute AND NOT i_PLCopenCallInternal._execute)THEN
+		i_PLCopenCallInternal._execute := TRUE;
+		i_PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_NEW_COMMAND;
+	END_IF
+	
+	// If this call get aborted, handle it
+	IF( i_PLCopenCallInternal._abort )THEN
+		i_PLCopenCallInternal._abort := 0;
+		i_PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_ABORTED;
+	END_IF
 
-// If this call get aborted, handle it
-IF (i_PLCOpenCallInternal._abort) THEN
-    i_PLCOpenCallInternal._abort := 0;
-    i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_ABORTED;
-END_IF
+	i_PLCopenCallInternal._self := THIS^;
+	
+	// Use a "while not break" to enable multiple passes on the state machine,
+	// to do as much as possible in a single call	
+	_break := FALSE;
+	WHILE _break = FALSE DO
+		CASE ( i_PLCopenCallInternal._state ) OF
+			
+			// IDLE
+			PLCopenCallState.PLCOPEN_FUB_IDLE:
+				Status := PLCopenStatusBase.NOT_ENABLED;
+				Busy := FALSE;
+				Done := FALSE;
+				Error := FALSE;
+				CommandAborted := FALSE;
+				_break := TRUE;
+				
+			// Start a new command
+			PLCopenCallState.PLCOPEN_FUB_NEW_COMMAND:
+				Status := PLCopenStatusBase.BUSY;
+				i_PLCopenCallInternal._RemoteStatus := PLCopenStatusBase.BUSY;
+				Busy := TRUE;
+				Done := FALSE;
+				Error := FALSE;
+				CommandAborted := FALSE;	
 
-i_PLCOpenCallInternal._self := THIS^;
+				// If this call is the current command:
+				// 1. don't need feedback (TODO why? because it is being aborted?)
+				// 2. this call doesn't get the abort
+				// so remove this FUB before calling abort previous
+				IF i_PLCopenCallInternal._Command <> 0 THEN
+					IF i_PLCopenCallInternal._Command.Remote = i_PLCopenCallInternal._self THEN
+						i_PLCopenCallInternal._Command.Remote := 0; 
+					END_IF
+				END_IF 
 
-// Use a "while not break" to enable multiple passes on the state machine,
-// to do as much as possible in a single call	
-_break := FALSE;
+				// Get the new command
+				i_PLCopenCallInternal._command := Command;
+	
+				IF i_PLCopenCallInternal._Command <> 0 THEN
+					i_PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_ABORT_OLD;
+					// No _break
+				ELSE
+					i_PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_WORKING;
+					i_PLCopenCallInternal._RemoteStatus := Fallback;
+					_break := TRUE;
+				END_IF
+				// No _break
+			
+			// Abort any commands that were active using the same PLCopen state
+			PLCopenCallState.PLCOPEN_FUB_ABORT_OLD:
+				i_PLCopenCallInternal._Command.AbortPreviousCommands(i_PLCopenCallInternal._Command);
 
-WHILE _break = FALSE DO
-    CASE (i_PLCOpenCallInternal._state) OF
+				i_PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_SET_COMMAND;
+				//no break;
+				
+			// Start the command
+			PLCopenCallState.PLCOPEN_FUB_SET_COMMAND:
+				i_PLCopenCallInternal._Command.Execute := TRUE;			
+				i_PLCopenCallInternal._Command.Remote := THIS^;			
+			
+				Busy := TRUE;
+				i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_WORKING;
+				// No _break
+	
+			//Wait for the command to be finished
+			PLCopenCallState.PLCOPEN_FUB_WORKING:
+				Busy := TRUE;
+				// No _break
+	
+				IF( i_PLCopenCallInternal._RemoteStatus <> PLCopenStatusBase.BUSY AND i_PLCopenCallInternal._RemoteStatus <> PLCopenStatusBase.ENABLED_WAITING ) THEN
+					Status := i_PLCopenCallInternal._RemoteStatus;
+					Busy := FALSE;
+					IF( Status = 0 ) THEN
+						Done := TRUE;
+					
+					ELSE
+						Error := TRUE;		
+					END_IF
+					i_PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
+					// No _break
+				ELSE 
+					_break := TRUE;
+				END_IF
+			
+			PLCopenCallState.PLCOPEN_FUB_CLEANUP:
+				// Remove self from the source command
+				IF i_PLCopenCallInternal._Command <> 0 THEN
+					i_PLCopenCallInternal._Command.Remote := 0;			
+					i_PLCopenCallInternal._Command := 0;
+				END_IF
+					
+				i_PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_DONE;
+				// Break to force at least 1 cycle with statuses
+				_break := TRUE;
 
-        // IDLE
-        PLCOpenCallState.PLCOPEN_FUB_IDLE:
-            Status := PLCOpenStatusBase.NOT_ENABLED;
-            Busy := FALSE;
-            Done := FALSE;
-            Error := FALSE;
-            CommandAborted := FALSE;
-            _break := TRUE;
-
-        // Start a new command
-        PLCOpenCallState.PLCOPEN_FUB_NEW_COMMAND:
-            Status := PLCOpenStatusBase.BUSY;
-            i_PLCOpenCallInternal._RemoteStatus := PLCOpenStatusBase.BUSY;
-            Busy := TRUE;
-            Done := FALSE;
-            Error := FALSE;
-            CommandAborted := FALSE;
-
-            // If this call is the current command:
-            // 1. don't need feedback (TODO why? because it is being aborted?)
-            // 2. this call doesn't get the abort
-            // so remove this FUB before calling abort previous
-            IF i_PLCOpenCallInternal._Command <> 0 THEN
-                IF i_PLCOpenCallInternal._Command.Remote = i_PLCOpenCallInternal._self THEN
-                    i_PLCOpenCallInternal._Command.Remote := 0;
-                END_IF
-            END_IF
-
-            // Get the new command
-            i_PLCOpenCallInternal._command := Command;
-
-            IF i_PLCOpenCallInternal._Command <> 0 THEN
-                i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_ABORT_OLD;
-                // No _break
-            ELSE
-                i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_WORKING;
-                i_PLCOpenCallInternal._RemoteStatus := Fallback;
-                _break := TRUE;
-            END_IF
-        // No _break
-
-        // Abort any commands that were active using the same PLCOpen state
-        PLCOpenCallState.PLCOPEN_FUB_ABORT_OLD:
-            i_PLCOpenCallInternal._Command.AbortPreviousCommands(i_PLCOpenCallInternal._Command);
-
-            i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_SET_COMMAND;
-        //no break;
-
-        // Start the command
-        PLCOpenCallState.PLCOPEN_FUB_SET_COMMAND:
-            i_PLCOpenCallInternal._Command.Execute := TRUE;
-            i_PLCOpenCallInternal._Command.Remote := THIS^;
-
-            Busy := TRUE;
-            i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_WORKING;
-        // No _break
-
-        //Wait for the command to be finished
-        PLCOpenCallState.PLCOPEN_FUB_WORKING:
-            Busy := TRUE;
-            // No _break
-
-            IF (i_PLCOpenCallInternal._RemoteStatus <> PLCOpenStatusBase.BUSY AND
-                i_PLCOpenCallInternal._RemoteStatus <> PLCOpenStatusBase.ENABLED_WAITING) THEN
-                Status := i_PLCOpenCallInternal._RemoteStatus;
-                Busy := FALSE;
-
-                IF (Status = 0) THEN
-                    Done := TRUE;
-
-                ELSE
-                    Error := TRUE;
-                END_IF
-
-                i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_CLEANUP;
-                // No _break
-            ELSE
-                _break := TRUE;
-            END_IF
-
-        PLCOpenCallState.PLCOPEN_FUB_CLEANUP:
-            // Remove self from the source command
-            IF i_PLCOpenCallInternal._Command <> 0 THEN
-                i_PLCOpenCallInternal._Command.Remote := 0;
-                i_PLCOpenCallInternal._Command := 0;
-            END_IF
-
-            i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_DONE;
-            // Break to force at least 1 cycle with statuses
-            _break := TRUE;
-
-        PLCOpenCallState.PLCOPEN_FUB_DONE:
-
-            IF (NOT Execute) THEN
-                i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_IDLE;
-                Status := PLCOpenStatusBase.NOT_ENABLED;
-                Busy := FALSE;
-                Done := FALSE;
-                Error := FALSE;
-                CommandAborted := FALSE;
-            END_IF
-
-            _break := TRUE;
-
-        PLCOpenCallState.PLCOPEN_FUB_ABORTED:
-            Status := PLCOpenStatusBase.ABORTED;
-            Busy := FALSE;
-            Done := FALSE;
-            Error := FALSE;
-            CommandAborted := TRUE;
-            i_PLCOpenCallInternal._command := 0;
-            i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_DONE;
-            _break := TRUE;
-
-    END_CASE
-END_WHILE]]></ST>
+			PLCopenCallState.PLCOPEN_FUB_DONE:
+	
+				IF( NOT Execute )THEN
+					i_PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_IDLE;
+					Status := PLCopenStatusBase.NOT_ENABLED;
+					Busy := FALSE;
+					Done := FALSE;
+					Error := FALSE;
+					CommandAborted := FALSE;				
+				END_IF
+				_break := TRUE;
+	
+			PLCopenCallState.PLCOPEN_FUB_ABORTED:
+				Status := PLCopenStatusBase.ABORTED;
+				Busy := FALSE;
+				Done := FALSE;
+				Error := FALSE;
+				CommandAborted := TRUE;
+				i_PLCopenCallInternal._command := 0;
+				i_PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_DONE;
+				_break := TRUE;
+					
+		END_CASE
+	END_WHILE]]></ST>
       </Implementation>
     </Method>
     <Method Name="Clear" Id="{5ea1194b-610a-4d48-bac7-dee9cee2d7d6}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Clear : PLCOpenStatusBase
+      <Declaration><![CDATA[METHOD Clear : PLCopenStatusBase
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 THIS^.Execute := FALSE;
-THIS^.i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_CLEANUP;
+THIS^.i_PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
 //One call to cleanup
 THIS^.Call();
 //Second call to clear
@@ -208,28 +203,28 @@ Clear := THIS^.Status;
     <Method Name="Errored" Id="{01a1ddfd-7791-443d-a60a-4fecd77dd437}" FolderPath="internal\">
       <Declaration><![CDATA[METHOD Errored : BOOL
 VAR_INPUT
-    ID : INT;
+	ID : INT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 CASE ID OF
-    //Any of these statuses are invalid to return as an error.
-    //Override to error
-    PLCOPENSTATUSBASE.BUSY,
-        PLCOPENSTATUSBASE.ENABLED_WAITING,
-        PLCOPENSTATUSBASE.ERR_OK:
-        i_PLCOpenCallInternal._RemoteStatus := PLCOPENSTATUSBASE.ERROR;
+	//Any of these statuses are invalid to return as an error.
+	//Override to error
+	PLCopenStatusBase.BUSY,
+	PLCopenStatusBase.ENABLED_WAITING,
+	PLCopenStatusBase.ERR_OK:
+		i_PLCopenCallInternal._RemoteStatus := PLCopenStatusBase.ERROR;
 ELSE
-    //Any other status can be passed through
-    i_PLCOpenCallInternal._RemoteStatus := ID;
+	//Any other status can be passed through
+	i_PLCopenCallInternal._RemoteStatus := ID;
 END_CASE]]></ST>
       </Implementation>
     </Method>
     <Method Name="Exec" Id="{e15badc6-3209-4aba-84cb-107a0ef3c14b}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Exec : PLCOpenStatusBase
+      <Declaration><![CDATA[METHOD Exec : PLCopenStatusBase
 VAR_INPUT
-    Command : IPLCOpenCommand;
+	Command : IPLCopenCommand;	
 END_VAR
 ]]></Declaration>
       <Implementation>
@@ -237,8 +232,8 @@ END_VAR
 
 //Abort the previous command if it exists
 IF THIS^.Command <> Command THEN
-    Command.Execute := FALSE;
-    THIS^.Call();
+	Command.Execute := FALSE;
+	THIS^.Call();
 END_IF
 
 THIS^.Command := Command;
@@ -253,14 +248,14 @@ Exec := THIS^.Status;]]></ST>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-i_PLCOpenCallInternal._RemoteStatus := PLCOpenStatusBase.ERR_OK;
+i_PLCopenCallInternal._RemoteStatus := PLCopenStatusBase.ERR_OK;
 ]]></ST>
       </Implementation>
     </Method>
     <Method Name="Start" Id="{b16dfd08-c0f6-43db-a57d-608fa4a860b4}" FolderPath="API\">
       <Declaration><![CDATA[METHOD Start : BOOL
 VAR_INPUT
-    Command : IPLCOpenCommand;
+	Command : IPLCopenCommand;	
 END_VAR
 ]]></Declaration>
       <Implementation>
