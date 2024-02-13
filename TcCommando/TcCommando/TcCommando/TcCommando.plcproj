@@ -19,7 +19,7 @@
     <Company>Loupe</Company>
     <Released>false</Released>
     <Title>TcCommando</Title>
-    <ProjectVersion>0.0.2</ProjectVersion>
+    <ProjectVersion>0.0.3</ProjectVersion>
     <Author>Loupe</Author>
     <CombineIds>true</CombineIds>
     <LibraryCategories>
@@ -34,62 +34,62 @@
     </SelectedLibraryCategories>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DUTs\PLCOpenCallInternal.TcDUT">
+    <Compile Include="DUTs\PLCopenCallInternal.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\PLCOpenCallState.TcTLEO">
+    <Compile Include="DUTs\PLCopenCallState.TcTLEO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\PLCOpenCommandInternal.TcDUT">
+    <Compile Include="DUTs\PLCopenCommandInternal.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\PLCOpenStatusBase.TcTLEO">
+    <Compile Include="DUTs\PLCopenStatusBase.TcTLEO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GVLs\GVL.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
-    <Compile Include="Interfaces\IPLCOpenBase.TcIO">
+    <Compile Include="Interfaces\IPLCopenBase.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Interfaces\IPLCOpenCall.TcIO">
+    <Compile Include="Interfaces\IPLCopenCall.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Interfaces\IPLCOpenCommand.TcIO">
+    <Compile Include="Interfaces\IPLCopenCommand.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Interfaces\IPLCOpenGroup.TcIO">
+    <Compile Include="Interfaces\IPLCopenGroup.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\PLCOpenCall.TcPOU">
+    <Compile Include="POUs\PLCopenCall.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\PLCOpenCallGroup.TcPOU">
+    <Compile Include="POUs\PLCopenCallGroup.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\PLCOpenCallGroupType.TcDUT">
+    <Compile Include="POUs\PLCopenCallGroupType.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\PLCOpenCommand.TcPOU">
+    <Compile Include="POUs\PLCopenCommand.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\PLCOpenCommandGroup.TcPOU">
+    <Compile Include="POUs\PLCopenCommandGroup.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\PLCOpenNullRemote.TcPOU">
+    <Compile Include="POUs\PLCopenNullRemote.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Test\FB_PLCOpenCall_Test.TcPOU">
+    <Compile Include="Test\FB_PLCopenCall_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Test\TESTPRG.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Test\FB_PLCOpenCommand_Test.TcPOU">
+    <Compile Include="Test\FB_PLCopenCommand_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="PLCOpenNullRemote" Id="{73061230-7a8e-410b-ae26-c14eb801f0aa}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenNullRemote IMPLEMENTS IPLCOpenCall
+  <POU Name="PLCopenNullRemote" Id="{73061230-7a8e-410b-ae26-c14eb801f0aa}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenNullRemote IMPLEMENTS IPLCopenCall
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
 ]]></ST>
     </Implementation>
     <Method Name="Aborted" Id="{d3377050-9f4c-49f6-a051-4bcdc44d847d}">
@@ -39,9 +38,9 @@ END_VAR]]></Declaration>
     </Method>
     <Method Name="Start" Id="{42d0f9af-461f-4d36-bb4c-e7ed19b6748a}">
       <Declaration><![CDATA[{warning 'add method implementation '}
-METHOD Start
+METHOD Start : BOOL
 VAR_INPUT
-    Command : IPLCOpenCommand;
+    Command : IPLCopenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>

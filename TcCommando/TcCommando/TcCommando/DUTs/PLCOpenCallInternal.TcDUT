@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <DUT Name="PLCOpenCallInternal" Id="{a493e5a4-f6ba-450d-b862-4481c25cddf0}">
+  <DUT Name="PLCopenCallInternal" Id="{a493e5a4-f6ba-450d-b862-4481c25cddf0}">
     <Declaration><![CDATA[TYPE
-    PLCOpenCallInternal :
+    PLCopenCallInternal :
     STRUCT
-        _state : PLCOpenCallState;
-        _Command : IPLCOpenCommand;
+        _state : PLCopenCallState;
+        _Command : IPLCopenCommand;
         _abort : BOOL;
         _execute : BOOL;
         _break : BOOL;
-        _RemoteStatus : PLCOPENSTATUSBASE;
-        _self : IPLCOpenCall;
+        _RemoteStatus : PLCopenStatusBase;
+        _self : IPLCopenCall;
     END_STRUCT
 END_TYPE
 ]]></Declaration>

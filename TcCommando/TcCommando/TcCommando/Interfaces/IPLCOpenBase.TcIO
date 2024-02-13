@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <Itf Name="IPLCOpenBase" Id="{30663370-63aa-4ece-9d78-1fee533d169f}">
+  <Itf Name="IPLCopenBase" Id="{30663370-63aa-4ece-9d78-1fee533d169f}">
     <Declaration><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-INTERFACE IPLCOpenBase
+INTERFACE IPLCopenBase
 ]]></Declaration>
     <Property Name="Busy" Id="{dbad1434-9112-4a9a-ac6b-cefc61b97ffa}">
       <Declaration><![CDATA[PROPERTY Busy : BOOL]]></Declaration>

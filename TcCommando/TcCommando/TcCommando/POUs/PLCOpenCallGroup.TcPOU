@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="PLCOpenCallGroup" Id="{cba9c738-238a-4f8b-b4d1-3486de669f1d}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenCallGroup IMPLEMENTS IPLCOpenCall
+  <POU Name="PLCopenCallGroup" Id="{cba9c738-238a-4f8b-b4d1-3486de669f1d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCallGroup IMPLEMENTS IPLCopenCall
 VAR_INPUT
 END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    i_callgroup : PLCOpenCallGroupType;
+    i_callgroup : PLCopenCallGroupType;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -15,8 +15,8 @@ END_VAR
 
 ]]></ST>
     </Implementation>
-    <Folder Name="PLCOpenCaller" Id="{b4b03af3-7533-4298-bf9d-09121bd9eae9}" />
-    <Method Name="Aborted" Id="{88516a3e-7cba-4182-ba66-c0dd75064666}" FolderPath="PLCOpenCaller\">
+    <Folder Name="PLCopenCaller" Id="{b4b03af3-7533-4298-bf9d-09121bd9eae9}" />
+    <Method Name="Aborted" Id="{88516a3e-7cba-4182-ba66-c0dd75064666}" FolderPath="PLCopenCaller\">
       <Declaration><![CDATA[METHOD Aborted : BOOL
 ]]></Declaration>
       <Implementation>
@@ -25,8 +25,8 @@ END_VAR
 i_callgroup._syncAbort := TRUE;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="checkStatus" Id="{69b5b758-9323-4002-906a-f59304b6dbf8}">
-      <Declaration><![CDATA[METHOD PRIVATE checkStatus : BOOL
+    <Method Name="CheckStatus" Id="{69b5b758-9323-4002-906a-f59304b6dbf8}">
+      <Declaration><![CDATA[METHOD PRIVATE CheckStatus : BOOL
 VAR
     _commandIndex : INT;
     _anyAbort : BOOL;
@@ -37,7 +37,7 @@ END_VAR]]></Declaration>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //If it's not in the list
-FOR _commandIndex := 0 TO GVL.maxRelatedGroups DO
+FOR _commandIndex := 0 TO GVL.MAX_RELATED_GROUPS DO
     IF i_callgroup._commands[_commandIndex].Command <> 0 THEN
         i_callgroup._commands[_commandIndex]();
 
@@ -67,7 +67,7 @@ END_IF
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Errored" Id="{2a110df0-07b9-4922-ba19-6e9f76e5caa7}" FolderPath="PLCOpenCaller\">
+    <Method Name="Errored" Id="{2a110df0-07b9-4922-ba19-6e9f76e5caa7}" FolderPath="PLCopenCaller\">
       <Declaration><![CDATA[METHOD Errored : BOOL
 VAR_INPUT
     ID : INT;
@@ -79,7 +79,7 @@ END_VAR
 i_callgroup._syncError := TRUE;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Finished" Id="{a2282568-2a57-49ba-abc9-a320ea291002}" FolderPath="PLCOpenCaller\">
+    <Method Name="Finished" Id="{a2282568-2a57-49ba-abc9-a320ea291002}" FolderPath="PLCopenCaller\">
       <Declaration><![CDATA[METHOD Finished : BOOL
 ]]></Declaration>
       <Implementation>
@@ -88,8 +88,8 @@ i_callgroup._syncError := TRUE;]]></ST>
 i_callgroup._syncDone := TRUE;]]></ST>
       </Implementation>
     </Method>
-    <Property Name="isAbort" Id="{96e569b0-457f-4c6e-bec1-643c895a8b9c}">
-      <Declaration><![CDATA[PROPERTY isAbort : BOOL]]></Declaration>
+    <Property Name="IsAbort" Id="{96e569b0-457f-4c6e-bec1-643c895a8b9c}">
+      <Declaration><![CDATA[PROPERTY IsAbort : BOOL]]></Declaration>
       <Get Name="Get" Id="{17cd4830-83fc-4522-8782-e508fda2b93d}">
         <Declaration><![CDATA[VAR
 END_VAR
@@ -102,8 +102,8 @@ isAbort := i_callgroup._isAbort;]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Property Name="isDone" Id="{c890f33c-6dc4-4031-a7ae-121d8a0f3c09}">
-      <Declaration><![CDATA[PROPERTY isDone : BOOL]]></Declaration>
+    <Property Name="IsDone" Id="{c890f33c-6dc4-4031-a7ae-121d8a0f3c09}">
+      <Declaration><![CDATA[PROPERTY IsDone : BOOL]]></Declaration>
       <Get Name="Get" Id="{c8d0c1b7-b1e0-412a-9a10-7c15d2555f02}">
         <Declaration><![CDATA[]]></Declaration>
         <Implementation>
@@ -116,8 +116,8 @@ isDone := i_callgroup._isDone;]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Property Name="isError" Id="{28f1d1b2-fabc-44c9-968e-b0937bbe9074}">
-      <Declaration><![CDATA[PROPERTY isError : BOOL]]></Declaration>
+    <Property Name="IsError" Id="{28f1d1b2-fabc-44c9-968e-b0937bbe9074}">
+      <Declaration><![CDATA[PROPERTY IsError : BOOL]]></Declaration>
       <Get Name="Get" Id="{24b146e6-8584-4378-a902-a6d936d8a944}">
         <Declaration><![CDATA[VAR
 END_VAR
@@ -133,9 +133,9 @@ isError := i_callgroup._isError;]]></ST>
     </Property>
     <Method Name="PLCOpenCall" Id="{e899a63b-d12d-476a-8450-473b6110f918}">
       <Declaration><![CDATA[{warning 'add method implementation '}
-METHOD PLCOpenCall : PLCOpenStatusBase
+METHOD PLCopenCall : PLCopenStatusBase
 VAR_INPUT
-    Command : IPLCOpenCommand;
+    Command : IPLCopenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>
@@ -144,8 +144,8 @@ END_VAR
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="resetCommands" Id="{cd896665-6c8b-4e15-8c06-75a5a8e469f2}">
-      <Declaration><![CDATA[METHOD resetCommands : BOOL
+    <Method Name="ResetCommands" Id="{cd896665-6c8b-4e15-8c06-75a5a8e469f2}">
+      <Declaration><![CDATA[METHOD ResetCommands : BOOL
 VAR
     _commandIndex : INT;
 END_VAR]]></Declaration>
@@ -153,16 +153,16 @@ END_VAR]]></Declaration>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //If it's not in the list
-FOR _commandIndex := 0 TO GVL.maxRelatedGroups DO
+FOR _commandIndex := 0 TO GVL.MAX_RELATED_GROUPS DO
     i_callgroup._commands[_commandIndex].Clear();
 END_FOR
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Start" Id="{df0ebf2c-61b1-498a-bcc4-44d1e2466b24}" FolderPath="PLCOpenCaller\">
+    <Method Name="Start" Id="{df0ebf2c-61b1-498a-bcc4-44d1e2466b24}" FolderPath="PLCopenCaller\">
       <Declaration><![CDATA[METHOD Start : BOOL
 VAR_INPUT
-    Command : IPLCOpenCommand;
+    Command : IPLCopenCommand;
 END_VAR
 VAR
     _commandIndex : INT;
@@ -170,8 +170,8 @@ END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-// Check if it's already in the list
-FOR _commandIndex := 0 TO GVL.maxRelatedGroups DO
+//Check if it's already in the list
+FOR _commandIndex := 0 TO GVL.MAX_RELATED_GROUPS DO
     IF i_callgroup._commands[_commandIndex].Command = Command THEN
         i_callgroup._commands[_commandIndex].Exec(Command);
         Start := TRUE;
@@ -180,7 +180,7 @@ FOR _commandIndex := 0 TO GVL.maxRelatedGroups DO
 END_FOR
 
 //If it's not in the list
-FOR _commandIndex := 0 TO GVL.maxRelatedGroups DO
+FOR _commandIndex := 0 TO GVL.MAX_RELATED_GROUPS DO
     IF i_callgroup._commands[_commandIndex].Command = 0 THEN
         i_callgroup._commands[_commandIndex].Exec(Command);
         Start := TRUE;

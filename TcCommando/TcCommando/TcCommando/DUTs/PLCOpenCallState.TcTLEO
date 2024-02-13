@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <EnumerationTextList Name="PLCOpenCallState" Id="{3ae6e054-32d2-4fc8-9116-cc770a82905a}">
+  <EnumerationTextList Name="PLCopenCallState" Id="{3ae6e054-32d2-4fc8-9116-cc770a82905a}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 {attribute 'strict'}
-TYPE PLCOpenCallState :
+TYPE PLCopenCallState :
 (
 	PLCOPEN_FUB_IDLE := 0,
 	PLCOPEN_FUB_NEW_COMMAND,
