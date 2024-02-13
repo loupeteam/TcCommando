@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <Itf Name="IPLCOpenCall" Id="{6aa201bf-eb14-40e6-82eb-dedd5645dc58}">
-    <Declaration><![CDATA[INTERFACE IPLCOpenCall
+    <Declaration><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+INTERFACE IPLCOpenCall
 ]]></Declaration>
     <Method Name="Aborted" Id="{86840f40-10b0-4de0-ab69-6c5eb8f761fb}">
       <Declaration><![CDATA[METHOD Aborted : BOOL
@@ -12,7 +14,7 @@ END_VAR
     <Method Name="Errored" Id="{6b8dd4a3-2d32-4590-a313-c41aaa663229}">
       <Declaration><![CDATA[METHOD Errored : BOOL
 VAR_INPUT
-	ID : INT;
+    ID : INT;
 END_VAR]]></Declaration>
     </Method>
     <Method Name="Finished" Id="{bd57ce11-7e84-4c4a-bfa9-527eee6bb14e}">
@@ -24,7 +26,7 @@ END_VAR
     <Method Name="Start" Id="{01dee355-ca51-4d77-a6f2-e38c0d6e5deb}">
       <Declaration><![CDATA[METHOD Start : BOOL
 VAR_INPUT
-	Command : IPLCOpenCommand;	
+    Command : IPLCOpenCommand;
 END_VAR
 ]]></Declaration>
     </Method>

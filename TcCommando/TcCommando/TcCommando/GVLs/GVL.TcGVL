@@ -5,7 +5,7 @@
 VAR_GLOBAL
 END_VAR
 VAR_GLOBAL CONSTANT
-	maxRelatedGroups: USINT := 19;
+    maxRelatedGroups : USINT := 19;
 END_VAR
 ]]></Declaration>
   </GVL>

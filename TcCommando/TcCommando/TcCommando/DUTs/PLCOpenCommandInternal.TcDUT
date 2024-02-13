@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <DUT Name="PLCOpenCommandInternal" Id="{2586c15f-1927-4933-a282-856f73a5f588}">
-    <Declaration><![CDATA[TYPE PLCOpenCommandInternal :
-STRUCT
-	_Execute : BOOL;
-	_Trig : BOOL;
-	_status : PLCOpenStatusBase;
-	_remote : IPLCOpenCall;
-	_nullRemote : PLCOpenNullRemote;
-	_commandGroups : ARRAY[0..GVL.maxRelatedGroups] OF IPLCOpenGroup;
-END_STRUCT
+    <Declaration><![CDATA[TYPE
+    PLCOpenCommandInternal :
+    STRUCT
+        _Execute : BOOL;
+        _Trig : BOOL;
+        _status : PLCOpenStatusBase;
+        _remote : IPLCOpenCall;
+        _nullRemote : PLCOpenNullRemote;
+        _commandGroups : ARRAY[0..GVL.maxRelatedGroups] OF IPLCOpenGroup;
+    END_STRUCT
 END_TYPE
 ]]></Declaration>
   </DUT>

@@ -7,43 +7,50 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-	i_callgroup : PLCOpenCallGroupType;
+    i_callgroup : PLCOpenCallGroupType;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+]]></ST>
     </Implementation>
     <Folder Name="PLCOpenCaller" Id="{b4b03af3-7533-4298-bf9d-09121bd9eae9}" />
     <Method Name="Aborted" Id="{88516a3e-7cba-4182-ba66-c0dd75064666}" FolderPath="PLCOpenCaller\">
       <Declaration><![CDATA[METHOD Aborted : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[i_callgroup._syncAbort := TRUE;]]></ST>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+i_callgroup._syncAbort := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="checkStatus" Id="{69b5b758-9323-4002-906a-f59304b6dbf8}">
       <Declaration><![CDATA[METHOD PRIVATE checkStatus : BOOL
 VAR
-	_commandIndex : INT;
-	_anyAbort : BOOL;
-	_anyBusy : BOOL;
-	_anyError : BOOL;
+    _commandIndex : INT;
+    _anyAbort : BOOL;
+    _anyBusy : BOOL;
+    _anyError : BOOL;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[//If it's not in the list
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+//If it's not in the list
 FOR _commandIndex := 0 TO GVL.maxRelatedGroups DO
-	IF i_callgroup._commands[_commandIndex].Command <> 0 THEN
-		i_callgroup._commands[_commandIndex]();
-		IF i_callgroup._commands[_commandIndex].CommandAborted THEN		
-			_anyAbort := TRUE;
-		ELSIF i_callgroup._commands[_commandIndex].Error THEN		
-			_anyError := TRUE;
-		ELSIF i_callgroup._commands[_commandIndex].Busy THEN		
-			_anyBusy := TRUE;
-		ELSE
-			i_callgroup._commands[_commandIndex].Command := 0;	
-		END_IF
-	END_IF
+    IF i_callgroup._commands[_commandIndex].Command <> 0 THEN
+        i_callgroup._commands[_commandIndex]();
+
+        IF i_callgroup._commands[_commandIndex].CommandAborted THEN
+            _anyAbort := TRUE;
+        ELSIF i_callgroup._commands[_commandIndex].Error THEN
+            _anyError := TRUE;
+        ELSIF i_callgroup._commands[_commandIndex].Busy THEN
+            _anyBusy := TRUE;
+        ELSE
+            i_callgroup._commands[_commandIndex].Command := 0;
+        END_IF
+    END_IF
 END_FOR
 
 i_callgroup._isError := FALSE;
@@ -51,11 +58,11 @@ i_callgroup._isAbort := FALSE;
 i_callgroup._isDone := FALSE;
 
 IF _anyError OR i_callgroup._syncError THEN
-	i_callgroup._isError := TRUE;
+    i_callgroup._isError := TRUE;
 ELSIF _anyAbort OR i_callgroup._syncAbort THEN
-	i_callgroup._isAbort := TRUE;
+    i_callgroup._isAbort := TRUE;
 ELSIF NOT _anyBusy THEN
-	i_callgroup._isDone := TRUE;
+    i_callgroup._isDone := TRUE;
 END_IF
 ]]></ST>
       </Implementation>
@@ -63,18 +70,22 @@ END_IF
     <Method Name="Errored" Id="{2a110df0-07b9-4922-ba19-6e9f76e5caa7}" FolderPath="PLCOpenCaller\">
       <Declaration><![CDATA[METHOD Errored : BOOL
 VAR_INPUT
-	ID	: INT;
+    ID : INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[i_callgroup._syncError := TRUE;]]></ST>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+i_callgroup._syncError := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="Finished" Id="{a2282568-2a57-49ba-abc9-a320ea291002}" FolderPath="PLCOpenCaller\">
       <Declaration><![CDATA[METHOD Finished : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[i_callgroup._syncDone := TRUE;]]></ST>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+i_callgroup._syncDone := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Property Name="isAbort" Id="{96e569b0-457f-4c6e-bec1-643c895a8b9c}">
@@ -84,7 +95,9 @@ END_VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[checkStatus();
+          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+checkStatus();
 isAbort := i_callgroup._isAbort;]]></ST>
         </Implementation>
       </Get>
@@ -94,7 +107,9 @@ isAbort := i_callgroup._isAbort;]]></ST>
       <Get Name="Get" Id="{c8d0c1b7-b1e0-412a-9a10-7c15d2555f02}">
         <Declaration><![CDATA[]]></Declaration>
         <Implementation>
-          <ST><![CDATA[checkStatus();
+          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+checkStatus();
 
 //Check if we are done
 isDone := i_callgroup._isDone;]]></ST>
@@ -108,7 +123,9 @@ isDone := i_callgroup._isDone;]]></ST>
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[checkStatus();
+          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+checkStatus();
 
 isError := i_callgroup._isError;]]></ST>
         </Implementation>
@@ -118,22 +135,26 @@ isError := i_callgroup._isError;]]></ST>
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD PLCOpenCall : PLCOpenStatusBase
 VAR_INPUT
-	Command	: IPLCOpenCommand;
+    Command : IPLCOpenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="resetCommands" Id="{cd896665-6c8b-4e15-8c06-75a5a8e469f2}">
       <Declaration><![CDATA[METHOD resetCommands : BOOL
 VAR
-	_commandIndex : INT;
+    _commandIndex : INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[//If it's not in the list
-FOR  _commandIndex :=0 TO PLCOpenCommand.maxRelatedGroups DO
-	i_callgroup._commands[_commandIndex].Clear();
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+//If it's not in the list
+FOR _commandIndex := 0 TO GVL.maxRelatedGroups DO
+    i_callgroup._commands[_commandIndex].Clear();
 END_FOR
 ]]></ST>
       </Implementation>
@@ -141,28 +162,30 @@ END_FOR
     <Method Name="Start" Id="{df0ebf2c-61b1-498a-bcc4-44d1e2466b24}" FolderPath="PLCOpenCaller\">
       <Declaration><![CDATA[METHOD Start : BOOL
 VAR_INPUT
-	Command	: IPLCOpenCommand;
+    Command : IPLCOpenCommand;
 END_VAR
 VAR
-	_commandIndex : INT;
+    _commandIndex : INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[//Check if it's already in the list
-FOR _commandIndex :=0 TO GVL.maxRelatedGroups DO
-	IF i_callgroup._commands[_commandIndex].Command = Command THEN
-		i_callgroup._commands[_commandIndex].Exec(Command);
-		Start := TRUE;
-		RETURN;
-	END_IF
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+// Check if it's already in the list
+FOR _commandIndex := 0 TO GVL.maxRelatedGroups DO
+    IF i_callgroup._commands[_commandIndex].Command = Command THEN
+        i_callgroup._commands[_commandIndex].Exec(Command);
+        Start := TRUE;
+        RETURN;
+    END_IF
 END_FOR
 
 //If it's not in the list
-FOR _commandIndex :=0 TO GVL.maxRelatedGroups DO
-	IF i_callgroup._commands[_commandIndex].Command = 0 THEN
-		i_callgroup._commands[_commandIndex].Exec(Command);
-		Start := TRUE;
-		RETURN;
-	END_IF
+FOR _commandIndex := 0 TO GVL.maxRelatedGroups DO
+    IF i_callgroup._commands[_commandIndex].Command = 0 THEN
+        i_callgroup._commands[_commandIndex].Exec(Command);
+        Start := TRUE;
+        RETURN;
+    END_IF
 END_FOR
 
 Start := FALSE;
