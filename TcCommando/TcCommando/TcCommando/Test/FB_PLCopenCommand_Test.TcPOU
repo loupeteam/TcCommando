@@ -10,7 +10,9 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[CallFinished();
+      <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+CallFinished();
 CallAbort();
 CallError();
 AbortPrevious();]]></ST>
@@ -23,7 +25,9 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('AbortPrevious');
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+TEST('AbortPrevious');
 	command.Execute := TRUE;
 	command();
 	command.AbortPreviousCommands(newCommand);
@@ -38,7 +42,9 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('CallAbort');
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+TEST('CallAbort');
 	AssertFalse(Condition := command.Consume, Message := 'Consume Should start false');
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
 	
@@ -79,7 +85,9 @@ VAR
 	command : PLCOpenCommand();
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('CallError');
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+TEST('CallError');
 
 	AssertFalse(Condition := command.Consume, Message := 'Consume Should start false');
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
@@ -116,7 +124,9 @@ VAR
 	command : PLCOpenCommand();
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('CallFinished');
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+TEST('CallFinished');
 	AssertFalse(Condition := command.Consume, Message := 'Consume should start false');
 	AssertEquals_DINT(Actual := command.status, Expected:= PLCOpenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
 	

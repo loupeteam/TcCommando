@@ -22,7 +22,9 @@ VAR CONSTANT
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[Call();]]></ST>
+      <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+Call();]]></ST>
     </Implementation>
     <Folder Name="API" Id="{81b669e9-53d1-43c3-adb5-dd314cabfeda}" />
     <Folder Name="internal" Id="{3ca49896-8361-42f2-89ba-941a123d684d}" />
@@ -30,7 +32,9 @@ END_VAR
       <Declaration><![CDATA[METHOD Aborted : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[i_PLCOpenCallInternal._abort := true;]]></ST>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+i_PLCOpenCallInternal._abort := true;]]></ST>
       </Implementation>
     </Method>
     <Method Name="Call" Id="{678db6c7-a95b-4103-a6a7-438e03861a08}" FolderPath="internal\">
@@ -39,7 +43,9 @@ VAR
 	_break : BOOL;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[	//Capture edges
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+	//Capture edges
 	IF NOT Execute THEN
 		i_PLCOpenCallInternal._execute := FALSE;
 	END_IF
@@ -182,7 +188,9 @@ END_VAR]]></Declaration>
       <Declaration><![CDATA[METHOD Clear : PLCOpenStatusBase
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[THIS^.Execute := FALSE;
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+THIS^.Execute := FALSE;
 THIS^.i_PLCOpenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_CLEANUP;
 //One call to cleanup
 THIS^.Call();
@@ -198,7 +206,9 @@ VAR_INPUT
 	ID : INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[CASE ID OF
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+CASE ID OF
 	//Any of these statuses are invalid to return as an error.
 	//Override to error
 	PLCOPENSTATUSBASE.BUSY,
@@ -218,7 +228,9 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[//Abort the previous command if it exists
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+//Abort the previous command if it exists
 IF THIS^.Command <> Command THEN
 	Command.Execute := FALSE;
 	THIS^.Call();
@@ -234,7 +246,9 @@ Exec := THIS^.Status;]]></ST>
       <Declaration><![CDATA[METHOD Finished : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[i_PLCOpenCallInternal._RemoteStatus := PLCOpenStatusBase.ERR_OK;
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+i_PLCOpenCallInternal._RemoteStatus := PLCOpenStatusBase.ERR_OK;
 ]]></ST>
       </Implementation>
     </Method>
@@ -245,7 +259,9 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[THIS^.Exec(Command);]]></ST>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+THIS^.Exec(Command);]]></ST>
       </Implementation>
     </Method>
   </POU>

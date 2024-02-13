@@ -7,7 +7,9 @@ VAR_INPUT
 	commands : ARRAY[0..GVL.maxRelatedGroups] OF IPLCOpenCommand;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+]]></ST>
     </Implementation>
     <Method Name="AbortPreviousCommands" Id="{4d65389e-e404-419c-8d9a-839278ec3b86}">
       <Declaration><![CDATA[METHOD AbortPreviousCommands : BOOL
@@ -19,7 +21,9 @@ VAR
 	i: INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[FOR i:=0 TO PLCOpenCommand.maxRelatedGroups DO
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+FOR i:=0 TO GVL.maxRelatedGroups DO
 
 	IF commands[i] <> 0 AND commands[i] <> newCommand THEN
 
@@ -39,12 +43,14 @@ VAR
 	i : INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[ADSLOGSTR(
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+ADSLOGSTR(
 	msgCtrlMask := ADSLOG_MSGTYPE_ERROR, 
 	msgFmtStr   := 'Initing command group', 
 	strArg      := '');  
 
-FOR i:=0 TO PLCOpenCommand.maxRelatedGroups DO
+FOR i:=0 TO GVL.maxRelatedGroups DO
 	
 	IF commands[i] <> 0 THEN
 

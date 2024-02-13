@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <Itf Name="IPLCOpenCommand" Id="{b8a2e96e-644a-4a58-85de-dacd7b91c166}">
-    <Declaration><![CDATA[INTERFACE IPLCOpenCommand
+    <Declaration><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+INTERFACE IPLCOpenCommand
 ]]></Declaration>
     <Method Name="Aborted" Id="{9d6d52ef-ef78-446b-8945-f54bce7d4c7d}">
       <Declaration><![CDATA[METHOD Aborted : BOOL
