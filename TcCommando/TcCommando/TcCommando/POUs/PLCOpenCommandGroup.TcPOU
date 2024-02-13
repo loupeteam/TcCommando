@@ -4,7 +4,7 @@
     <Declaration><![CDATA[{attribute 'call_after_init'}
 FUNCTION_BLOCK PLCOpenCommandGroup IMPLEMENTS IPLCOpenGroup
 VAR_INPUT
-	commands : ARRAY[0..GVL.maxRelatedGroups] OF IPLCOpenCommand;
+    commands : ARRAY[0..GVL.maxRelatedGroups] OF IPLCOpenCommand;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
@@ -14,25 +14,24 @@ END_VAR]]></Declaration>
     <Method Name="AbortPreviousCommands" Id="{4d65389e-e404-419c-8d9a-839278ec3b86}">
       <Declaration><![CDATA[METHOD AbortPreviousCommands : BOOL
 VAR_INPUT
-	newCommand : IPLCOpenCommand;
+    newCommand : IPLCOpenCommand;
 END_VAR
 
 VAR
-	i: INT;
+    i : INT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-FOR i:=0 TO GVL.maxRelatedGroups DO
+FOR i := 0 TO GVL.maxRelatedGroups DO
 
-	IF commands[i] <> 0 AND commands[i] <> newCommand THEN
+    IF commands[i] <> 0 AND commands[i] <> newCommand THEN
 
-		commands[i].Aborted();
+        commands[i].Aborted();
 
-	END_IF	
+    END_IF
 
 END_FOR
-
 ]]></ST>
       </Implementation>
     </Method>
@@ -40,24 +39,23 @@ END_FOR
       <Declaration><![CDATA[{attribute 'call_after_init'}
 METHOD registerCommands : BOOL
 VAR
-	i : INT;
+    i : INT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-ADSLOGSTR(
-	msgCtrlMask := ADSLOG_MSGTYPE_ERROR, 
-	msgFmtStr   := 'Initing command group', 
-	strArg      := '');  
+ADSLOGSTR(msgCtrlMask := ADSLOG_MSGTYPE_ERROR,
+    msgFmtStr := 'Initing command group',
+    strArg := '');
 
-FOR i:=0 TO GVL.maxRelatedGroups DO
-	
-	IF commands[i] <> 0 THEN
+FOR i := 0 TO GVL.maxRelatedGroups DO
 
-		commands[i].registerGroup(THIS^);
-	
-	END_IF
-	
+    IF commands[i] <> 0 THEN
+
+        commands[i].registerGroup(THIS^);
+
+    END_IF
+
 END_FOR]]></ST>
       </Implementation>
     </Method>

@@ -8,7 +8,7 @@ INTERFACE IPLCOpenGroup
     <Method Name="AbortPreviousCommands" Id="{33d62d2b-227e-4998-b717-c18b2f1e35eb}">
       <Declaration><![CDATA[METHOD AbortPreviousCommands : BOOL
 VAR_INPUT
-	newCommand : IPLCOpenCommand;
+    newCommand : IPLCOpenCommand;
 END_VAR]]></Declaration>
     </Method>
   </Itf>

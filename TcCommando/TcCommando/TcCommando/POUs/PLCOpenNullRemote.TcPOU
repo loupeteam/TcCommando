@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCOpenNullRemote" Id="{73061230-7a8e-410b-ae26-c14eb801f0aa}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenNullRemote IMPLEMENTS  IPLCOpenCall
-
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenNullRemote IMPLEMENTS IPLCOpenCall
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
@@ -21,7 +20,7 @@
     <Method Name="Errored" Id="{97c3ac24-72bd-4b21-93c4-11f805822d38}">
       <Declaration><![CDATA[METHOD Errored : BOOL
 VAR_INPUT
-	ID : INT;
+    ID : INT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
@@ -42,7 +41,7 @@ END_VAR]]></Declaration>
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD Start
 VAR_INPUT
-	Command	: IPLCOpenCommand;
+    Command : IPLCOpenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>

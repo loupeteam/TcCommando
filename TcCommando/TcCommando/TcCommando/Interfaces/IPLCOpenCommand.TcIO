@@ -14,7 +14,7 @@ END_VAR
     <Method Name="AbortPreviousCommands" Id="{118dd5ed-57aa-4c07-ad44-4088eeac9e5c}">
       <Declaration><![CDATA[METHOD AbortPreviousCommands : BOOL
 VAR_INPUT
-	newCommand : IPLCOpenCommand;
+    newCommand : IPLCOpenCommand;
 END_VAR
 ]]></Declaration>
     </Method>
@@ -27,7 +27,7 @@ END_VAR
     <Method Name="Errored" Id="{555f5ff6-f7de-4a4d-96f0-5c1829a76433}">
       <Declaration><![CDATA[METHOD Errored : BOOL
 VAR_INPUT
-	ID : INT;
+    ID : INT;
 END_VAR
 ]]></Declaration>
     </Method>
@@ -46,7 +46,7 @@ END_VAR
     <Method Name="registerGroup" Id="{75eeace0-1636-4dbc-8de2-8401cd2ef881}">
       <Declaration><![CDATA[METHOD registerGroup : BOOL
 VAR_INPUT
-	group : IPLCOpenGroup;
+    group : IPLCOpenGroup;
 END_VAR
 ]]></Declaration>
     </Method>
