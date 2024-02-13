@@ -30,7 +30,6 @@ END_VAR]]></Declaration>
 
 TEST('PLCopenCallIdle');
 
-
 	AssertFalse(Condition := call.Busy, Message := 'Busy should be false as default');
 	AssertFalse(Condition := call.Done, Message := 'Done should be false as default');
 	AssertFalse(Condition := call.Error, Message := 'Error should be false as default');
@@ -110,7 +109,7 @@ TEST('Exec');
 	
 	call.Exec(command2);
 	AssertTrue(call.Execute, Message := 'Execute should still be true, second command should abort first');
-	AssertFalse(command1.Execute, Message := 'Execute should not be true on first command');
+	AssertFalse(command1.Execute, Message := 'Execute should not be true on first of two commands');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
