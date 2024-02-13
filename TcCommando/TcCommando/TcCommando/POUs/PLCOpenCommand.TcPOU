@@ -3,14 +3,14 @@
   <POU Name="PLCopenCommand" Id="{1ef37826-7fac-4345-b9dc-ffeb92b64305}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCommand IMPLEMENTS IPLCopenCommand
 VAR
-	i_PLCopenCommand : PLCopenCommandInternal;
+    i_PLCopenCommand : PLCopenCommandInternal;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 IF i_PLCopenCommand._status <> PLCopenStatusBase.BUSY AND NOT Execute THEN
-	i_PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
+    i_PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
 END_IF
 ]]></ST>
     </Implementation>
@@ -33,10 +33,10 @@ Remote := 0;]]></ST>
     <Method Name="AbortPreviousCommands" Id="{72a4612a-7755-4ff4-a80f-b8e7a7020c17}" FolderPath="API\">
       <Declaration><![CDATA[METHOD AbortPreviousCommands : BOOL
 VAR_INPUT
-	newCommand : IPLCopenCommand;
+    newCommand : IPLCopenCommand;
 END_VAR
 VAR
-	i: USINT;
+    i : USINT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
@@ -47,12 +47,11 @@ Remote.Aborted();
 Remote := 0;
 
 //Abort any related commands
-FOR i:=0 TO GVL.MAX_RELATED_GROUPS DO
-	IF i_PLCopenCommand._commandGroups[i] <> 0 THEN
-		i_PLCopenCommand._commandGroups[i].AbortPreviousCommands(newCommand);
-	END_IF
+FOR i := 0 TO GVL.MAX_RELATED_GROUPS DO
+    IF i_PLCopenCommand._commandGroups[i] <> 0 THEN
+        i_PLCopenCommand._commandGroups[i].AbortPreviousCommands(newCommand);
+    END_IF
 END_FOR
-
 ]]></ST>
       </Implementation>
     </Method>
@@ -76,9 +75,9 @@ END_VAR
 
 Consume := i_PLCopenCommand._Execute;
 
-IF i_PLCopenCommand._Execute THEN	
-//	THIS^.AbortPreviousCommands( THIS^ );//This is meant to abort if the command comes locally
-	i_PLCopenCommand._status := PLCopenStatusBase.BUSY;	
+IF i_PLCopenCommand._Execute THEN
+    //	THIS^.AbortPreviousCommands( THIS^ );//This is meant to abort if the command comes locally
+    i_PLCopenCommand._status := PLCopenStatusBase.BUSY;
 END_IF
 
 i_PLCopenCommand._Execute := FALSE;
@@ -89,24 +88,24 @@ i_PLCopenCommand._Execute := FALSE;
     <Method Name="Errored" Id="{e4afdd7d-e3d4-4bb8-9a5c-f28bb8c767d0}" FolderPath="API\">
       <Declaration><![CDATA[METHOD Errored : BOOL
 VAR_INPUT
-	ID : INT;
+    ID : INT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 CASE ID OF
-	//Any of these statuses are invalid to return as an error.
-	//Override to error
-	PLCopenStatusBase.BUSY,
-	PLCopenStatusBase.ENABLED_WAITING,
-	PLCopenStatusBase.ERR_OK:
-		i_PLCopenCommand._status := PLCopenStatusBase.ERROR;
+    //Any of these statuses are invalid to return as an error.
+    //Override to error
+    PLCopenStatusBase.BUSY,
+        PLCopenStatusBase.ENABLED_WAITING,
+        PLCopenStatusBase.ERR_OK:
+        i_PLCopenCommand._status := PLCopenStatusBase.ERROR;
 ELSE
-	//Any other status can be passed through
-	i_PLCopenCommand._status := ID;
+    //Any other status can be passed through
+    i_PLCopenCommand._status := ID;
 END_CASE
 
-Remote.Errored(ID);	
+Remote.Errored(ID);
 ]]></ST>
       </Implementation>
     </Method>
@@ -134,21 +133,19 @@ END_VAR
 //We are already executing
 IF i_PLCopenCommand._Trig = TRUE AND Execute = TRUE THEN
 
-;	//Do nothing
-//Trigger an execute
-ELSIF i_PLCopenCommand._Trig = FALSE AND Execute = TRUE THEN	
-	i_PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
-	i_PLCopenCommand._Execute := TRUE;
+    ; //Do nothing
+    //Trigger an execute
+ELSIF i_PLCopenCommand._Trig = FALSE AND Execute = TRUE THEN
+    i_PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
+    i_PLCopenCommand._Execute := TRUE;
 
-	THIS^.AbortPreviousCommands( THIS^ );//This is meant to abort if the command comes locally	
+    THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
 
-// We were executing, but resetting it to false;
-// Just resetting execute to false all the time is OK
+    // We were executing, but resetting it to false;
+    // Just resetting execute to false all the time is OK
 ELSIF Execute = FALSE THEN
-	i_PLCopenCommand._Execute := FALSE;
+    i_PLCopenCommand._Execute := FALSE;
 END_IF
-
-
 ]]></ST>
         </Implementation>
       </Set>
@@ -156,8 +153,8 @@ END_IF
     <Method Name="FB_init" Id="{b4349aad-b544-4b1e-a56d-39ff17892797}" FolderPath="API\">
       <Declaration><![CDATA[METHOD FB_init : BOOL
 VAR_INPUT
-	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
-	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+    bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+    bInCopyCode : BOOL; // if TRUE, the instance afterwards gets moved into the copy code (online change)
 END_VAR
 ]]></Declaration>
       <Implementation>
@@ -170,13 +167,13 @@ i_PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
     <Method Name="Finished" Id="{bd7fbae3-272f-4620-a9e2-ef86e3120b6b}" FolderPath="API\">
       <Declaration><![CDATA[METHOD Finished : BOOL
 VAR_INST
-	derived : BOOL;
+    derived : BOOL;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 IF i_PLCopenCommand._status = PLCopenStatusBase.BUSY THEN
-	i_PLCopenCommand._status := PLCopenStatusBase.ERR_OK;
+    i_PLCopenCommand._status := PLCopenStatusBase.ERR_OK;
 END_IF
 
 Remote.Finished();
@@ -205,20 +202,20 @@ GetThis := THIS;]]></ST>
     <Method Name="RegisterGroup" Id="{cb5ff1a4-1084-4750-a268-4c2294c40278}" FolderPath="internal\">
       <Declaration><![CDATA[METHOD RegisterGroup : BOOL
 VAR_INPUT
-	group	: IPLCopenGroup;
+    group : IPLCopenGroup;
 END_VAR
 
 VAR
-	i: INT;
+    i : INT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-FOR i:=0 TO GVL.MAX_RELATED_GROUPS DO
-	IF i_PLCopenCommand._commandGroups[i] = 0 THEN
-		i_PLCopenCommand._commandGroups[i] := group;
-		EXIT;
-	END_IF
+FOR i := 0 TO GVL.MAX_RELATED_GROUPS DO
+    IF i_PLCopenCommand._commandGroups[i] = 0 THEN
+        i_PLCopenCommand._commandGroups[i] := group;
+        EXIT;
+    END_IF
 END_FOR]]></ST>
       </Implementation>
     </Method>
@@ -233,9 +230,9 @@ END_VAR
           <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 IF i_PLCopenCommand._remote <> 0 THEN
-	Remote := i_PLCopenCommand._remote;
+    Remote := i_PLCopenCommand._remote;
 ELSE
-	Remote := i_PLCopenCommand._nullRemote;
+    Remote := i_PLCopenCommand._nullRemote;
 END_IF]]></ST>
         </Implementation>
       </Get>
