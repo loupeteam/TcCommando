@@ -97,8 +97,8 @@ END_VAR
         <Implementation>
           <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-checkStatus();
-isAbort := i_callgroup._isAbort;]]></ST>
+CheckStatus();
+IsAbort := i_callgroup._isAbort;]]></ST>
         </Implementation>
       </Get>
     </Property>
@@ -109,10 +109,10 @@ isAbort := i_callgroup._isAbort;]]></ST>
         <Implementation>
           <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-checkStatus();
+CheckStatus();
 
 //Check if we are done
-isDone := i_callgroup._isDone;]]></ST>
+IsDone := i_callgroup._isDone;]]></ST>
         </Implementation>
       </Get>
     </Property>
@@ -125,9 +125,9 @@ END_VAR
         <Implementation>
           <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-checkStatus();
+CheckStatus();
 
-isError := i_callgroup._isError;]]></ST>
+IsError := i_callgroup._isError;]]></ST>
         </Implementation>
       </Get>
     </Property>
