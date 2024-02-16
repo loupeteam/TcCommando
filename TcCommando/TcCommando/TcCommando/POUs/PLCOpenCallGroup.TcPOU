@@ -170,7 +170,7 @@ END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-//Check if it's already in the list
+// Check if it's already in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
     IF _callGroup._commands[_commandIndex].Command = Command THEN
         _callGroup._commands[_commandIndex].Exec(Command);
@@ -179,7 +179,7 @@ FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
     END_IF
 END_FOR
 
-//If it's not in the list
+// If it's not in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
     IF _callGroup._commands[_commandIndex].Command = 0 THEN
         _callGroup._commands[_commandIndex].Exec(Command);
