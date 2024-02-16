@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <GVL Name="GVL" Id="{1c792e27-feb4-0b48-1cf6-c8147134d538}">
+  <GVL Name="GVLTcCommando" Id="{1c792e27-feb4-0b48-1cf6-c8147134d538}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
 END_VAR

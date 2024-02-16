@@ -49,7 +49,7 @@
     <Compile Include="DUTs\PLCopenStatusBase.TcTLEO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GVLs\GVL.TcGVL">
+    <Compile Include="GVLs\GVLTcCommando.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
