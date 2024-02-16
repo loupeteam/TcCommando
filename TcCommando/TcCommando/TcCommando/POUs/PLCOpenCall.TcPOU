@@ -17,9 +17,6 @@ END_VAR
 VAR
     i_PLCopenCallInternal : PLCopenCallInternal;
 END_VAR
-VAR CONSTANT
-    MAX_RELATED_GROUPS : USINT := 19; // TODO evaluate this
-END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
