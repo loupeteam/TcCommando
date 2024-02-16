@@ -7,7 +7,7 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    i_callgroup : PLCopenCallGroupType;
+    _callGroup : PLCopenCallGroupType;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -22,7 +22,7 @@ END_VAR
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-i_callgroup._syncAbort := TRUE;]]></ST>
+_callGroup._syncAbort := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="CheckStatus" Id="{69b5b758-9323-4002-906a-f59304b6dbf8}">
@@ -37,32 +37,32 @@ END_VAR]]></Declaration>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //If it's not in the list
-FOR _commandIndex := 0 TO GVL.MAX_RELATED_GROUPS DO
-    IF i_callgroup._commands[_commandIndex].Command <> 0 THEN
-        i_callgroup._commands[_commandIndex]();
+FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+    IF _callGroup._commands[_commandIndex].Command <> 0 THEN
+        _callGroup._commands[_commandIndex]();
 
-        IF i_callgroup._commands[_commandIndex].CommandAborted THEN
+        IF _callGroup._commands[_commandIndex].CommandAborted THEN
             _anyAbort := TRUE;
-        ELSIF i_callgroup._commands[_commandIndex].Error THEN
+        ELSIF _callGroup._commands[_commandIndex].Error THEN
             _anyError := TRUE;
-        ELSIF i_callgroup._commands[_commandIndex].Busy THEN
+        ELSIF _callGroup._commands[_commandIndex].Busy THEN
             _anyBusy := TRUE;
         ELSE
-            i_callgroup._commands[_commandIndex].Command := 0;
+            _callGroup._commands[_commandIndex].Command := 0;
         END_IF
     END_IF
 END_FOR
 
-i_callgroup._isError := FALSE;
-i_callgroup._isAbort := FALSE;
-i_callgroup._isDone := FALSE;
+_callGroup._isError := FALSE;
+_callGroup._isAbort := FALSE;
+_callGroup._isDone := FALSE;
 
-IF _anyError OR i_callgroup._syncError THEN
-    i_callgroup._isError := TRUE;
-ELSIF _anyAbort OR i_callgroup._syncAbort THEN
-    i_callgroup._isAbort := TRUE;
+IF _anyError OR _callGroup._syncError THEN
+    _callGroup._isError := TRUE;
+ELSIF _anyAbort OR _callGroup._syncAbort THEN
+    _callGroup._isAbort := TRUE;
 ELSIF NOT _anyBusy THEN
-    i_callgroup._isDone := TRUE;
+    _callGroup._isDone := TRUE;
 END_IF
 ]]></ST>
       </Implementation>
@@ -76,7 +76,7 @@ END_VAR
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-i_callgroup._syncError := TRUE;]]></ST>
+_callGroup._syncError := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="Finished" Id="{a2282568-2a57-49ba-abc9-a320ea291002}" FolderPath="PLCopenCaller\">
@@ -85,7 +85,7 @@ i_callgroup._syncError := TRUE;]]></ST>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-i_callgroup._syncDone := TRUE;]]></ST>
+_callGroup._syncDone := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Property Name="IsAbort" Id="{96e569b0-457f-4c6e-bec1-643c895a8b9c}">
@@ -98,7 +98,7 @@ END_VAR
           <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 CheckStatus();
-IsAbort := i_callgroup._isAbort;]]></ST>
+IsAbort := _callGroup._isAbort;]]></ST>
         </Implementation>
       </Get>
     </Property>
@@ -112,7 +112,7 @@ IsAbort := i_callgroup._isAbort;]]></ST>
 CheckStatus();
 
 //Check if we are done
-IsDone := i_callgroup._isDone;]]></ST>
+IsDone := _callGroup._isDone;]]></ST>
         </Implementation>
       </Get>
     </Property>
@@ -127,7 +127,7 @@ END_VAR
 
 CheckStatus();
 
-IsError := i_callgroup._isError;]]></ST>
+IsError := _callGroup._isError;]]></ST>
         </Implementation>
       </Get>
     </Property>
@@ -153,8 +153,8 @@ END_VAR]]></Declaration>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //If it's not in the list
-FOR _commandIndex := 0 TO GVL.MAX_RELATED_GROUPS DO
-    i_callgroup._commands[_commandIndex].Clear();
+FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+    _callGroup._commands[_commandIndex].Clear();
 END_FOR
 ]]></ST>
       </Implementation>
@@ -171,18 +171,18 @@ END_VAR]]></Declaration>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //Check if it's already in the list
-FOR _commandIndex := 0 TO GVL.MAX_RELATED_GROUPS DO
-    IF i_callgroup._commands[_commandIndex].Command = Command THEN
-        i_callgroup._commands[_commandIndex].Exec(Command);
+FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+    IF _callGroup._commands[_commandIndex].Command = Command THEN
+        _callGroup._commands[_commandIndex].Exec(Command);
         Start := TRUE;
         RETURN;
     END_IF
 END_FOR
 
 //If it's not in the list
-FOR _commandIndex := 0 TO GVL.MAX_RELATED_GROUPS DO
-    IF i_callgroup._commands[_commandIndex].Command = 0 THEN
-        i_callgroup._commands[_commandIndex].Exec(Command);
+FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+    IF _callGroup._commands[_commandIndex].Command = 0 THEN
+        _callGroup._commands[_commandIndex].Exec(Command);
         Start := TRUE;
         RETURN;
     END_IF
