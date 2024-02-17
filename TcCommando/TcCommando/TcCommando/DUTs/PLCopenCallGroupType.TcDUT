@@ -14,7 +14,7 @@
         _isError : BOOL;
         _statusChecked : BOOL;
         _numberActiveCommands : INT;
-        _commands : ARRAY[0..GVL.MAX_RELATED_GROUPS] OF PLCopenCall;
+        _commands : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF PLCopenCall;
         _syncAbort : BOOL;
         _syncError : BOOL;
         _syncDone : BOOL;

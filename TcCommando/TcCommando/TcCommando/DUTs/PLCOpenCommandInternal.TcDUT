@@ -9,7 +9,7 @@
         _status : PLCopenStatusBase;
         _remote : IPLCopenCall;
         _nullRemote : PLCopenNullRemote;
-        _commandGroups : ARRAY[0..GVL.MAX_RELATED_GROUPS] OF IPLCopenGroup;
+        _commandGroups : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF IPLCopenGroup;
     END_STRUCT
 END_TYPE
 ]]></Declaration>
