@@ -38,7 +38,7 @@ END_VAR]]></Declaration>
 
 //If it's not in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-    IF _callGroup._commands[_commandIndex].Command <> 0 THEN
+    IF _callGroup._commands[_commandIndex].CommandInternal <> 0 THEN
         _callGroup._commands[_commandIndex]();
 
         IF _callGroup._commands[_commandIndex].CommandAborted THEN
@@ -48,7 +48,7 @@ FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
         ELSIF _callGroup._commands[_commandIndex].Busy THEN
             _anyBusy := TRUE;
         ELSE
-            _callGroup._commands[_commandIndex].Command := 0;
+            _callGroup._commands[_commandIndex].CommandInternal := 0;
         END_IF
     END_IF
 END_FOR
@@ -172,7 +172,7 @@ END_VAR]]></Declaration>
 
 // Check if it's already in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-    IF _callGroup._commands[_commandIndex].Command = Command THEN
+    IF _callGroup._commands[_commandIndex].CommandInternal = Command THEN
         _callGroup._commands[_commandIndex].Exec(Command);
         Start := TRUE;
         RETURN;
@@ -181,7 +181,7 @@ END_FOR
 
 // If it's not in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-    IF _callGroup._commands[_commandIndex].Command = 0 THEN
+    IF _callGroup._commands[_commandIndex].CommandInternal = 0 THEN
         _callGroup._commands[_commandIndex].Exec(Command);
         Start := TRUE;
         RETURN;
