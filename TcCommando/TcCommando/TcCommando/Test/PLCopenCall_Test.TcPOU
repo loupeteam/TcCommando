@@ -105,11 +105,17 @@ END_VAR
 
 TEST('Exec');
 	call.Exec(command1);
-	AssertTrue(call.Execute, Message := 'Execute should be true');
+	AssertTrue(call.Execute, Message := 'Execute should be true on call');
+	AssertTrue(command1.Execute, Message := 'Execute should be true on command');
 	
 	call.Exec(command2);
 	AssertTrue(call.Execute, Message := 'Execute should still be true, second command should abort first');
-	AssertFalse(command1.Execute, Message := 'Execute should not be true on first of two commands');
+	AssertFalse(command2.Execute, Message := 'Execute should not be set, command should be aborted');
+	
+	call.Exec(command1);
+	AssertEquals_DINT(command1.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'First command should not be aborted');
+	AssertFalse(command2.Execute, Message := 'Execute should not be set, command should be aborted');
+	AssertEquals_DINT(command2.Status, PLCopenStatusBase.ABORTED, Message := 'Second command should be aborted');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
@@ -127,14 +133,12 @@ END_VAR
 (*STweep.Disable*)
 
 TEST('Start');
-    // TODO check cancelling previous command
-	
-	// NOTE: since Start is just a wrapper around Exec, these tests are the same as Exec
+
 	call.Start(command1);
-	AssertTrue(call.Execute, Message := 'Execute should be true');
+	AssertTrue(command1.Execute, Message := 'Execute should be true');
 	
 	call.Start(command2);
-	AssertTrue(command1.Execute, Message := 'Execute should not be true on first command');
+	AssertFalse(command2.Execute, Message := 'Execute should be false on second command');
 
 TEST_FINISHED();]]></ST>
       </Implementation>
