@@ -232,13 +232,10 @@ END_VAR
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-//Abort the previous command if it exists
-IF THIS^.CommandInternal <> Command THEN
-	IF THIS^.CommandInternal <> 0 THEN
-		THIS^.Execute := FALSE;
-		THIS^.Call();
-	END_IF
-END_IF
+//Call with false to force an edge
+//	This will also Abort the previous command if it exists
+THIS^.Execute := FALSE;
+THIS^.Call();
 
 THIS^.CommandInternal := Command;
 THIS^.Execute := TRUE;
