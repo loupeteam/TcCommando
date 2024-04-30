@@ -226,19 +226,19 @@ END_CASE]]></ST>
     <Method Name="Exec" Id="{e15badc6-3209-4aba-84cb-107a0ef3c14b}" FolderPath="API\">
       <Declaration><![CDATA[METHOD Exec : PLCopenStatusBase
 VAR_INPUT
-    Command : IPLCopenCommand;
+    CommandIn : IPLCopenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //Abort the previous command if it exists
-IF THIS^.Command <> Command THEN
-    Command.Execute := FALSE;
+IF THIS^.Command <> CommandIn THEN
+    CommandIn.Execute := FALSE;
     THIS^.Call();
 END_IF
 
-THIS^.Command := Command;
+THIS^.Command := CommandIn;
 THIS^.Execute := TRUE;
 THIS^.Call();
 Exec := THIS^.Status;]]></ST>
