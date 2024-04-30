@@ -234,8 +234,10 @@ END_VAR
 
 //Abort the previous command if it exists
 IF THIS^.CommandInternal <> Command THEN
-    Command.Execute := FALSE;
-    THIS^.Call();
+	IF THIS^.CommandInternal <> 0 THEN
+		THIS^.CommandInternal.Execute := FALSE;
+		THIS^.Call();
+	END_IF
 END_IF
 
 THIS^.CommandInternal := Command;
