@@ -257,13 +257,13 @@ _PLCopenCallInternal._RemoteStatus := PLCopenStatusBase.ERR_OK;
     <Method Name="Start" Id="{b16dfd08-c0f6-43db-a57d-608fa4a860b4}" FolderPath="API\">
       <Declaration><![CDATA[METHOD Start : BOOL
 VAR_INPUT
-    Command : IPLCopenCommand;
+    CommandIn : IPLCopenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-THIS^.Exec(Command);]]></ST>
+THIS^.Exec(CommandIn);]]></ST>
       </Implementation>
     </Method>
   </POU>
