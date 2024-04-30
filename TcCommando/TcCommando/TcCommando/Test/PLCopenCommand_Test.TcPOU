@@ -33,7 +33,7 @@ TEST('AbortPrevious');
 	command.Execute := TRUE;
 	command();
 	command.AbortPreviousCommands(newCommand);
-	AssertEquals_DINT(Expected := PLCopenStatusBase.ABORTED, Actual := command.status, Message := 'Initial command should be aborted');
+	AssertEquals_INT(Expected := PLCopenStatusBase.ABORTED, Actual := command.status, Message := 'Initial command should be aborted');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>

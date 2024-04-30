@@ -109,13 +109,12 @@ TEST('Exec');
 	AssertTrue(command1.Execute, Message := 'Execute should be true on command');
 	
 	call.Exec(command2);
-	AssertTrue(call.Execute, Message := 'Execute should still be true, second command should abort first');
-	AssertFalse(command2.Execute, Message := 'Execute should not be set, command should be aborted');
+	AssertEquals_INT(command1.Status, PLCopenStatusBase.ABORTED, Message := 'First command should be aborted');
+	AssertEquals_INT(command2.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'Second command should be enabled waiting');
 	
 	call.Exec(command1);
-	AssertEquals_DINT(command1.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'First command should not be aborted');
-	AssertFalse(command2.Execute, Message := 'Execute should not be set, command should be aborted');
-	AssertEquals_DINT(command2.Status, PLCopenStatusBase.ABORTED, Message := 'Second command should be aborted');
+	AssertEquals_INT(command1.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'First command should be enabled waiting');
+	AssertEquals_INT(command2.Status, PLCopenStatusBase.ABORTED, Message := 'Second command should be aborted');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
