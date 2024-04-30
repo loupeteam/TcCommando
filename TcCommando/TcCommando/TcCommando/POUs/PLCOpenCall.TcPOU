@@ -4,7 +4,7 @@
     <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCall IMPLEMENTS IPLCopenCall
 VAR_INPUT
     Execute : BOOL;
-    Command : IPLCopenCommand;
+    CommandInternal : IPLCopenCommand;
     Fallback : PLCopenStatusBase;
 END_VAR
 VAR_OUTPUT
@@ -97,7 +97,7 @@ WHILE _break = FALSE DO
             END_IF
 
             // Get the new command
-            _PLCopenCallInternal._command := Command;
+            _PLCopenCallInternal._command := CommandInternal;
 
             IF _PLCopenCallInternal._Command <> 0 THEN
                 _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_ABORT_OLD;
@@ -226,19 +226,19 @@ END_CASE]]></ST>
     <Method Name="Exec" Id="{e15badc6-3209-4aba-84cb-107a0ef3c14b}" FolderPath="API\">
       <Declaration><![CDATA[METHOD Exec : PLCopenStatusBase
 VAR_INPUT
-    CommandIn : IPLCopenCommand;
+    Command : IPLCopenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //Abort the previous command if it exists
-IF THIS^.Command <> CommandIn THEN
-    CommandIn.Execute := FALSE;
+IF THIS^.CommandInternal <> Command THEN
+    Command.Execute := FALSE;
     THIS^.Call();
 END_IF
 
-THIS^.Command := CommandIn;
+THIS^.CommandInternal := Command;
 THIS^.Execute := TRUE;
 THIS^.Call();
 Exec := THIS^.Status;]]></ST>
@@ -257,13 +257,13 @@ _PLCopenCallInternal._RemoteStatus := PLCopenStatusBase.ERR_OK;
     <Method Name="Start" Id="{b16dfd08-c0f6-43db-a57d-608fa4a860b4}" FolderPath="API\">
       <Declaration><![CDATA[METHOD Start : BOOL
 VAR_INPUT
-    CommandIn : IPLCopenCommand;
+    Command : IPLCopenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-THIS^.Exec(CommandIn);]]></ST>
+THIS^.Exec(Command);]]></ST>
       </Implementation>
     </Method>
   </POU>
