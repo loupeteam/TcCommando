@@ -4,7 +4,7 @@
     <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCall IMPLEMENTS IPLCopenCall
 VAR_INPUT
     Execute : BOOL;
-    CommandInternal : IPLCopenCommand;
+    Command : IPLCopenCommand;
     Fallback : PLCopenStatusBase;
 END_VAR
 VAR_OUTPUT
@@ -97,7 +97,7 @@ WHILE _break = FALSE DO
             END_IF
 
             // Get the new command
-            _PLCopenCallInternal._command := CommandInternal;
+            _PLCopenCallInternal._command := Command;
 
             IF _PLCopenCallInternal._Command <> 0 THEN
                 _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_ABORT_OLD;
@@ -237,7 +237,7 @@ END_VAR
 THIS^.Execute := FALSE;
 THIS^.Call();
 
-THIS^.CommandInternal := Command;
+THIS^.Command := Command;
 THIS^.Execute := TRUE;
 THIS^.Call();
 Exec := THIS^.Status;]]></ST>
