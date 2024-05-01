@@ -12,11 +12,72 @@ END_VAR
     <Implementation>
       <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
+Abort();
 Call();
 Clear();
 Exec();
-Start();]]></ST>
+Start();
+]]></ST>
     </Implementation>
+    <Method Name="Abort" Id="{5e3bf46f-cc78-0c00-30ee-e6dd365264ce}">
+      <Declaration><![CDATA[METHOD Abort
+VAR
+    call1 : PLCopenCall();
+    call2 : PLCopenCall();
+    command : PLCopenCommand();
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+(*STweep.Disable*)
+
+TEST('Abort');
+	
+	call1();
+	call2();
+
+	call1.Exec(command);
+	call1.Execute := FALSE;
+
+	AssertEquals_INT(call1.Status, PLCopenStatusBase.BUSY, Message := 'Status should be busy');
+	AssertEquals_INT(call2.Status, PLCopenStatusBase.NOT_ENABLED, Message := 'Status should be not enabled');
+
+	AssertTrue(command.Execute, Message := 'Execute should be true on command');
+	AssertEquals_INT(command.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'First command should be waiting');
+	
+	AssertTrue(command.Consume, Message := 'consume should be true');
+	AssertFalse(command.Consume, Message := 'consume should be false on second read');
+	AssertEquals_INT(command.Status, PLCopenStatusBase.BUSY, Message := 'Command should be busy');
+
+	call2.Exec(Command);
+	call2.Execute := FALSE;
+
+	call1();
+	AssertEquals_INT(call1.Status, PLCopenStatusBase.ABORTED, Message := 'Status should be aborted');
+	AssertEquals_INT(call2.Status, PLCopenStatusBase.BUSY, Message := 'Status should be busy');
+
+	AssertTrue(command.Execute, Message := 'Execute should be true on command');
+	AssertEquals_INT(command.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'First command should be waiting');
+	
+	AssertTrue(command.Consume, Message := 'consume should be true');
+	AssertFalse(command.Consume, Message := 'consume should be false on second read');
+	AssertEquals_INT(command.Status, PLCopenStatusBase.BUSY, Message := 'Command should be busy');
+
+	command.Finished();
+	
+	call1();
+	call2();
+
+	AssertEquals_INT(call1.Status, PLCopenStatusBase.NOT_ENABLED, Message := 'Status should be no enabled');
+	AssertEquals_INT(call2.Status, PLCopenStatusBase.ERR_OK, Message := 'Status should be err ok');
+	
+	
+
+TEST_FINISHED();
+]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="Call" Id="{191016cf-95da-4fad-aea1-2f6fad08115d}">
       <Declaration><![CDATA[METHOD Call
 VAR
@@ -103,13 +164,57 @@ END_VAR
 
 (*STweep.Disable*)
 
-TEST('Exec');
+TEST('Exec1');
+
 	call.Exec(command1);
-	AssertTrue(call.Execute, Message := 'Execute should be true');
+	AssertTrue(call.Execute, Message := 'Execute should be true on call');
+	AssertTrue(command1.Execute, Message := 'Execute should be true on command');
+	AssertEquals_INT(command1.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'First command should be aborted');
+	AssertEquals_INT(command2.Status, PLCopenStatusBase.NOT_ENABLED, Message := 'Second command should be not enabled');
 	
+	AssertTrue(command1.Consume, Message := 'First command consume should be true');
+	AssertFalse(command2.Consume, Message := 'Second command consume should be false');
+
+	AssertFalse(command1.Consume, Message := 'First command consume should be false');
+	AssertFalse(command2.Consume, Message := 'Second command consume should be false');
+
+	command1.Finished();
+
+	call();
+
+	AssertEquals_INT(call.Status, PLCopenStatusBase.ERR_OK, Message := 'Call should be Err OK');
+	AssertEquals_INT(command1.Status, PLCopenStatusBase.ERR_OK, Message := 'First command should be Err OK');
+	AssertEquals_INT(command2.Status, PLCopenStatusBase.NOT_ENABLED, Message := 'Second command should be enabled waiting');
+TEST_FINISHED();
+TEST('Exec2');
+	
+//	call.Clear();//DO we need clear?
+
+
 	call.Exec(command2);
-	AssertTrue(call.Execute, Message := 'Execute should still be true, second command should abort first');
-	AssertFalse(command1.Execute, Message := 'Execute should not be true on first of two commands');
+
+//	AssertEquals_INT(command1.Status, PLCopenStatusBase.NOT_ENABLED, Message := 'First command should be Not Enabled');//This is actually not defined, the status doesn't get reset until it's needed again
+	AssertEquals_INT(command2.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'Second command should be enabled waiting');
+
+	AssertFalse(command1.Consume, Message := 'First command consume should be false');
+	AssertTrue(command2.Consume, Message := 'Second command consume should be true');
+
+	AssertFalse(command1.Consume, Message := 'First command consume should be false');
+	AssertFalse(command2.Consume, Message := 'Second command consume should be false');
+
+	command2.Finished();
+
+	call();
+
+	AssertEquals_INT(call.Status, PLCopenStatusBase.ERR_OK, Message := 'Call should be Err OK');
+//	AssertEquals_INT(command1.Status, PLCopenStatusBase.NOT_ENABLED, Message := 'First command should be Not Enabled');//This is actually not defined, the status doesn't get reset until it's needed again
+	AssertEquals_INT(command2.Status, PLCopenStatusBase.ERR_OK, Message := 'Second command should be ERR OK');
+
+	
+	call.Exec(command1);
+	AssertEquals_INT(command1.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'First command should be enabled waiting');
+//	AssertEquals_INT(command2.Status, PLCopenStatusBase.NOT_ENABLED, Message := 'Second command should be not enabled');//This is actually not defined, the status doesn't get reset until it's needed again
+
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
@@ -127,14 +232,12 @@ END_VAR
 (*STweep.Disable*)
 
 TEST('Start');
-    // TODO check cancelling previous command
-	
-	// NOTE: since Start is just a wrapper around Exec, these tests are the same as Exec
+
 	call.Start(command1);
-	AssertTrue(call.Execute, Message := 'Execute should be true');
+	AssertTrue(command1.Execute, Message := 'Execute should be true');
 	
 	call.Start(command2);
-	AssertTrue(command1.Execute, Message := 'Execute should not be true on first command');
+	AssertTrue(command2.Execute, Message := 'Execute should be true');
 
 TEST_FINISHED();]]></ST>
       </Implementation>
