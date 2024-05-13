@@ -19,7 +19,7 @@
     <Company>Loupe</Company>
     <Released>false</Released>
     <Title>TcCommando</Title>
-    <ProjectVersion>0.0.5</ProjectVersion>
+    <ProjectVersion>0.0.6</ProjectVersion>
     <Author>Loupe</Author>
     <CombineIds>true</CombineIds>
     <LibraryCategories>
