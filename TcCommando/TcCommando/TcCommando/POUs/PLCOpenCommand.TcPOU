@@ -26,7 +26,7 @@ END_VAR
 
 _PLCopenCommand._status := PLCopenStatusBase.ABORTED;
 
-Remote.Aborted();
+Remote.ReportAborted();
 Remote := 0;]]></ST>
       </Implementation>
     </Method>
@@ -43,7 +43,7 @@ END_VAR]]></Declaration>
 
 //If there is a remote, abort it here
 //Don't use this^.abort() because we don't want about ourselves
-Remote.Aborted();
+Remote.ReportAborted();
 Remote := 0;
 
 //Abort any related commands
@@ -105,7 +105,7 @@ ELSE
     _PLCopenCommand._status := ID;
 END_CASE
 
-Remote.Errored(ID);
+Remote.ReportErrored(ID);
 ]]></ST>
       </Implementation>
     </Method>
@@ -176,7 +176,7 @@ IF _PLCopenCommand._status = PLCopenStatusBase.BUSY THEN
     _PLCopenCommand._status := PLCopenStatusBase.ERR_OK;
 END_IF
 
-Remote.Finished();
+Remote.ReportFinished();
 ]]></ST>
       </Implementation>
     </Method>

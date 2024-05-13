@@ -7,8 +7,8 @@
       <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 ]]></ST>
     </Implementation>
-    <Method Name="Aborted" Id="{d3377050-9f4c-49f6-a051-4bcdc44d847d}">
-      <Declaration><![CDATA[METHOD Aborted : BOOL
+    <Method Name="ReportAborted" Id="{d3377050-9f4c-49f6-a051-4bcdc44d847d}">
+      <Declaration><![CDATA[METHOD ReportAborted : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
@@ -16,8 +16,8 @@
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Errored" Id="{97c3ac24-72bd-4b21-93c4-11f805822d38}">
-      <Declaration><![CDATA[METHOD Errored : BOOL
+    <Method Name="ReportErrored" Id="{97c3ac24-72bd-4b21-93c4-11f805822d38}">
+      <Declaration><![CDATA[METHOD ReportErrored : BOOL
 VAR_INPUT
     ID : INT;
 END_VAR]]></Declaration>
@@ -27,8 +27,8 @@ END_VAR]]></Declaration>
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Finished" Id="{6fdf66c9-5086-43d9-b213-c69b23218cc4}">
-      <Declaration><![CDATA[METHOD Finished : BOOL
+    <Method Name="ReportFinished" Id="{6fdf66c9-5086-43d9-b213-c69b23218cc4}">
+      <Declaration><![CDATA[METHOD ReportFinished : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.

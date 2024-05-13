@@ -16,15 +16,6 @@ END_VAR
 ]]></ST>
     </Implementation>
     <Folder Name="PLCopenCaller" Id="{b4b03af3-7533-4298-bf9d-09121bd9eae9}" />
-    <Method Name="Aborted" Id="{88516a3e-7cba-4182-ba66-c0dd75064666}" FolderPath="PLCopenCaller\">
-      <Declaration><![CDATA[METHOD Aborted : BOOL
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-_callGroup._syncAbort := TRUE;]]></ST>
-      </Implementation>
-    </Method>
     <Method Name="CheckStatus" Id="{69b5b758-9323-4002-906a-f59304b6dbf8}">
       <Declaration><![CDATA[METHOD PRIVATE CheckStatus : BOOL
 VAR
@@ -65,27 +56,6 @@ ELSIF NOT _anyBusy THEN
     _callGroup._isDone := TRUE;
 END_IF
 ]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="Errored" Id="{2a110df0-07b9-4922-ba19-6e9f76e5caa7}" FolderPath="PLCopenCaller\">
-      <Declaration><![CDATA[METHOD Errored : BOOL
-VAR_INPUT
-    ID : INT;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-_callGroup._syncError := TRUE;]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="Finished" Id="{a2282568-2a57-49ba-abc9-a320ea291002}" FolderPath="PLCopenCaller\">
-      <Declaration><![CDATA[METHOD Finished : BOOL
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-_callGroup._syncDone := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Property Name="IsAbort" Id="{96e569b0-457f-4c6e-bec1-643c895a8b9c}">
@@ -131,17 +101,34 @@ IsError := _callGroup._isError;]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Method Name="PLCOpenCall" Id="{e899a63b-d12d-476a-8450-473b6110f918}">
-      <Declaration><![CDATA[{warning 'add method implementation '}
-METHOD PLCopenCall : PLCopenStatusBase
+    <Method Name="ReportAborted" Id="{88516a3e-7cba-4182-ba66-c0dd75064666}" FolderPath="PLCopenCaller\">
+      <Declaration><![CDATA[METHOD ReportAborted : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+_callGroup._syncAbort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReportErrored" Id="{2a110df0-07b9-4922-ba19-6e9f76e5caa7}" FolderPath="PLCopenCaller\">
+      <Declaration><![CDATA[METHOD ReportErrored : BOOL
 VAR_INPUT
-    Command : IPLCopenCommand;
+    ID : INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-]]></ST>
+_callGroup._syncError := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReportFinished" Id="{a2282568-2a57-49ba-abc9-a320ea291002}" FolderPath="PLCopenCaller\">
+      <Declaration><![CDATA[METHOD ReportFinished : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+_callGroup._syncDone := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="ResetCommands" Id="{cd896665-6c8b-4e15-8c06-75a5a8e469f2}">

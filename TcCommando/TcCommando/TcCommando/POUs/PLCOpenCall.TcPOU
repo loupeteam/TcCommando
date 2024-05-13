@@ -25,15 +25,6 @@ Call();]]></ST>
     </Implementation>
     <Folder Name="API" Id="{81b669e9-53d1-43c3-adb5-dd314cabfeda}" />
     <Folder Name="internal" Id="{3ca49896-8361-42f2-89ba-941a123d684d}" />
-    <Method Name="Aborted" Id="{d852b156-0dcb-4482-b2e7-1df0a5df8a63}" FolderPath="internal\">
-      <Declaration><![CDATA[METHOD Aborted : BOOL
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-_PLCopenCallInternal._abort := true;]]></ST>
-      </Implementation>
-    </Method>
     <Method Name="Call" Id="{678db6c7-a95b-4103-a6a7-438e03861a08}" FolderPath="internal\">
       <Declaration><![CDATA[METHOD Call : BOOL
 VAR
@@ -202,27 +193,6 @@ Clear := THIS^.Status;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Errored" Id="{01a1ddfd-7791-443d-a60a-4fecd77dd437}" FolderPath="internal\">
-      <Declaration><![CDATA[METHOD Errored : BOOL
-VAR_INPUT
-    ID : INT;
-END_VAR]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-CASE ID OF
-    //Any of these statuses are invalid to return as an error.
-    //Override to error
-    PLCopenStatusBase.BUSY,
-        PLCopenStatusBase.ENABLED_WAITING,
-        PLCopenStatusBase.ERR_OK:
-        _PLCopenCallInternal._RemoteStatus := PLCopenStatusBase.ERROR;
-ELSE
-    //Any other status can be passed through
-    _PLCopenCallInternal._RemoteStatus := ID;
-END_CASE]]></ST>
-      </Implementation>
-    </Method>
     <Method Name="Exec" Id="{e15badc6-3209-4aba-84cb-107a0ef3c14b}" FolderPath="API\">
       <Declaration><![CDATA[METHOD Exec : PLCopenStatusBase
 VAR_INPUT
@@ -243,8 +213,38 @@ THIS^.Call();
 Exec := THIS^.Status;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Finished" Id="{f01f5879-6af5-40cc-8d64-3d5824931435}" FolderPath="internal\">
-      <Declaration><![CDATA[METHOD Finished : BOOL
+    <Method Name="ReportAborted" Id="{d852b156-0dcb-4482-b2e7-1df0a5df8a63}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD ReportAborted : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+_PLCopenCallInternal._abort := true;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReportErrored" Id="{01a1ddfd-7791-443d-a60a-4fecd77dd437}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD ReportErrored : BOOL
+VAR_INPUT
+    ID : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+CASE ID OF
+    //Any of these statuses are invalid to return as an error.
+    //Override to error
+    PLCopenStatusBase.BUSY,
+        PLCopenStatusBase.ENABLED_WAITING,
+        PLCopenStatusBase.ERR_OK:
+        _PLCopenCallInternal._RemoteStatus := PLCopenStatusBase.ERROR;
+ELSE
+    //Any other status can be passed through
+    _PLCopenCallInternal._RemoteStatus := ID;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReportFinished" Id="{f01f5879-6af5-40cc-8d64-3d5824931435}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD ReportFinished : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
