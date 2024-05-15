@@ -1,0 +1,455 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PLCopenGroupCommand" Id="{2e0402f9-bb03-4307-bd9d-f64d15557336}" SpecialFunc="None">
+    <Declaration><![CDATA[
+FUNCTION_BLOCK PLCopenGroupCommand IMPLEMENTS IPLCopenCommand, IPLCopenCallStatus, IPLCopenCallRemote
+VAR
+  _PLCopenCommand : PLCopenCommandGroupInternal;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+IF _PLCopenCommand._status <> PLCopenStatusBase.BUSY AND NOT Execute THEN
+  _PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
+END_IF
+]]></ST>
+    </Implementation>
+    <Folder Name="API" Id="{b4cb7c13-7345-44ed-a6a5-26d1ff59917e}" />
+    <Folder Name="internal" Id="{bc5dbaf1-a59e-45ac-ba7f-2fe65e0965ac}" />
+    <Property Name="abort" Id="{1481c1bf-dd08-458a-bff7-86f233f6eeac}">
+      <Declaration><![CDATA[{warning 'add property implementation'}
+PROPERTY abort : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{595e4f9c-a6b2-49c1-89ff-f9a8181dbc2a}">
+        <Declaration><![CDATA[VAR
+	i : INT;
+	_abort : BOOL; 
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_abort := FALSE;
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+
+	IF _PLCopenCommand.subscriber[i].command = 0 THEN
+	
+	  _abort := _abort OR _PLCopenCommand.subscriber[i].abort;
+	
+	END_IF
+
+END_FOR
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{8a526a1f-79ec-413f-b67f-f9efc0af12a6}">
+        <Declaration><![CDATA[VAR
+	i : INT;
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+
+	IF _PLCopenCommand.subscriber[i].command = 0 THEN
+	
+	  _PLCopenCommand.subscriber[i].abort := FALSE;
+	
+	END_IF
+
+END_FOR
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="AbortPreviousCommands" Id="{d96a3de2-9b29-447f-9cc6-35dbbf6dd762}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD AbortPreviousCommands : BOOL
+VAR_INPUT
+  newCommand : IPLCopenCommand;
+END_VAR
+VAR
+  i : USINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+//If there is a remote, abort it here
+//Don't use this^.abort() because we don't want about ourselves
+Remote.ReportAborted();
+Remote := 0;
+
+//Abort any related commands
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+  IF _PLCopenCommand._commandGroups[i] <> 0 THEN
+    _PLCopenCommand._commandGroups[i].AbortPreviousCommands(newCommand);
+  END_IF
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="BaseSize" Id="{1ac08a1f-f31c-4d4a-b4fd-493736322d9a}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD FINAL BaseSize : ULINT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+BaseSize := SIZEOF(THIS^);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Execute" Id="{1eae2873-62e1-475a-b9ee-452bf611bce0}" FolderPath="API\">
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
+PROPERTY Execute : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{38852b17-c4a0-40d6-819f-d48e38c88c45}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+Execute := _PLCopenCommand._Execute;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{b688f25b-4595-4002-87f3-4230ee125cb8}">
+        <Declaration><![CDATA[
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+//We are already executing
+IF _PLCopenCommand._Trig = TRUE AND Execute = TRUE THEN
+
+  ; //Do nothing
+  //Trigger an execute
+ELSIF _PLCopenCommand._Trig = FALSE AND Execute = TRUE THEN
+  _PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
+  _PLCopenCommand._Execute := TRUE;
+
+  THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
+
+  THIS^.Remote.ReportFinished();
+
+  FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+    IF _PLCopenCommand.subscriber[i].command <> 0 THEN
+      _PLCopenCommand.subscriber[i].Start(_PLCopenCommand.subscriber[i].command);
+    END_IF
+  END_FOR
+
+  // We were executing, but resetting it to false;
+  // Just resetting execute to false all the time is OK
+ELSIF Execute = FALSE THEN
+  _PLCopenCommand._Execute := FALSE;
+END_IF
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="FB_init" Id="{62f8f380-4d47-4719-a2c7-a7f000597606}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD FB_init : BOOL
+VAR_INPUT
+  bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+  bInCopyCode : BOOL; // if TRUE, the instance afterwards gets moved into the copy code (online change)
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+_PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetSize" Id="{5a0cbd23-ed35-43bd-b919-aad552d10f4e}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD GetSize : ULINT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+GetSize := SIZEOF(THIS^);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetThis" Id="{bf8128c0-8884-4b03-b2f5-d39929482dc2}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD GetThis : ULINT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+GetThis := THIS;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="PropagateReport" Id="{06b6e849-94ee-4dda-9c26-96e1ae389029}" FolderPath="internal\">
+      <Declaration><![CDATA[METHOD PropagateReport : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE RemoteStatus OF
+	PLCopenStatusBase.BUSY,
+	PLCopenStatusBase.ENABLED_WAITING:
+		;//Nothing to do
+	PLCopenStatusBase.ERR_OK:
+		remote.ReportFinished();
+	ELSE
+		remote.ReportErrored(RemoteStatus);				
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RegisterGroup" Id="{710eae99-01b3-4973-9293-78a0a5985158}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD RegisterGroup : BOOL
+VAR_INPUT
+  group : IPLCopenGroup;
+END_VAR
+
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+  IF _PLCopenCommand._commandGroups[i] = 0 THEN
+    _PLCopenCommand._commandGroups[i] := group;
+    EXIT;
+  END_IF
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Remote" Id="{d9e5369b-028c-46f8-a89a-4ffb3dea3bf5}" FolderPath="internal\">
+      <Declaration><![CDATA[
+PROPERTY Remote : IPLCopenCallRemote
+]]></Declaration>
+      <Get Name="Get" Id="{f4cd0e9d-571a-44e1-97f8-88e611ce92e4}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+IF _PLCopenCommand._remote <> 0 THEN
+  Remote := _PLCopenCommand._remote;
+ELSE
+  Remote := _PLCopenCommand._nullRemote;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{390bfe16-8b18-464d-93ae-4b6c74d4d8c6}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+_PLCopenCommand._remote := Remote;
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="RemoteExecute" Id="{6a0caeff-e008-4e4e-8e10-5ac4e600e899}" FolderPath="API\">
+      <Declaration><![CDATA[
+METHOD RemoteExecute : BOOL
+VAR_INPUT
+  remote : IPLCopenCallRemote;
+END_VAR
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+_PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
+_PLCopenCommand._Execute := TRUE;
+THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
+
+IF _PLCopenCommand.subscriberCount = 0 THEN
+  remote.ReportFinished();
+ELSE
+  THIS^.Remote := remote;
+
+  FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+    IF _PLCopenCommand.subscriber[i].command <> 0 THEN		
+      _PLCopenCommand.subscriber[i].Start(_PLCopenCommand.subscriber[i].command);
+    END_IF
+  END_FOR
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="RemoteStatus" Id="{205f74a8-fc38-44d9-b915-074d931a1a17}">
+      <Declaration><![CDATA[{warning 'add property implementation'}
+PROPERTY RemoteStatus : PLCopenStatusBase
+]]></Declaration>
+      <Get Name="Get" Id="{9005f72b-5b68-4944-80e7-1a2d3dd95b2d}">
+        <Declaration><![CDATA[VAR
+	i : INT;
+	done : BOOL;
+	error : BOOL;
+	busy : BOOL;
+	errorID : PLCopenStatusBase;
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+	IF _PLCopenCommand.subscriber[i].command = 0 THEN
+		
+		CASE _PLCopenCommand.subscriber[i].RemoteStatus OF
+		  //Any of these statuses are invalid to return as an error.
+		  //Override to error
+			PLCopenStatusBase.BUSY,
+			PLCopenStatusBase.ENABLED_WAITING:
+				busy := TRUE;
+			PLCopenStatusBase.ERR_OK:
+				done := TRUE;
+		ELSE
+		  //Any other status can be passed through
+			error := TRUE;
+			errorID := _PLCopenCommand.subscriber[i].RemoteStatus;
+		END_CASE				
+	END_IF
+END_FOR
+
+IF error THEN
+	RemoteStatus := errorID;
+ELSIF busy THEN
+	RemoteStatus := PLCopenStatusBase.BUSY;
+ELSE
+	RemoteStatus := PLCopenStatusBase.ERR_OK;		
+END_IF]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{3cf642f5-d7a0-45cb-9562-4796c5a4284b}">
+        <Declaration><![CDATA[VAR
+	i : INT;
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+
+	IF _PLCopenCommand.subscriber[i].command = 0 THEN
+	
+	  _PLCopenCommand.subscriber[i].RemoteStatus := RemoteStatus;
+	
+	END_IF
+
+END_FOR]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="ReportAborted" Id="{0ad81ece-f45c-4bfe-8275-0b88f20ba7f9}">
+      <Declaration><![CDATA[METHOD ReportAborted : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+remote.ReportAborted();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReportErrored" Id="{64171600-801f-42eb-b53a-2c8820ca15b2}">
+      <Declaration><![CDATA[METHOD ReportErrored : BOOL
+VAR_INPUT
+	ID	: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+PropagateReport();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReportFinished" Id="{685cdf62-5140-4613-a4f4-988c84b23715}">
+      <Declaration><![CDATA[METHOD ReportFinished : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+PropagateReport();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Subscribe" Id="{f77bb195-a8c6-409a-8fef-a2a8a01adc97}" FolderPath="API\">
+      <Declaration><![CDATA[
+METHOD Subscribe : BOOL
+VAR_INPUT
+  command : IPLCopenCommand;
+END_VAR
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF _PLCopenCommand.subscriberCount > GVLTcCommando.MAX_RELATED_GROUPS THEN
+  //Throw an error
+  Subscribe := FALSE;
+  RETURN;
+END_IF
+
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+  IF _PLCopenCommand.subscriber[i].command = 0 THEN
+    _PLCopenCommand.subscriber[i].command := command;
+	_PLCopenCommand.subscriber[i].proxy := THIS^;
+    _PLCopenCommand.subscriberCount := _PLCopenCommand.subscriberCount + 1;
+    Subscribe := TRUE;
+    RETURN;
+  END_IF
+END_FOR
+
+//Throw an error
+Subscribe := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Unsubscribe" Id="{8b526c33-1564-429b-8718-fad28d62ba85}" FolderPath="API\">
+      <Declaration><![CDATA[
+METHOD Unsubscribe : BOOL
+VAR_INPUT
+  command : IPLCopenCommand;
+END_VAR
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+  IF _PLCopenCommand.subscriber[i].command = command THEN
+    _PLCopenCommand.subscriberCount := _PLCopenCommand.subscriberCount - 1;
+    _PLCopenCommand.subscriber[i].command := 0;
+    Unsubscribe := TRUE;
+    RETURN;
+  END_IF
+END_FOR
+
+//Throw an error
+Unsubscribe := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

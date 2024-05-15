@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PLCopenRemote" Id="{603500fb-9066-4ec5-b073-ea0871d605ca}" SpecialFunc="None">
+    <Declaration><![CDATA[
+FUNCTION_BLOCK PLCopenRemote IMPLEMENTS IPLCopenCallRemote, IPLCopenCallStatus
+VAR_INPUT
+  command : IPLCopenCommand;
+  proxy : IPLCopenCallRemote;
+END_VAR
+VAR
+  _PLCopenCallInternal : PLCopenRemoteInternal;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+]]></ST>
+    </Implementation>
+    <Property Name="abort" Id="{c7641c67-ae0d-4596-b708-3691eb9c1d20}">
+      <Declaration><![CDATA[{warning 'add property implementation'}
+PROPERTY abort : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{59c0b979-29c2-4ad1-b323-896aa956b7b1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[abort := _PLCopenCallInternal.abort;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{3bc2a4d4-a0df-4a5d-87f3-0a319ab86ebb}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_PLCopenCallInternal.abort := abort;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="RemoteStatus" Id="{27ee096e-7abf-4323-b731-6523795b731f}">
+      <Declaration><![CDATA[PROPERTY RemoteStatus : PLCopenStatusBase
+]]></Declaration>
+      <Get Name="Get" Id="{e2b3ab12-0ad9-4b99-adc0-fc57a956ef6f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[RemoteStatus := _PLCopenCallInternal.status;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{1a539f5d-b4b2-467b-8226-4bf0c3488566}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_PLCopenCallInternal.status := RemoteStatus;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="ReportAborted" Id="{cbecde3e-63d7-41c9-90ae-249e6fdbfbdc}">
+      <Declaration><![CDATA[
+METHOD ReportAborted : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+_PLCopenCallInternal.abort := TRUE;
+IF proxy <> 0 THEN
+	proxy.ReportAborted();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReportErrored" Id="{c6822c79-4afc-4bd0-8933-2b53beb26986}">
+      <Declaration><![CDATA[
+METHOD ReportErrored : BOOL
+VAR_INPUT
+  ID : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+CASE ID OF
+  //Any of these statuses are invalid to return as an error.
+  //Override to error
+  	PLCopenStatusBase.BUSY,
+	PLCopenStatusBase.ENABLED_WAITING,
+	PLCopenStatusBase.ERR_OK:
+    _PLCopenCallInternal.status := PLCopenStatusBase.ERROR;
+ELSE
+  //Any other status can be passed through
+  _PLCopenCallInternal.status := ID;
+END_CASE
+
+IF proxy <> 0 THEN
+	proxy.ReportErrored(_PLCopenCallInternal.status);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReportFinished" Id="{cf5564a2-2dcb-446f-9ce1-2b34ce737728}">
+      <Declaration><![CDATA[
+METHOD ReportFinished : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+_PLCopenCallInternal.status := PLCopenStatusBase.ERR_OK;
+
+IF proxy <> 0 THEN
+	proxy.ReportFinished();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Start" Id="{4e7a139b-9cbd-4971-b8b3-78113352ebfb}">
+      <Declaration><![CDATA[
+METHOD Start : BOOL
+VAR_INPUT
+  Command : IPLCopenCommand;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+command.RemoteExecute(THIS^);
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

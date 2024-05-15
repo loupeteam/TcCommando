@@ -1,45 +1,53 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenCommand" Id="{1ef37826-7fac-4345-b9dc-ffeb92b64305}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCommand IMPLEMENTS IPLCopenCommand
+    <Declaration><![CDATA[
+FUNCTION_BLOCK PLCopenCommand IMPLEMENTS IPLCopenCommand, IPLCopenConsumer
 VAR
-    _PLCopenCommand : PLCopenCommandInternal;
+  _PLCopenCommand : PLCopenCommandInternal;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+      <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 IF _PLCopenCommand._status <> PLCopenStatusBase.BUSY AND NOT Execute THEN
-    _PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
+  _PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
 END_IF
 ]]></ST>
     </Implementation>
     <Folder Name="API" Id="{0587c0fb-5387-4c8e-ab33-b65a12ba1fe4}" />
     <Folder Name="internal" Id="{49c08f52-caae-4692-bd2e-016738f72df3}" />
     <Method Name="Aborted" Id="{d2af0695-906b-4a1e-be1b-8d6698087918}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Aborted : BOOL
+      <Declaration><![CDATA[
+METHOD Aborted : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 _PLCopenCommand._status := PLCopenStatusBase.ABORTED;
 
 Remote.ReportAborted();
-Remote := 0;]]></ST>
+Remote := 0;
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="AbortPreviousCommands" Id="{72a4612a-7755-4ff4-a80f-b8e7a7020c17}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD AbortPreviousCommands : BOOL
+      <Declaration><![CDATA[
+METHOD AbortPreviousCommands : BOOL
 VAR_INPUT
-    newCommand : IPLCopenCommand;
+  newCommand : IPLCopenCommand;
 END_VAR
 VAR
-    i : USINT;
-END_VAR]]></Declaration>
+  i : USINT;
+END_VAR
+]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //If there is a remote, abort it here
 //Don't use this^.abort() because we don't want about ourselves
@@ -48,36 +56,43 @@ Remote := 0;
 
 //Abort any related commands
 FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-    IF _PLCopenCommand._commandGroups[i] <> 0 THEN
-        _PLCopenCommand._commandGroups[i].AbortPreviousCommands(newCommand);
-    END_IF
+  IF _PLCopenCommand._commandGroups[i] <> 0 THEN
+    _PLCopenCommand._commandGroups[i].AbortPreviousCommands(newCommand);
+  END_IF
 END_FOR
 ]]></ST>
       </Implementation>
     </Method>
     <Method Name="BaseSize" Id="{68c25b13-c5d3-4fd8-80c7-c8d81abff00e}" FolderPath="internal\">
-      <Declaration><![CDATA[METHOD FINAL BaseSize : ULINT
+      <Declaration><![CDATA[
+METHOD FINAL BaseSize : ULINT
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-BaseSize := SIZEOF(THIS^);]]></ST>
+BaseSize := SIZEOF(THIS^);
+]]></ST>
       </Implementation>
     </Method>
     <Property Name="Consume" Id="{2ef92d9e-be31-4204-86c4-dd6ebc3c6354}" FolderPath="API\">
-      <Declaration><![CDATA[PROPERTY Consume : BOOL]]></Declaration>
+      <Declaration><![CDATA[
+PROPERTY Consume : BOOL
+]]></Declaration>
       <Get Name="Get" Id="{48f7ff29-f664-4620-8fbe-665cd82855fe}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 Consume := _PLCopenCommand._Execute;
 
 IF _PLCopenCommand._Execute THEN
-    //	THIS^.AbortPreviousCommands( THIS^ );//This is meant to abort if the command comes locally
-    _PLCopenCommand._status := PLCopenStatusBase.BUSY;
+  //	THIS^.AbortPreviousCommands( THIS^ );//This is meant to abort if the command comes locally
+  _PLCopenCommand._status := PLCopenStatusBase.BUSY;
 END_IF
 
 _PLCopenCommand._Execute := FALSE;
@@ -86,23 +101,26 @@ _PLCopenCommand._Execute := FALSE;
       </Get>
     </Property>
     <Method Name="Errored" Id="{e4afdd7d-e3d4-4bb8-9a5c-f28bb8c767d0}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Errored : BOOL
+      <Declaration><![CDATA[
+METHOD Errored : BOOL
 VAR_INPUT
-    ID : INT;
-END_VAR]]></Declaration>
+  ID : INT;
+END_VAR
+]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 CASE ID OF
-    //Any of these statuses are invalid to return as an error.
-    //Override to error
-    PLCopenStatusBase.BUSY,
-        PLCopenStatusBase.ENABLED_WAITING,
-        PLCopenStatusBase.ERR_OK:
-        _PLCopenCommand._status := PLCopenStatusBase.ERROR;
+  //Any of these statuses are invalid to return as an error.
+  //Override to error
+  PLCopenStatusBase.BUSY,
+    PLCopenStatusBase.ENABLED_WAITING,
+    PLCopenStatusBase.ERR_OK:
+    _PLCopenCommand._status := PLCopenStatusBase.ERROR;
 ELSE
-    //Any other status can be passed through
-    _PLCopenCommand._status := ID;
+  //Any other status can be passed through
+  _PLCopenCommand._status := ID;
 END_CASE
 
 Remote.ReportErrored(ID);
@@ -110,70 +128,81 @@ Remote.ReportErrored(ID);
       </Implementation>
     </Method>
     <Property Name="Execute" Id="{cf9e92fe-da22-4c8e-b19d-8971f1bd24dd}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
-PROPERTY Execute : BOOL]]></Declaration>
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
+PROPERTY Execute : BOOL
+]]></Declaration>
       <Get Name="Get" Id="{15e0faeb-edb9-48e1-b660-f89f647245cb}">
         <Declaration><![CDATA[
 VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-Execute := _PLCopenCommand._Execute;]]></ST>
+Execute := _PLCopenCommand._Execute;
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{a312909e-3f1e-413f-a5a5-82ae3ecc3633}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //We are already executing
 IF _PLCopenCommand._Trig = TRUE AND Execute = TRUE THEN
 
-    ; //Do nothing
-    //Trigger an execute
+  ; //Do nothing
+  //Trigger an execute
 ELSIF _PLCopenCommand._Trig = FALSE AND Execute = TRUE THEN
-    _PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
-    _PLCopenCommand._Execute := TRUE;
+  _PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
+  _PLCopenCommand._Execute := TRUE;
 
-    THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
+  THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
 
-    // We were executing, but resetting it to false;
-    // Just resetting execute to false all the time is OK
+  // We were executing, but resetting it to false;
+  // Just resetting execute to false all the time is OK
 ELSIF Execute = FALSE THEN
-    _PLCopenCommand._Execute := FALSE;
+  _PLCopenCommand._Execute := FALSE;
 END_IF
 ]]></ST>
         </Implementation>
       </Set>
     </Property>
-    <Method Name="FB_init" Id="{b4349aad-b544-4b1e-a56d-39ff17892797}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD FB_init : BOOL
+    <Method Name="FB_init" Id="{b4349aad-b544-4b1e-a56d-39ff17892797}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD FB_init : BOOL
 VAR_INPUT
-    bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
-    bInCopyCode : BOOL; // if TRUE, the instance afterwards gets moved into the copy code (online change)
+  bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+  bInCopyCode : BOOL; // if TRUE, the instance afterwards gets moved into the copy code (online change)
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 _PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
 ]]></ST>
       </Implementation>
     </Method>
     <Method Name="Finished" Id="{bd7fbae3-272f-4620-a9e2-ef86e3120b6b}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Finished : BOOL
+      <Declaration><![CDATA[
+METHOD Finished : BOOL
 VAR_INST
-    derived : BOOL;
-END_VAR]]></Declaration>
+  derived : BOOL;
+END_VAR
+]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 IF _PLCopenCommand._status = PLCopenStatusBase.BUSY THEN
-    _PLCopenCommand._status := PLCopenStatusBase.ERR_OK;
+  _PLCopenCommand._status := PLCopenStatusBase.ERR_OK;
 END_IF
 
 Remote.ReportFinished();
@@ -185,79 +214,116 @@ Remote.ReportFinished();
 METHOD GetSize : ULINT
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-GetSize := SIZEOF(THIS^);]]></ST>
+GetSize := SIZEOF(THIS^);
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="GetThis" Id="{12291a40-cea3-4f5e-bd41-1dabff99abc5}" FolderPath="internal\">
-      <Declaration><![CDATA[METHOD GetThis : ULINT
+      <Declaration><![CDATA[
+METHOD GetThis : ULINT
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-GetThis := THIS;]]></ST>
+GetThis := THIS;
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="RegisterGroup" Id="{cb5ff1a4-1084-4750-a268-4c2294c40278}" FolderPath="internal\">
-      <Declaration><![CDATA[METHOD RegisterGroup : BOOL
+      <Declaration><![CDATA[
+METHOD RegisterGroup : BOOL
 VAR_INPUT
-    group : IPLCopenGroup;
+  group : IPLCopenGroup;
 END_VAR
 
 VAR
-    i : INT;
-END_VAR]]></Declaration>
+  i : INT;
+END_VAR
+]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-    IF _PLCopenCommand._commandGroups[i] = 0 THEN
-        _PLCopenCommand._commandGroups[i] := group;
-        EXIT;
-    END_IF
-END_FOR]]></ST>
+  IF _PLCopenCommand._commandGroups[i] = 0 THEN
+    _PLCopenCommand._commandGroups[i] := group;
+    EXIT;
+  END_IF
+END_FOR
+]]></ST>
       </Implementation>
     </Method>
     <Property Name="Remote" Id="{db1da67f-8a2d-451e-9ac8-181a6de631fa}" FolderPath="internal\">
-      <Declaration><![CDATA[PROPERTY Remote : IPLCopenCall
+      <Declaration><![CDATA[
+PROPERTY Remote : IPLCopenCallRemote
 ]]></Declaration>
       <Get Name="Get" Id="{144c094c-479d-406d-b7b8-b66e9e7db9d4}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 IF _PLCopenCommand._remote <> 0 THEN
-    Remote := _PLCopenCommand._remote;
+  Remote := _PLCopenCommand._remote;
 ELSE
-    Remote := _PLCopenCommand._nullRemote;
-END_IF]]></ST>
+  Remote := _PLCopenCommand._nullRemote;
+END_IF
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{ccf43fee-53f8-4d05-987a-04726b9b683d}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-_PLCopenCommand._remote := Remote;]]></ST>
+_PLCopenCommand._remote := Remote;
+]]></ST>
         </Implementation>
       </Set>
     </Property>
+    <Method Name="RemoteExecute" Id="{1464deb5-0ed6-4f94-88a3-65d78513e8e5}" FolderPath="API\">
+      <Declaration><![CDATA[
+METHOD RemoteExecute : BOOL
+VAR_INPUT
+  remote : IPLCopenCallRemote;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+_PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
+_PLCopenCommand._Execute := TRUE;
+THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
+THIS^.Remote := remote;
+]]></ST>
+      </Implementation>
+    </Method>
     <Property Name="Status" Id="{3390b090-03b4-43fa-b62c-451c749fc114}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
-PROPERTY Status : PLCopenStatusBase]]></Declaration>
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
+PROPERTY Status : PLCopenStatusBase
+]]></Declaration>
       <Get Name="Get" Id="{d49175ec-85a1-4e46-9ed1-546dc054337a}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-status := _PLCopenCommand._status;]]></ST>
+status := _PLCopenCommand._status;
+]]></ST>
         </Implementation>
       </Get>
     </Property>

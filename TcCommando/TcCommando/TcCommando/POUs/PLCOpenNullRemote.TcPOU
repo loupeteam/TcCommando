@@ -1,52 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenNullRemote" Id="{73061230-7a8e-410b-ae26-c14eb801f0aa}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenNullRemote IMPLEMENTS IPLCopenCall
+    <Declaration><![CDATA[
+FUNCTION_BLOCK PLCopenNullRemote IMPLEMENTS IPLCopenCallRemote
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+      <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 ]]></ST>
     </Implementation>
+    <Property Name="RemoteStatus" Id="{84bb0023-487f-4833-ab3a-6bf154688ca2}">
+      <Declaration><![CDATA[PROPERTY RemoteStatus : PLCopenStatusBase
+]]></Declaration>
+      <Get Name="Get" Id="{3030317c-e694-4f80-994c-f5a95fac3c12}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{072515d1-b207-49fe-b993-f97b9c3f49cf}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
     <Method Name="ReportAborted" Id="{d3377050-9f4c-49f6-a051-4bcdc44d847d}">
-      <Declaration><![CDATA[METHOD ReportAborted : BOOL
+      <Declaration><![CDATA[
+METHOD ReportAborted : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 ]]></ST>
       </Implementation>
     </Method>
     <Method Name="ReportErrored" Id="{97c3ac24-72bd-4b21-93c4-11f805822d38}">
-      <Declaration><![CDATA[METHOD ReportErrored : BOOL
+      <Declaration><![CDATA[
+METHOD ReportErrored : BOOL
 VAR_INPUT
-    ID : INT;
-END_VAR]]></Declaration>
+  ID : INT;
+END_VAR
+]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 ]]></ST>
       </Implementation>
     </Method>
     <Method Name="ReportFinished" Id="{6fdf66c9-5086-43d9-b213-c69b23218cc4}">
-      <Declaration><![CDATA[METHOD ReportFinished : BOOL
+      <Declaration><![CDATA[
+METHOD ReportFinished : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 ]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="Start" Id="{42d0f9af-461f-4d36-bb4c-e7ed19b6748a}">
-      <Declaration><![CDATA[{warning 'add method implementation '}
-METHOD Start : BOOL
-VAR_INPUT
-    Command : IPLCopenCommand;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-//TODO]]></ST>
       </Implementation>
     </Method>
   </POU>

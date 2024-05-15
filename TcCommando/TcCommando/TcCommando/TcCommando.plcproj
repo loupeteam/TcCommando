@@ -43,7 +43,13 @@
     <Compile Include="DUTs\PLCopenCallState.TcTLEO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\PLCopenCommandGroupInternal.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\PLCopenCommandInternal.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\PLCopenRemoteInternal.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\PLCopenStatusBase.TcTLEO">
@@ -56,10 +62,19 @@
     <Compile Include="Interfaces\IPLCopenBase.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Interfaces\IPLCopenCall.TcIO">
+    <Compile Include="Interfaces\IPLCopenCallRemote.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\IPLCopenCallStatus.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Interfaces\IPLCopenCommand.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\IPLCopenConsumer.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\IPLCopenFull.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Interfaces\IPLCopenGroup.TcIO">
@@ -77,13 +92,22 @@
     <Compile Include="POUs\PLCopenCommand.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\PLCopenCommandGroup.TcPOU">
+    <Compile Include="POUs\PLCopenGroupCommand.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PLCopenExlusionGroup.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\PLCopenNullRemote.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\PLCopenRemote.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Test\PLCopenCall_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Test\PLCOpenGroup_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Test\TESTPRG.TcPOU">

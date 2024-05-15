@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="PLCopenCommandGroupInternal" Id="{f2eaeac7-e209-40d2-95ee-fa36a7e2cbeb}">
+    <Declaration><![CDATA[
+TYPE
+PLCopenCommandGroupInternal EXTENDS PLCopenCommandInternal :
+STRUCT
+  subscriberCount : INT;
+  subscriber : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF PLCopenRemote;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PLCopenExlusionGroup" Id="{a76b1f90-0a80-460a-90df-c4011f390707}" SpecialFunc="None">
+    <Declaration><![CDATA[
+{attribute 'call_after_init'}
+FUNCTION_BLOCK PLCopenExlusionGroup IMPLEMENTS IPLCopenGroup
+VAR_INPUT
+  commands : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF IPLCopenCommand;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+]]></ST>
+    </Implementation>
+    <Method Name="AbortPreviousCommands" Id="{4d65389e-e404-419c-8d9a-839278ec3b86}">
+      <Declaration><![CDATA[
+METHOD AbortPreviousCommands : BOOL
+VAR_INPUT
+  newCommand : IPLCopenCommand;
+END_VAR
+
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+
+  IF commands[i] <> 0 AND commands[i] <> newCommand THEN
+
+    commands[i].Aborted();
+
+  END_IF
+
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RegisterCommands" Id="{0e4d6210-f4c5-4680-bac6-f30527be8c7f}">
+      <Declaration><![CDATA[
+{attribute 'call_after_init'}
+METHOD RegisterCommands : BOOL
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+ADSLOGSTR(
+  msgCtrlMask := ADSLOG_MSGTYPE_ERROR,
+  msgFmtStr := 'Initing command group',
+  strArg := ''
+);
+
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+
+  IF commands[i] <> 0 THEN
+
+    commands[i].registerGroup(THIS^);
+
+  END_IF
+
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenCommand_Test" Id="{0f0750ea-d1ee-4a18-8aa2-27762e9d8df2}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCommand_Test EXTENDS TcUnit.FB_TestSuite
+    <Declaration><![CDATA[
+FUNCTION_BLOCK PLCopenCommand_Test EXTENDS TcUnit.FB_TestSuite
 VAR_INPUT
 END_VAR
 VAR_OUTPUT
@@ -10,22 +11,26 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+      <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 CallFinished();
 CallAbort();
 CallError();
-AbortPrevious();]]></ST>
+AbortPrevious();
+]]></ST>
     </Implementation>
     <Method Name="AbortPrevious" Id="{5caf9c09-4d16-4f97-b4a8-afa5a2f2097d}">
-      <Declaration><![CDATA[METHOD AbortPrevious
+      <Declaration><![CDATA[
+METHOD AbortPrevious
 VAR
-    command : PLCopenCommand();
-    newCommand : PLCopenCommand();
+  command : PLCopenCommand();
+  newCommand : PLCopenCommand();
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 (*STweep.Disable*)
 
@@ -39,13 +44,15 @@ TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
     <Method Name="CallAbort" Id="{411b9336-d620-4448-b02d-c7622c01b45e}">
-      <Declaration><![CDATA[METHOD CallAbort
+      <Declaration><![CDATA[
+METHOD CallAbort
 VAR
-    command : PLCopenCommand();
+  command : PLCopenCommand();
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 (*STweep.Disable*)
 
@@ -85,12 +92,15 @@ TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
     <Method Name="CallError" Id="{1a56507b-64b6-4d10-a688-45cc5b0dc888}">
-      <Declaration><![CDATA[METHOD CallError
+      <Declaration><![CDATA[
+METHOD CallError
 VAR
-    command : PLCopenCommand();
-END_VAR]]></Declaration>
+  command : PLCopenCommand();
+END_VAR
+]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 (*STweep.Disable*)
 
@@ -126,12 +136,15 @@ TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
     <Method Name="CallFinished" Id="{25b22591-3533-478f-bf71-aa6877370f35}">
-      <Declaration><![CDATA[METHOD CallFinished
+      <Declaration><![CDATA[
+METHOD CallFinished
 VAR
-    command : PLCopenCommand();
-END_VAR]]></Declaration>
+  command : PLCopenCommand();
+END_VAR
+]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 (*STweep.Disable*)
 

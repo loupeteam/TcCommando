@@ -1,58 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <Itf Name="IPLCopenCommand" Id="{b8a2e96e-644a-4a58-85de-dacd7b91c166}">
-    <Declaration><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+    <Declaration><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 INTERFACE IPLCopenCommand
 ]]></Declaration>
-    <Method Name="Aborted" Id="{9d6d52ef-ef78-446b-8945-f54bce7d4c7d}">
-      <Declaration><![CDATA[METHOD Aborted : BOOL
-VAR_INPUT
-END_VAR
-]]></Declaration>
-    </Method>
     <Method Name="AbortPreviousCommands" Id="{118dd5ed-57aa-4c07-ad44-4088eeac9e5c}">
-      <Declaration><![CDATA[METHOD AbortPreviousCommands : BOOL
+      <Declaration><![CDATA[
+METHOD AbortPreviousCommands : BOOL
 VAR_INPUT
-    newCommand : IPLCopenCommand;
-END_VAR
-]]></Declaration>
-    </Method>
-    <Property Name="Consume" Id="{964841b7-219f-4d91-abbc-4e694a63fbfd}">
-      <Declaration><![CDATA[PROPERTY Consume : BOOL]]></Declaration>
-      <Get Name="Get" Id="{4e535252-1866-4d3a-84c2-c265027de691}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Get>
-    </Property>
-    <Method Name="Errored" Id="{555f5ff6-f7de-4a4d-96f0-5c1829a76433}">
-      <Declaration><![CDATA[METHOD Errored : BOOL
-VAR_INPUT
-    ID : INT;
+  newCommand : IPLCopenCommand;
 END_VAR
 ]]></Declaration>
     </Method>
     <Property Name="Execute" Id="{191d42b1-9768-413a-8dd5-5e2df0572dc2}">
-      <Declaration><![CDATA[PROPERTY Execute : BOOL]]></Declaration>
+      <Declaration><![CDATA[
+PROPERTY Execute : BOOL
+]]></Declaration>
       <Set Name="Set" Id="{c1c106ad-262f-465b-9bb4-b6e1e214a2e2}">
         <Declaration><![CDATA[]]></Declaration>
       </Set>
     </Property>
-    <Method Name="Finished" Id="{8d4ad453-b5db-4cb5-9fad-fde134f92b71}">
-      <Declaration><![CDATA[METHOD Finished : BOOL
-VAR_INPUT
-END_VAR
-]]></Declaration>
-    </Method>
-    <Method Name="RegisterGroup" Id="{75eeace0-1636-4dbc-8de2-8401cd2ef881}">
-      <Declaration><![CDATA[METHOD RegisterGroup : BOOL
-VAR_INPUT
-    group : IPLCopenGroup;
-END_VAR
-]]></Declaration>
-    </Method>
     <Property Name="Remote" Id="{57e041e0-47dd-412b-8e3f-60bcf4f3351e}">
       <Declaration><![CDATA[{warning 'add property implementation'}
-PROPERTY Remote : IPLCopenCall
+PROPERTY Remote : IPLCopenCallRemote
 ]]></Declaration>
       <Get Name="Get" Id="{d280f6d0-bd45-4d6a-bf59-884213c7b933}">
         <Declaration><![CDATA[]]></Declaration>
@@ -61,11 +33,13 @@ PROPERTY Remote : IPLCopenCall
         <Declaration><![CDATA[]]></Declaration>
       </Set>
     </Property>
-    <Property Name="Status" Id="{19a8f19b-6eef-4123-af85-596f1682d840}">
-      <Declaration><![CDATA[PROPERTY Status : PLCopenStatusBase]]></Declaration>
-      <Get Name="Get" Id="{4d51c448-5bf2-40e3-9b67-57a69f90d56b}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Get>
-    </Property>
+    <Method Name="RemoteExecute" Id="{848c1c0e-acc8-4bf6-badb-32bdb38afd6e}">
+      <Declaration><![CDATA[
+METHOD RemoteExecute : BOOL
+VAR_INPUT
+  remote : IPLCopenCallRemote;
+END_VAR
+]]></Declaration>
+    </Method>
   </Itf>
 </TcPlcObject>
