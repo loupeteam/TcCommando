@@ -92,7 +92,7 @@
     <Compile Include="POUs\PLCopenCommand.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\PLCopenGroupCommand.TcPOU">
+    <Compile Include="POUs\PLCopenCommandGroup.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\PLCopenExlusionGroup.TcPOU">
@@ -107,7 +107,10 @@
     <Compile Include="Test\PLCopenCall_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Test\PLCOpenGroup_Test.TcPOU">
+    <Compile Include="Test\PLCOpenCommandGroup_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Test\PLCOpenCallGroup_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Test\TESTPRG.TcPOU">

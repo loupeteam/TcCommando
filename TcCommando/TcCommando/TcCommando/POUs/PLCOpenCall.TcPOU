@@ -10,24 +10,37 @@ VAR_INPUT
 END_VAR
 VAR_OUTPUT
   Status : PLCopenStatusBase;
-  Busy : BOOL;
-  Done : BOOL;
-  Error : BOOL;
-  CommandAborted : BOOL;
 END_VAR
 VAR
   _PLCopenCallInternal : PLCopenCallInternal;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+      <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 Call();
 ]]></ST>
     </Implementation>
     <Folder Name="API" Id="{81b669e9-53d1-43c3-adb5-dd314cabfeda}" />
     <Folder Name="internal" Id="{3ca49896-8361-42f2-89ba-941a123d684d}" />
+    <Property Name="Busy" Id="{cf0c79ab-c265-06c8-24b4-62a6689a62ca}" FolderPath="API\">
+      <Declaration><![CDATA[PROPERTY Busy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{d3b6feb1-7a50-0e26-362b-67ad77045f12}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+CheckStatus();
+
+//Check if we are busy
+Busy := _PLCopenCallInternal.Busy;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
     <Method Name="Call" Id="{678db6c7-a95b-4103-a6a7-438e03861a08}" FolderPath="internal\">
       <Declaration><![CDATA[
 METHOD Call : BOOL
@@ -68,20 +81,20 @@ WHILE _break = FALSE DO
     // IDLE
     PLCopenCallState.PLCOPEN_FUB_IDLE:
       Status := PLCopenStatusBase.NOT_ENABLED;
-      Busy := FALSE;
-      Done := FALSE;
-      Error := FALSE;
-      CommandAborted := FALSE;
+      _PLCopenCallInternal.Busy := FALSE;
+      _PLCopenCallInternal.Done := FALSE;
+      _PLCopenCallInternal.Error := FALSE;
+      _PLCopenCallInternal.CommandAborted := FALSE;
       _break := TRUE;
 
     // Start a new command
     PLCopenCallState.PLCOPEN_FUB_NEW_COMMAND:
       Status := PLCopenStatusBase.BUSY;
       _PLCopenCallInternal._Remote.RemoteStatus := PLCopenStatusBase.BUSY;
-      Busy := TRUE;
-      Done := FALSE;
-      Error := FALSE;
-      CommandAborted := FALSE;
+      _PLCopenCallInternal.Busy := TRUE;
+      _PLCopenCallInternal.Done := FALSE;
+      _PLCopenCallInternal.Error := FALSE;
+      _PLCopenCallInternal.CommandAborted := FALSE;
 
       // If this call is the current command:
       // 1. don't need feedback (TODO why? because it is being aborted?)
@@ -117,26 +130,26 @@ WHILE _break = FALSE DO
     PLCopenCallState.PLCOPEN_FUB_SET_COMMAND:
       _PLCopenCallInternal._Command.RemoteExecute( _PLCopenCallInternal._self );
 
-      Busy := TRUE;
+      _PLCopenCallInternal.Busy := TRUE;
       _PLCopenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_WORKING;
       _break := TRUE;
     // No _break?
 
     //Wait for the command to be finished
     PLCopenCallState.PLCOPEN_FUB_WORKING:
-      Busy := TRUE;
+      _PLCopenCallInternal.Busy := TRUE;
       // No _break
 
       IF (_PLCopenCallInternal._Remote.RemoteStatus <> PLCopenStatusBase.BUSY AND _PLCopenCallInternal._Remote.RemoteStatus <> PLCopenStatusBase.ENABLED_WAITING)
         THEN
         Status := _PLCopenCallInternal._Remote.RemoteStatus;
-        Busy := FALSE;
+        _PLCopenCallInternal.Busy := FALSE;
 
         IF (Status = 0) THEN
-          Done := TRUE;
+          _PLCopenCallInternal.Done := TRUE;
 
         ELSE
-          Error := TRUE;
+          _PLCopenCallInternal.Error := TRUE;
         END_IF
 
         _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
@@ -161,20 +174,20 @@ WHILE _break = FALSE DO
       IF (NOT Execute) THEN
         _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_IDLE;
         Status := PLCopenStatusBase.NOT_ENABLED;
-        Busy := FALSE;
-        Done := FALSE;
-        Error := FALSE;
-        CommandAborted := FALSE;
+        _PLCopenCallInternal.Busy := FALSE;
+        _PLCopenCallInternal.Done := FALSE;
+        _PLCopenCallInternal.Error := FALSE;
+        _PLCopenCallInternal.CommandAborted := FALSE;
       END_IF
 
       _break := TRUE;
 
     PLCopenCallState.PLCOPEN_FUB_ABORTED:
       Status := PLCopenStatusBase.ABORTED;
-      Busy := FALSE;
-      Done := FALSE;
-      Error := FALSE;
-      CommandAborted := TRUE;
+      _PLCopenCallInternal.Busy := FALSE;
+      _PLCopenCallInternal.Done := FALSE;
+      _PLCopenCallInternal.Error := FALSE;
+      _PLCopenCallInternal.CommandAborted := TRUE;
       _PLCopenCallInternal._command := 0;
       _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_DONE;
       _break := TRUE;
@@ -184,13 +197,82 @@ END_WHILE
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Clear" Id="{5ea1194b-610a-4d48-bac7-dee9cee2d7d6}" FolderPath="API\">
+    <Method Name="CheckStatus" Id="{9995d239-7d4d-0db8-208e-cdd0cab76b95}" FolderPath="internal\">
       <Declaration><![CDATA[
-METHOD Clear : PLCopenStatusBase
+METHOD PRIVATE CheckStatus : BOOL
+VAR
+  _commandIndex : INT;
+  _anyAbort : BOOL;
+  _anyBusy : BOOL;
+  _anyError : BOOL;
+END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="CommandAborted" Id="{e75eea2f-57f3-0f3b-2d5e-17d007ee4a24}" FolderPath="API\">
+      <Declaration><![CDATA[PROPERTY CommandAborted : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{dda65603-34b7-0326-3983-c29aa7f0d3a4}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+CheckStatus();
+
+CommandAborted := _PLCopenCallInternal.CommandAborted;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Done" Id="{daaa5575-b6f6-0081-0ade-9d334e2ddaec}" FolderPath="API\">
+      <Declaration><![CDATA[PROPERTY Done : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{52977fbf-d3ec-0b64-26ca-6fdeafd08239}">
+        <Declaration><![CDATA[
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+CheckStatus();
+
+//Check if we are done
+Done := _PLCopenCallInternal.Done;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Error" Id="{84e87513-beea-0896-2a38-2a206620126f}" FolderPath="API\">
+      <Declaration><![CDATA[PROPERTY Error : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{ef247b85-248a-0489-15fa-eb4b157b7926}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+CheckStatus();
+
+Error := _PLCopenCallInternal.Error;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="Reset" Id="{5ea1194b-610a-4d48-bac7-dee9cee2d7d6}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD Reset : PLCopenStatusBase
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 THIS^.Execute := FALSE;
 THIS^._PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
@@ -198,20 +280,18 @@ THIS^._PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
 THIS^.Call();
 //Second call to clear
 THIS^.Call();
-Clear := THIS^.Status;
+Reset := THIS^.Status;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Exec" Id="{e15badc6-3209-4aba-84cb-107a0ef3c14b}" FolderPath="API\">
-      <Declaration><![CDATA[
-METHOD Exec : PLCopenStatusBase
+    <Method Name="Start" Id="{da1eb03e-04f1-0a6d-2bb9-8cc131c7f295}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD Start : PLCopenStatusBase
 VAR_INPUT
   Command : IPLCopenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //Call with false to force an edge
 //	This will also Abort the previous command if it exists
@@ -221,23 +301,7 @@ THIS^.Call();
 THIS^.Command := Command;
 THIS^.Execute := TRUE;
 THIS^.Call();
-Exec := THIS^.Status;
-]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="Start" Id="{b16dfd08-c0f6-43db-a57d-608fa4a860b4}" FolderPath="API\">
-      <Declaration><![CDATA[
-METHOD Start : BOOL
-VAR_INPUT
-  Command : IPLCopenCommand;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-THIS^.Exec(Command);
-]]></ST>
+Start := THIS^.Status;]]></ST>
       </Implementation>
     </Method>
   </POU>

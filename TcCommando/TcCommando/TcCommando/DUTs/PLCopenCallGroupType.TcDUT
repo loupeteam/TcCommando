@@ -13,6 +13,7 @@ STRUCT
   _isDone : BOOL;
   _isAbort : BOOL;
   _isError : BOOL;
+  _isBusy : BOOL;
   _statusChecked : BOOL;
   _numberActiveCommands : INT;
   _commands : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF PLCopenCall;

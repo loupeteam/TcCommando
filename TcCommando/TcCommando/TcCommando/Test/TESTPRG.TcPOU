@@ -6,7 +6,8 @@ PROGRAM TESTPRG
 VAR
   plcopenCommandTest : PLCopenCommand_Test;
   plcopenCallTest : PLCopenCall_Test;
-  plcopenGroupTest : PLCOpenGroup_Test;
+  plcopenGroupTest : PLCOpenCommandGroup_Test;
+  plcopenCallGroupTest : PLCOpenCallGroup_Test;
 END_VAR
 ]]></Declaration>
     <Implementation>

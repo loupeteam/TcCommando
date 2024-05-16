@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="PLCOpenGroup_Test" Id="{c2e266e0-7e5f-45af-8f7a-be49e67451e7}" SpecialFunc="None">
-    <Declaration><![CDATA[
-FUNCTION_BLOCK PLCOpenGroup_Test EXTENDS TcUnit.FB_TestSuite
+  <POU Name="PLCOpenCallGroup_Test" Id="{1b543c78-0b2c-0039-37ba-d5585a1070fe}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenCallGroup_Test EXTENDS TcUnit.FB_TestSuite
 VAR_INPUT
 END_VAR
 VAR_OUTPUT
@@ -16,26 +15,24 @@ EmptyCall();
 OneCommand();
 ]]></ST>
     </Implementation>
-    <Method Name="EmptyCall" Id="{346110c2-4c18-41af-994b-98b1e67f77fb}">
+    <Method Name="EmptyCall" Id="{906cca04-d8b1-043a-35d8-63712f2aa233}">
       <Declaration><![CDATA[
 METHOD EmptyCall
 VAR
-  caller : PLCopenCall;
-  group : PLCopenGroupCommand;
+  caller : PLCopenCallGroup;
+  command : PLCopenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
 TEST('EmptyCall');
 
-caller.Start(group);
-AssertTrue(Condition := caller.Busy, Message := 'Caller must be busy for once cycle');
+caller.Start(command);
 
-caller.Execute := FALSE;
-caller();
 AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
 
-caller();
+caller.Reset();
+
 AssertFalse(Condition := caller.Done, Message := 'Done must be false after complete');
 AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after complete');
 AssertFalse(Condition := caller.Error, Message := 'Error must be false after complete');
@@ -44,22 +41,19 @@ TEST_FINISHED();
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="OneCommand" Id="{fdc0fb3c-310d-4315-a4c0-16fb34d26615}">
+    <Method Name="OneCommand" Id="{9b8750c4-5b71-068f-360a-68239122d003}">
       <Declaration><![CDATA[
 METHOD OneCommand
 VAR
-  caller : PLCopenCall;
+  caller : PLCopenCallGroup;
   command : PLCopenCommand;
-  group : PLCopenGroupCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
 TEST('One Command');
 
-group.Subscribe(command);
-
-caller.Start(group);
+caller.Start(Command);
 AssertTrue(Condition := caller.Busy, Message := 'Caller must be busy for once cycle');
 
 AssertTrue(Condition := command.Consume, Message := 'Consume should be true after call');
@@ -67,11 +61,10 @@ AssertFalse(Condition := command.Consume, Message := 'Consume should only be tru
 
 command.Finished();
 
-caller.Execute := FALSE;
-caller();
 AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
 
-caller();
+caller.Reset();
+
 AssertFalse(Condition := caller.Done, Message := 'Done must be false after complete');
 AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after complete');
 AssertFalse(Condition := caller.Error, Message := 'Error must be false after complete');

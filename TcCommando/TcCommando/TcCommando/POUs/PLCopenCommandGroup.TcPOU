@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="PLCopenGroupCommand" Id="{2e0402f9-bb03-4307-bd9d-f64d15557336}" SpecialFunc="None">
-    <Declaration><![CDATA[
-FUNCTION_BLOCK PLCopenGroupCommand IMPLEMENTS IPLCopenCommand, IPLCopenCallStatus, IPLCopenCallRemote
+  <POU Name="PLCopenCommandGroup" Id="{2e0402f9-bb03-4307-bd9d-f64d15557336}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCommandGroup IMPLEMENTS IPLCopenCommand, IPLCopenCallStatus, IPLCopenCallRemote
 VAR
   _PLCopenCommand : PLCopenCommandGroupInternal;
 END_VAR

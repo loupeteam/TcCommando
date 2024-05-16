@@ -41,7 +41,7 @@ TEST('Abort');
 	call1();
 	call2();
 
-	call1.Exec(command);
+	call1.Start(command);
 	call1.Execute := FALSE;
 
 	AssertEquals_INT(call1.Status, PLCopenStatusBase.BUSY, Message := 'Status should be busy');
@@ -54,7 +54,7 @@ TEST('Abort');
 	AssertFalse(command.Consume, Message := 'consume should be false on second read');
 	AssertEquals_INT(command.Status, PLCopenStatusBase.BUSY, Message := 'Command should be busy');
 
-	call2.Exec(Command);
+	call2.Start(Command);
 	call2.Execute := FALSE;
 
 	call1();
@@ -102,7 +102,7 @@ TEST('PLCopenCallIdle');
 	AssertFalse(Condition := call.Done, Message := 'Done should be false as default');
 	AssertFalse(Condition := call.Error, Message := 'Error should be false as default');
 	
-	call.Exec(command);
+	call.Start(command);
 	AssertTrue(Condition := call.Busy, Message := 'Busy should be true after first exec');
 	AssertFalse(Condition := call.Done, Message := 'Done should be false after first exec');
 	AssertFalse(Condition := call.Error, Message := 'Error should be false as default');
@@ -141,7 +141,7 @@ END_VAR
 TEST('Clear');
 	call.Execute := TRUE;
 	call();
-	status := call.Clear();
+	status := call.Reset();
 	AssertFalse(call.Execute, Message := 'Execute should not be true');
 	AssertEquals_INT(Expected := PLCopenStatusBase.NOT_ENABLED, Actual := status, Message := 'Call status should be not enabled');
 TEST_FINISHED();]]></ST>
@@ -179,7 +179,7 @@ END_VAR
 
 TEST('Exec1');
 
-	call.Exec(command1);
+	call.Start(command1);
 	AssertTrue(call.Execute, Message := 'Execute should be true on call');
 	AssertTrue(command1.Execute, Message := 'Execute should be true on command');
 	AssertEquals_INT(command1.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'First command should be aborted');
@@ -204,7 +204,7 @@ TEST('Exec2');
 //	call.Clear();//DO we need clear?
 
 
-	call.Exec(command2);
+	call.Start(command2);
 
 //	AssertEquals_INT(command1.Status, PLCopenStatusBase.NOT_ENABLED, Message := 'First command should be Not Enabled');//This is actually not defined, the status doesn't get reset until it's needed again
 	AssertEquals_INT(command2.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'Second command should be enabled waiting');
@@ -224,7 +224,7 @@ TEST('Exec2');
 	AssertEquals_INT(command2.Status, PLCopenStatusBase.ERR_OK, Message := 'Second command should be ERR OK');
 
 	
-	call.Exec(command1);
+	call.Start(command1);
 	AssertEquals_INT(command1.Status, PLCopenStatusBase.ENABLED_WAITING, Message := 'First command should be enabled waiting');
 //	AssertEquals_INT(command2.Status, PLCopenStatusBase.NOT_ENABLED, Message := 'Second command should be not enabled');//This is actually not defined, the status doesn't get reset until it's needed again
 

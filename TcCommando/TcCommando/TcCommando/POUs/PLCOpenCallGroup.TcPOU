@@ -16,8 +16,27 @@ END_VAR
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 ]]></ST>
     </Implementation>
-    <Folder Name="PLCopenCaller" Id="{b4b03af3-7533-4298-bf9d-09121bd9eae9}" />
-    <Method Name="CheckStatus" Id="{69b5b758-9323-4002-906a-f59304b6dbf8}">
+    <Folder Name="API" Id="{fb09183a-54f7-047a-3485-8e6859a5d681}" />
+    <Folder Name="internal" Id="{beafbdd8-261d-0a4b-0a06-801311af234c}" />
+    <Property Name="Busy" Id="{365e6aa2-05a5-093c-3b46-fde57ca4eb8a}" FolderPath="API\">
+      <Declaration><![CDATA[PROPERTY Busy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{708104a0-2307-0952-0586-659817ab29e1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+CheckStatus();
+
+//Check if we are busy
+Busy := _callGroup._isBusy;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="CheckStatus" Id="{69b5b758-9323-4002-906a-f59304b6dbf8}" FolderPath="internal\">
       <Declaration><![CDATA[
 METHOD PRIVATE CheckStatus : BOOL
 VAR
@@ -30,41 +49,43 @@ END_VAR
       <Implementation>
         <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-//If it's not in the list
-FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-  IF _callGroup._commands[_commandIndex].Command <> 0 THEN
-    _callGroup._commands[_commandIndex]();
-
-    IF _callGroup._commands[_commandIndex].CommandAborted THEN
-      _anyAbort := TRUE;
-    ELSIF _callGroup._commands[_commandIndex].Error THEN
-      _anyError := TRUE;
-    ELSIF _callGroup._commands[_commandIndex].Busy THEN
-      _anyBusy := TRUE;
-    ELSE
-      _callGroup._commands[_commandIndex].Command := 0;
-    END_IF
-  END_IF
-END_FOR
-
-_callGroup._isError := FALSE;
-_callGroup._isAbort := FALSE;
-_callGroup._isDone := FALSE;
-
-IF _anyError OR _callGroup._syncError THEN
-  _callGroup._isError := TRUE;
-ELSIF _anyAbort OR _callGroup._syncAbort THEN
-  _callGroup._isAbort := TRUE;
-ELSIF NOT _anyBusy THEN
-  _callGroup._isDone := TRUE;
-END_IF
-]]></ST>
+IF _callGroup._isBusy THEN
+	//If it's not in the list
+	FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+	  IF _callGroup._commands[_commandIndex].Command <> 0 THEN
+		_callGroup._commands[_commandIndex]();
+	
+		IF _callGroup._commands[_commandIndex].CommandAborted THEN
+		  _anyAbort := TRUE;
+		ELSIF _callGroup._commands[_commandIndex].Error THEN
+		  _anyError := TRUE;
+		ELSIF _callGroup._commands[_commandIndex].Busy THEN
+		  _anyBusy := TRUE;
+		ELSE
+		  _callGroup._commands[_commandIndex].Command := 0;
+		END_IF
+	  END_IF
+	END_FOR
+	
+	_callGroup._isError := FALSE;
+	_callGroup._isAbort := FALSE;
+	_callGroup._isDone := FALSE;
+	
+	IF _anyError OR _callGroup._syncError THEN
+	  _callGroup._isError := TRUE;
+	  _callGroup._isBusy := FALSE;
+	ELSIF _anyAbort OR _callGroup._syncAbort THEN
+	  _callGroup._isAbort := TRUE;
+	  _callGroup._isBusy := FALSE;
+	ELSIF NOT _anyBusy THEN
+	  _callGroup._isDone := TRUE;
+	  _callGroup._isBusy := FALSE;
+	END_IF
+END_IF]]></ST>
       </Implementation>
     </Method>
-    <Property Name="IsAbort" Id="{96e569b0-457f-4c6e-bec1-643c895a8b9c}">
-      <Declaration><![CDATA[
-PROPERTY IsAbort : BOOL
+    <Property Name="CommandAborted" Id="{96e569b0-457f-4c6e-bec1-643c895a8b9c}" FolderPath="API\">
+      <Declaration><![CDATA[PROPERTY CommandAborted : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{17cd4830-83fc-4522-8782-e508fda2b93d}">
         <Declaration><![CDATA[
@@ -76,14 +97,14 @@ END_VAR
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 CheckStatus();
-IsAbort := _callGroup._isAbort;
+
+CommandAborted := _callGroup._isAbort;
 ]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Property Name="IsDone" Id="{c890f33c-6dc4-4031-a7ae-121d8a0f3c09}">
-      <Declaration><![CDATA[
-PROPERTY IsDone : BOOL
+    <Property Name="Done" Id="{c890f33c-6dc4-4031-a7ae-121d8a0f3c09}" FolderPath="API\">
+      <Declaration><![CDATA[PROPERTY Done : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{c8d0c1b7-b1e0-412a-9a10-7c15d2555f02}">
         <Declaration><![CDATA[
@@ -95,14 +116,13 @@ PROPERTY IsDone : BOOL
 CheckStatus();
 
 //Check if we are done
-IsDone := _callGroup._isDone;
+Done := _callGroup._isDone;
 ]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Property Name="IsError" Id="{28f1d1b2-fabc-44c9-968e-b0937bbe9074}">
-      <Declaration><![CDATA[
-PROPERTY IsError : BOOL
+    <Property Name="Error" Id="{28f1d1b2-fabc-44c9-968e-b0937bbe9074}" FolderPath="API\">
+      <Declaration><![CDATA[PROPERTY Error : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{24b146e6-8584-4378-a902-a6d936d8a944}">
         <Declaration><![CDATA[
@@ -115,69 +135,33 @@ END_VAR
 
 CheckStatus();
 
-IsError := _callGroup._isError;
+Error := _callGroup._isError;
 ]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Method Name="ReportAborted" Id="{88516a3e-7cba-4182-ba66-c0dd75064666}" FolderPath="PLCopenCaller\">
-      <Declaration><![CDATA[
-METHOD ReportAborted : BOOL
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-_callGroup._syncAbort := TRUE;
-]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="ReportErrored" Id="{2a110df0-07b9-4922-ba19-6e9f76e5caa7}" FolderPath="PLCopenCaller\">
-      <Declaration><![CDATA[
-METHOD ReportErrored : BOOL
-VAR_INPUT
-  ID : INT;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-_callGroup._syncError := TRUE;
-]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="ReportFinished" Id="{a2282568-2a57-49ba-abc9-a320ea291002}" FolderPath="PLCopenCaller\">
-      <Declaration><![CDATA[
-METHOD ReportFinished : BOOL
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-_callGroup._syncDone := TRUE;
-]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="ResetCommands" Id="{cd896665-6c8b-4e15-8c06-75a5a8e469f2}">
-      <Declaration><![CDATA[
-METHOD ResetCommands : BOOL
+    <Method Name="Reset" Id="{cd896665-6c8b-4e15-8c06-75a5a8e469f2}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD Reset : BOOL
 VAR
   _commandIndex : INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //If it's not in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-  _callGroup._commands[_commandIndex].Clear();
+  _callGroup._commands[_commandIndex].Reset();
 END_FOR
+
+_callGroup._isBusy := FALSE;
+_callGroup._isAbort := FALSE;
+_callGroup._isDone := FALSE;
+_callGroup._isError := FALSE;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Start" Id="{df0ebf2c-61b1-498a-bcc4-44d1e2466b24}" FolderPath="PLCopenCaller\">
+    <Method Name="Start" Id="{df0ebf2c-61b1-498a-bcc4-44d1e2466b24}" FolderPath="API\">
       <Declaration><![CDATA[
 METHOD Start : BOOL
 VAR_INPUT
@@ -194,8 +178,9 @@ END_VAR
 // Check if it's already in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
   IF _callGroup._commands[_commandIndex].Command = Command THEN
-    _callGroup._commands[_commandIndex].Exec(Command);
+    _callGroup._commands[_commandIndex].Start(Command);
     Start := TRUE;
+	_callGroup._isBusy := TRUE;
     RETURN;
   END_IF
 END_FOR
@@ -203,8 +188,9 @@ END_FOR
 // If it's not in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
   IF _callGroup._commands[_commandIndex].Command = 0 THEN
-    _callGroup._commands[_commandIndex].Exec(Command);
+    _callGroup._commands[_commandIndex].Start(Command);
     Start := TRUE;
+	_callGroup._isBusy := TRUE;
     RETURN;
   END_IF
 END_FOR
