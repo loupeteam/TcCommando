@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Example" Id="{45624f9c-54ce-022c-10aa-cb07990b8aec}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Example
+VAR
+	SingleCaller : PLCopenCall;
+	SingleCallerMulti : PLCopenCall;
+	MultiCaller1 : PLCopenCallGroup;
+	MultiCaller2 : PLCopenCallGroup;
+
+
+	SingleCommand1 : PLCopenCommand;
+	SingleCommand2 : PLCopenCommand;
+	MultiCommand : PLCopenCommandGroup;
+
+	init : BOOL;
+
+	t : ARRAY[0..9] OF TON;
+	ton_id : INT;
+	executeMultiCall1 : BOOL;
+	executeMultiCall2 : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT init THEN
+	init:= TRUE;
+	MultiCommand.Subscribe(SingleCommand1);
+	MultiCommand.Subscribe(SingleCommand2);
+	MultiCaller2.Fallback := PLCopenStatusBase.NOT_ENABLED;
+END_IF
+
+ton_id := 0;
+
+IF executeMultiCall1 THEN
+	executeMultiCall1  := FALSE;
+	MultiCaller1.Start(SingleCommand1);
+	MultiCaller1.Start(SingleCommand2);
+END_IF
+IF executeMultiCall2 THEN
+	executeMultiCall2  := FALSE;
+	MultiCaller2.Start(SingleCommand1);
+	MultiCaller2.Start(SingleCommand2);
+END_IF
+
+Call(SingleCaller, SingleCommand1);
+Call(SingleCallerMulti, MultiCommand);
+Call(MultiCaller1, SingleCommand1);
+Call(MultiCaller2, SingleCommand2);
+
+
+
+FinishAfterTimeout(SingleCommand1);
+FinishAfterTimeout(singleCommand2);
+command(MultiCommand);
+]]></ST>
+    </Implementation>
+    <Method Name="Call" Id="{2ac8c54c-fba6-01b2-3cc3-82e30c1a971c}">
+      <Declaration><![CDATA[METHOD Call : BOOL
+VAR_INPUT
+	Caller : IPLCopenCaller;
+	Command : IPLCopenCommand;
+END_VAR
+VAR 
+	cyclic : ICyclic;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+Caller.Command := Command;
+IF __QUERYINTERFACE(Caller, cyclic) THEN
+	cyclic.Cyclic();
+END_IF
+Caller.Execute := FALSE;
+
+IF Caller.Error THEN
+	;
+ELSIF Caller.CommandAborted THEN
+	;	
+ELSIF Caller.Done THEN
+	;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="command" Id="{58689e1e-1db8-03f4-3ece-7ded9b093c54}">
+      <Declaration><![CDATA[METHOD command : BOOL
+VAR_INPUT
+	cmd : IPLCopenCommand;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[cmd.Execute := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FinishAfterTimeout" Id="{5bdcf402-e79d-05b8-0ee5-834a8a43222c}">
+      <Declaration><![CDATA[METHOD FinishAfterTimeout : BOOL
+VAR_INPUT
+	cmd : IPLCopenConsumer;
+END_VAR
+VAR 
+	t : REFERENCE TO TON;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[t REF= ton();
+
+IF cmd.Consume THEN
+
+	t(IN:=FALSE);	
+	t(IN:=TRUE);	
+	
+END_IF
+
+t();
+IF t.Q THEN	
+	t.IN:= FALSE;
+	cmd.Finished();
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ton" Id="{1e6afb45-f37a-053f-2351-ec6fb3db5186}">
+      <Declaration><![CDATA[METHOD ton : REFERENCE TO TON
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+ton REF= t[ton_id];
+IF t[ton_id].PT = T#0S THEN
+	t[ton_id].PT := T#1S + DINT_TO_TIME(ton_id*1000);	
+END_IF
+ton_id := ton_id +1;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

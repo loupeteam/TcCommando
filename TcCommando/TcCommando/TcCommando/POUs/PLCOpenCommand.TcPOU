@@ -124,6 +124,7 @@ ELSE
 END_CASE
 
 Remote.ReportErrored(ID);
+Remote := 0;
 ]]></ST>
       </Implementation>
     </Method>
@@ -206,6 +207,7 @@ IF _PLCopenCommand._status = PLCopenStatusBase.BUSY THEN
 END_IF
 
 Remote.ReportFinished();
+Remote := 0;
 ]]></ST>
       </Implementation>
     </Method>

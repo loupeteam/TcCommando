@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <Itf Name="IPLCopenCallStatus" Id="{60f3b750-fcda-423b-b14b-4ab6a5b83007}">
-    <Declaration><![CDATA[INTERFACE IPLCopenCallStatus
+    <Declaration><![CDATA[INTERFACE IPLCopenCallStatus EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
     <Property Name="abort" Id="{e3fd7230-b538-4c9e-9d21-fdf83ee0041b}">
       <Declaration><![CDATA[PROPERTY abort : bool]]></Declaration>

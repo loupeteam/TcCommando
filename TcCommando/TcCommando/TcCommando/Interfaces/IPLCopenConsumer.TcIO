@@ -4,7 +4,7 @@
     <Declaration><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-INTERFACE IPLCopenConsumer
+INTERFACE IPLCopenConsumer EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
     <Method Name="Aborted" Id="{af9a5c81-514c-4798-9d65-13d6c4bcb53d}">
       <Declaration><![CDATA[

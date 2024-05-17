@@ -5,6 +5,9 @@
 TYPE
 PLCopenCallGroupType :
 STRUCT
+  Execute : BOOL;
+  Command : IPLCopenCommand;
+  Fallback : PLCopenStatusBase;
   _startStep : ENUM; //The step when doStep was called
   _currentStep : ENUM;
   _lastRequestNumber : DINT;

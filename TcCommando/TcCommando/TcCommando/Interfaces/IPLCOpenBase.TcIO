@@ -4,7 +4,7 @@
     <Declaration><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-INTERFACE IPLCopenBase
+INTERFACE IPLCopenBase EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
     <Property Name="Busy" Id="{dbad1434-9112-4a9a-ac6b-cefc61b97ffa}">
       <Declaration><![CDATA[

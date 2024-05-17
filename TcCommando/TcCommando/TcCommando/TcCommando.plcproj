@@ -55,9 +55,15 @@
     <Compile Include="DUTs\PLCopenStatusBase.TcTLEO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Example\Example.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GVLs\GVLTcCommando.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
+    </Compile>
+    <Compile Include="Interfaces\ICyclic.TcIO">
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Interfaces\IPLCopenBase.TcIO">
       <SubType>Code</SubType>
@@ -127,6 +133,7 @@
     <Folder Include="DUTs" />
     <Folder Include="GVLs" />
     <Folder Include="Interfaces" />
+    <Folder Include="Example" />
     <Folder Include="Test" />
     <Folder Include="POUs" />
   </ItemGroup>

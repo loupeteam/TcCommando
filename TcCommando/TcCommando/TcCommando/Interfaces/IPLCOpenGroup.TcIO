@@ -4,7 +4,7 @@
     <Declaration><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-INTERFACE IPLCopenGroup
+INTERFACE IPLCopenGroup EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
     <Method Name="AbortPreviousCommands" Id="{33d62d2b-227e-4998-b717-c18b2f1e35eb}">
       <Declaration><![CDATA[

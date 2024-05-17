@@ -2,14 +2,10 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenCall" Id="{16877e71-b30e-4975-8b7d-5ec1774f2055}" SpecialFunc="None">
     <Declaration><![CDATA[
-FUNCTION_BLOCK PLCopenCall IMPLEMENTS IPLCopenCaller
+FUNCTION_BLOCK PLCopenCall IMPLEMENTS IPLCopenCaller, ICyclic
 VAR_INPUT
-  Execute : BOOL;
-  Command : IPLCopenCommand;
-  Fallback : PLCopenStatusBase;
 END_VAR
 VAR_OUTPUT
-  Status : PLCopenStatusBase;
 END_VAR
 VAR
   _PLCopenCallInternal : PLCopenCallInternal;
@@ -18,13 +14,17 @@ END_VAR
     <Implementation>
       <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-Call();
-]]></ST>
+Cyclic();
+
+// TODO: 
+//	What happens if the user doesn't call the cyclic?
+//	When do the statuses get reset?]]></ST>
     </Implementation>
     <Folder Name="API" Id="{81b669e9-53d1-43c3-adb5-dd314cabfeda}" />
     <Folder Name="internal" Id="{3ca49896-8361-42f2-89ba-941a123d684d}" />
     <Property Name="Busy" Id="{cf0c79ab-c265-06c8-24b4-62a6689a62ca}" FolderPath="API\">
-      <Declaration><![CDATA[PROPERTY Busy : BOOL]]></Declaration>
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Busy : BOOL]]></Declaration>
       <Get Name="Get" Id="{d3b6feb1-7a50-0e26-362b-67ad77045f12}">
         <Declaration><![CDATA[VAR
 END_VAR
@@ -41,9 +41,65 @@ Busy := _PLCopenCallInternal.Busy;
         </Implementation>
       </Get>
     </Property>
-    <Method Name="Call" Id="{678db6c7-a95b-4103-a6a7-438e03861a08}" FolderPath="internal\">
+    <Method Name="CheckStatus" Id="{9995d239-7d4d-0db8-208e-cdd0cab76b95}" FolderPath="internal\">
       <Declaration><![CDATA[
-METHOD Call : BOOL
+METHOD PRIVATE CheckStatus : BOOL
+VAR
+  _commandIndex : INT;
+  _anyAbort : BOOL;
+  _anyBusy : BOOL;
+  _anyError : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Command" Id="{ec88ee78-d3d9-04db-024e-c284b41bc783}" FolderPath="API\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Command : IPLCopenCommand
+]]></Declaration>
+      <Get Name="Get" Id="{d09cf0a9-c771-04f8-02f5-be448d232b25}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Command := _PLCopenCallInternal.Command;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{52c1b543-f900-0cfb-05d1-811fe8704e9d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_PLCopenCallInternal.Command := Command;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="CommandAborted" Id="{e75eea2f-57f3-0f3b-2d5e-17d007ee4a24}" FolderPath="API\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY CommandAborted : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{dda65603-34b7-0326-3983-c29aa7f0d3a4}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+CheckStatus();
+
+CommandAborted := _PLCopenCallInternal.CommandAborted;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="Cyclic" Id="{678db6c7-a95b-4103-a6a7-438e03861a08}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD Cyclic : BOOL
 VAR
   _break : BOOL;
 END_VAR
@@ -197,42 +253,9 @@ END_WHILE
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="CheckStatus" Id="{9995d239-7d4d-0db8-208e-cdd0cab76b95}" FolderPath="internal\">
-      <Declaration><![CDATA[
-METHOD PRIVATE CheckStatus : BOOL
-VAR
-  _commandIndex : INT;
-  _anyAbort : BOOL;
-  _anyBusy : BOOL;
-  _anyError : BOOL;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-]]></ST>
-      </Implementation>
-    </Method>
-    <Property Name="CommandAborted" Id="{e75eea2f-57f3-0f3b-2d5e-17d007ee4a24}" FolderPath="API\">
-      <Declaration><![CDATA[PROPERTY CommandAborted : BOOL
-]]></Declaration>
-      <Get Name="Get" Id="{dda65603-34b7-0326-3983-c29aa7f0d3a4}">
-        <Declaration><![CDATA[
-VAR
-END_VAR
-]]></Declaration>
-        <Implementation>
-          <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-CheckStatus();
-
-CommandAborted := _PLCopenCallInternal.CommandAborted;
-]]></ST>
-        </Implementation>
-      </Get>
-    </Property>
     <Property Name="Done" Id="{daaa5575-b6f6-0081-0ade-9d334e2ddaec}" FolderPath="API\">
-      <Declaration><![CDATA[PROPERTY Done : BOOL
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Done : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{52977fbf-d3ec-0b64-26ca-6fdeafd08239}">
         <Declaration><![CDATA[
@@ -250,7 +273,8 @@ Done := _PLCopenCallInternal.Done;
       </Get>
     </Property>
     <Property Name="Error" Id="{84e87513-beea-0896-2a38-2a206620126f}" FolderPath="API\">
-      <Declaration><![CDATA[PROPERTY Error : BOOL
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Error : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{ef247b85-248a-0489-15fa-eb4b157b7926}">
         <Declaration><![CDATA[
@@ -268,6 +292,48 @@ Error := _PLCopenCallInternal.Error;
         </Implementation>
       </Get>
     </Property>
+    <Property Name="Execute" Id="{a78c99c3-b18e-086f-1082-bce7c39d822a}" FolderPath="API\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Execute : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{eeb56ea0-7d3a-0968-16b2-b1406e1a7743}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Execute := _PLCopenCallInternal.Execute;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{92d72e6e-ba65-00ed-2f9f-9b3ceac447e7}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_PLCopenCallInternal.Execute := Execute;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Fallback" Id="{3c6500cf-cc58-024f-3997-89de867a5053}" FolderPath="API\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Fallback : PLCopenStatusBase
+]]></Declaration>
+      <Get Name="Get" Id="{5ddf0448-1b88-093f-2a51-c08ca75838c3}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Fallback := _PLCopenCallInternal.Fallback;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{b0b70d31-13fe-0aa6-2399-dc8f494d46fb}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_PLCopenCallInternal.Fallback := Fallback;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
     <Method Name="Reset" Id="{5ea1194b-610a-4d48-bac7-dee9cee2d7d6}" FolderPath="API\">
       <Declaration><![CDATA[METHOD Reset : BOOL
 ]]></Declaration>
@@ -277,9 +343,9 @@ Error := _PLCopenCallInternal.Error;
 THIS^.Execute := FALSE;
 THIS^._PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
 //One call to cleanup
-THIS^.Call();
+THIS^.Cyclic();
 //Second call to clear
-THIS^.Call();
+THIS^.Cyclic();
 Reset := FALSE;
 ]]></ST>
       </Implementation>
@@ -296,13 +362,33 @@ END_VAR
 //Call with false to force an edge
 //	This will also Abort the previous command if it exists
 THIS^.Execute := FALSE;
-THIS^.Call();
+THIS^.Cyclic();
 
 THIS^.Command := Command;
 THIS^.Execute := TRUE;
-THIS^.Call();
+THIS^.Cyclic();
 Start := THIS^.Status;]]></ST>
       </Implementation>
     </Method>
+    <Property Name="Status" Id="{0a5e3653-b223-07a3-19f3-f50b0fb1098e}" FolderPath="API\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY   Status :  PLCopenStatusBase;]]></Declaration>
+      <Get Name="Get" Id="{b752b811-6263-00d0-059f-e7a75d89737e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Status := _PLCopenCallInternal.Status;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{ee3cfff8-3a5e-0caf-195e-3849c82ce615}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_PLCopenCallInternal.Status := Status;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
   </POU>
 </TcPlcObject>

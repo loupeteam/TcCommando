@@ -3,7 +3,7 @@
   <Itf Name="IPLCopenCallRemote" Id="{6aa201bf-eb14-40e6-82eb-dedd5645dc58}">
     <Declaration><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-INTERFACE IPLCopenCallRemote
+INTERFACE IPLCopenCallRemote EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
     <Method Name="ReportAborted" Id="{86840f40-10b0-4de0-ab69-6c5eb8f761fb}">
       <Declaration><![CDATA[

@@ -1,13 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <Itf Name="IPLCopenCaller" Id="{3539bad0-84c7-0f02-0e2d-9dcc4fb33c22}">
-    <Declaration><![CDATA[INTERFACE IPLCopenCaller
+    <Declaration><![CDATA[INTERFACE IPLCopenCaller EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
     <Property Name="Busy" Id="{35f172e6-8886-0779-260d-da1cf511c014}">
       <Declaration><![CDATA[PROPERTY Busy : BOOL]]></Declaration>
       <Get Name="Get" Id="{d75c6d1b-1de8-03cb-154b-c5ab60116087}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>
+    </Property>
+    <Property Name="Command" Id="{e0f4faf6-71bc-0e9d-1a78-ded425fad3b8}">
+      <Declaration><![CDATA[PROPERTY Command : IPLCopenCommand ]]></Declaration>
+      <Get Name="Get" Id="{dbe69e9e-563b-07a1-27d8-f05d334de5f1}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{6d722569-e222-0e6b-0eb1-366ee5fc6131}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
     </Property>
     <Property Name="CommandAborted" Id="{8a5376e7-846f-0d1e-33f5-620b908f238f}">
       <Declaration><![CDATA[PROPERTY CommandAborted : BOOL
@@ -29,6 +38,26 @@
       <Get Name="Get" Id="{d5be0bf8-5ed8-022b-368d-d4421f994fbb}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>
+    </Property>
+    <Property Name="Execute" Id="{b483299d-2a67-013f-29f3-98c9269ee934}">
+      <Declaration><![CDATA[PROPERTY Execute : BOOL]]></Declaration>
+      <Get Name="Get" Id="{4f130ee4-ef52-0dc1-3a0f-ea31e9042a4f}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{bdc8426a-c2c7-0ce2-23a9-bea63fb21cf1}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Property Name="Fallback" Id="{1364c025-da75-018e-146b-189874eb68d2}">
+      <Declaration><![CDATA[PROPERTY Fallback : PLCopenStatusBase]]></Declaration>
+      <Get Name="Get" Id="{a90463fe-4a50-0b76-199d-7bc517e6cf8f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{742930a6-c0dd-0605-3185-310e54a04a23}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
     </Property>
     <Method Name="Reset" Id="{81b3fc3a-1372-0b12-38fe-bd388ba1f607}">
       <Declaration><![CDATA[METHOD Reset : BOOL

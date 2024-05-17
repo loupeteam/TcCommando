@@ -5,6 +5,7 @@
 TYPE
 PLCopenCommandGroupInternal EXTENDS PLCopenCommandInternal :
 STRUCT
+  working : BOOL;
   subscriberCount : INT;
   subscriber : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF PLCopenRemote;
 END_STRUCT

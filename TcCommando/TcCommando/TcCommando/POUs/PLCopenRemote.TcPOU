@@ -59,7 +59,8 @@ END_IF]]></ST>
       </Set>
     </Property>
     <Property Name="RemoteStatus" Id="{27ee096e-7abf-4323-b731-6523795b731f}">
-      <Declaration><![CDATA[PROPERTY RemoteStatus : PLCopenStatusBase
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY RemoteStatus : PLCopenStatusBase
 ]]></Declaration>
       <Get Name="Get" Id="{e2b3ab12-0ad9-4b99-adc0-fc57a956ef6f}">
         <Declaration><![CDATA[VAR
@@ -142,7 +143,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[ _PLCopenCallInternal.status := PLCopenStatusBase.ENABLED_WAITING;
 command.RemoteExecute(THIS^);
 ]]></ST>
       </Implementation>
