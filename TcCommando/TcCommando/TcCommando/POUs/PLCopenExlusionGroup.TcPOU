@@ -13,7 +13,8 @@ END_VAR
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 ]]></ST>
     </Implementation>
-    <Method Name="AbortPreviousCommands" Id="{4d65389e-e404-419c-8d9a-839278ec3b86}">
+    <Folder Name="internal" Id="{f611fbc9-82ea-082a-1b64-79cf4e0143ab}" />
+    <Method Name="AbortPreviousCommands" Id="{4d65389e-e404-419c-8d9a-839278ec3b86}" FolderPath="internal\">
       <Declaration><![CDATA[
 METHOD AbortPreviousCommands : BOOL
 VAR_INPUT
@@ -40,7 +41,7 @@ END_FOR
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="RegisterCommands" Id="{0e4d6210-f4c5-4680-bac6-f30527be8c7f}">
+    <Method Name="RegisterCommands" Id="{0e4d6210-f4c5-4680-bac6-f30527be8c7f}" FolderPath="internal\">
       <Declaration><![CDATA[
 {attribute 'call_after_init'}
 METHOD RegisterCommands : BOOL

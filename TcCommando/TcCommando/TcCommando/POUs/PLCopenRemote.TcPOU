@@ -5,19 +5,19 @@
 FUNCTION_BLOCK PLCopenRemote IMPLEMENTS IPLCopenCallRemote, IPLCopenCallStatus
 VAR_INPUT
   command : IPLCopenCommand;
-  proxy : IPLCopenCallRemote;
 END_VAR
 VAR
   _PLCopenCallInternal : PLCopenRemoteInternal;
+  status : IPLCopenCallStatus;
+  _delegate : IPLCopenCallRemote;
+  _nullRemote : PLCopenNullRemote;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
-]]></ST>
+      <ST><![CDATA[]]></ST>
     </Implementation>
-    <Property Name="abort" Id="{c7641c67-ae0d-4596-b708-3691eb9c1d20}">
-      <Declaration><![CDATA[{warning 'add property implementation'}
-PROPERTY abort : BOOL
+    <Property Name="Abort" Id="{c7641c67-ae0d-4596-b708-3691eb9c1d20}">
+      <Declaration><![CDATA[PROPERTY Abort : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{59c0b979-29c2-4ad1-b323-896aa956b7b1}">
         <Declaration><![CDATA[VAR
@@ -33,6 +33,28 @@ END_VAR
 ]]></Declaration>
         <Implementation>
           <ST><![CDATA[_PLCopenCallInternal.abort := abort;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Delegate" Id="{bce0543c-2a05-0c7a-3389-99dd8eec4ed4}">
+      <Declaration><![CDATA[PROPERTY Delegate : IPLCopenCallRemote]]></Declaration>
+      <Get Name="Get" Id="{06008cca-71d3-05a3-20b6-395d0133b4b2}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF _delegate <> 0 THEN
+	Delegate := _delegate;
+ELSE
+	Delegate := _nullRemote;
+END_IF]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{b5e3a340-0eb0-04ac-1f26-d0ac42dcb271}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_delegate := Delegate;]]></ST>
         </Implementation>
       </Set>
     </Property>
@@ -65,9 +87,8 @@ METHOD ReportAborted : BOOL
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 _PLCopenCallInternal.abort := TRUE;
-IF proxy <> 0 THEN
-	proxy.ReportAborted();
-END_IF]]></ST>
+Delegate.ReportAborted();
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="ReportErrored" Id="{c6822c79-4afc-4bd0-8933-2b53beb26986}">
@@ -93,8 +114,8 @@ ELSE
   _PLCopenCallInternal.status := ID;
 END_CASE
 
-IF proxy <> 0 THEN
-	proxy.ReportErrored(_PLCopenCallInternal.status);
+IF delegate <> 0 THEN
+	delegate.ReportErrored(_PLCopenCallInternal.status);
 END_IF]]></ST>
       </Implementation>
     </Method>
@@ -108,8 +129,8 @@ METHOD ReportFinished : BOOL
 
 _PLCopenCallInternal.status := PLCopenStatusBase.ERR_OK;
 
-IF proxy <> 0 THEN
-	proxy.ReportFinished();
+IF delegate <> 0 THEN
+	delegate.ReportFinished();
 END_IF]]></ST>
       </Implementation>
     </Method>

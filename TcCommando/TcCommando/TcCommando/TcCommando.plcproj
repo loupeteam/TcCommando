@@ -62,6 +62,9 @@
     <Compile Include="Interfaces\IPLCopenBase.TcIO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Interfaces\IPLCopenCaller.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interfaces\IPLCopenCallRemote.TcIO">
       <SubType>Code</SubType>
     </Compile>

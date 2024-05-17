@@ -141,7 +141,8 @@ END_VAR
 TEST('Clear');
 	call.Execute := TRUE;
 	call();
-	status := call.Reset();
+	call.Reset();
+	status := call.Status;
 	AssertFalse(call.Execute, Message := 'Execute should not be true');
 	AssertEquals_INT(Expected := PLCopenStatusBase.NOT_ENABLED, Actual := status, Message := 'Call status should be not enabled');
 TEST_FINISHED();]]></ST>

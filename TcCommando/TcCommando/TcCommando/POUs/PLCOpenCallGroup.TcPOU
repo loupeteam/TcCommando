@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenCallGroup" Id="{cba9c738-238a-4f8b-b4d1-3486de669f1d}" SpecialFunc="None">
     <Declaration><![CDATA[
-FUNCTION_BLOCK PLCopenCallGroup
+FUNCTION_BLOCK PLCopenCallGroup IMPLEMENTS IPLCopenCaller
 VAR_INPUT
 END_VAR
 VAR_OUTPUT
@@ -163,7 +163,7 @@ _callGroup._isError := FALSE;
     </Method>
     <Method Name="Start" Id="{df0ebf2c-61b1-498a-bcc4-44d1e2466b24}" FolderPath="API\">
       <Declaration><![CDATA[
-METHOD Start : BOOL
+METHOD Start : PLCopenStatusBase
 VAR_INPUT
   Command : IPLCopenCommand;
 END_VAR
@@ -179,7 +179,7 @@ END_VAR
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
   IF _callGroup._commands[_commandIndex].Command = Command THEN
     _callGroup._commands[_commandIndex].Start(Command);
-    Start := TRUE;
+    Start := PLCopenStatusBase.BUSY;
 	_callGroup._isBusy := TRUE;
     RETURN;
   END_IF
@@ -189,13 +189,13 @@ END_FOR
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
   IF _callGroup._commands[_commandIndex].Command = 0 THEN
     _callGroup._commands[_commandIndex].Start(Command);
-    Start := TRUE;
+    Start := PLCopenStatusBase.BUSY;
 	_callGroup._isBusy := TRUE;
     RETURN;
   END_IF
 END_FOR
 
-Start := FALSE;
+Start := PLCopenStatusBase.ERROR;
 
 //TODO: All out of commands.. Throw an error
 ]]></ST>

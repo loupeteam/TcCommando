@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenCall" Id="{16877e71-b30e-4975-8b7d-5ec1774f2055}" SpecialFunc="None">
     <Declaration><![CDATA[
-FUNCTION_BLOCK PLCopenCall
+FUNCTION_BLOCK PLCopenCall IMPLEMENTS IPLCopenCaller
 VAR_INPUT
   Execute : BOOL;
   Command : IPLCopenCommand;
@@ -269,7 +269,7 @@ Error := _PLCopenCallInternal.Error;
       </Get>
     </Property>
     <Method Name="Reset" Id="{5ea1194b-610a-4d48-bac7-dee9cee2d7d6}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Reset : PLCopenStatusBase
+      <Declaration><![CDATA[METHOD Reset : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
@@ -280,7 +280,7 @@ THIS^._PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
 THIS^.Call();
 //Second call to clear
 THIS^.Call();
-Reset := THIS^.Status;
+Reset := FALSE;
 ]]></ST>
       </Implementation>
     </Method>

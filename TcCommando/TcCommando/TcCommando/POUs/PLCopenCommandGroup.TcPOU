@@ -17,7 +17,7 @@ END_IF
     </Implementation>
     <Folder Name="API" Id="{b4cb7c13-7345-44ed-a6a5-26d1ff59917e}" />
     <Folder Name="internal" Id="{bc5dbaf1-a59e-45ac-ba7f-2fe65e0965ac}" />
-    <Property Name="abort" Id="{1481c1bf-dd08-458a-bff7-86f233f6eeac}">
+    <Property Name="abort" Id="{1481c1bf-dd08-458a-bff7-86f233f6eeac}" FolderPath="internal\">
       <Declaration><![CDATA[{warning 'add property implementation'}
 PROPERTY abort : BOOL
 ]]></Declaration>
@@ -302,7 +302,7 @@ END_IF
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="RemoteStatus" Id="{205f74a8-fc38-44d9-b915-074d931a1a17}">
+    <Property Name="RemoteStatus" Id="{205f74a8-fc38-44d9-b915-074d931a1a17}" FolderPath="internal\">
       <Declaration><![CDATA[{warning 'add property implementation'}
 PROPERTY RemoteStatus : PLCopenStatusBase
 ]]></Declaration>
@@ -363,7 +363,7 @@ END_FOR]]></ST>
         </Implementation>
       </Set>
     </Property>
-    <Method Name="ReportAborted" Id="{0ad81ece-f45c-4bfe-8275-0b88f20ba7f9}">
+    <Method Name="ReportAborted" Id="{0ad81ece-f45c-4bfe-8275-0b88f20ba7f9}" FolderPath="internal\">
       <Declaration><![CDATA[METHOD ReportAborted : BOOL
 ]]></Declaration>
       <Implementation>
@@ -372,7 +372,7 @@ remote.ReportAborted();
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="ReportErrored" Id="{64171600-801f-42eb-b53a-2c8820ca15b2}">
+    <Method Name="ReportErrored" Id="{64171600-801f-42eb-b53a-2c8820ca15b2}" FolderPath="internal\">
       <Declaration><![CDATA[METHOD ReportErrored : BOOL
 VAR_INPUT
 	ID	: INT;
@@ -383,7 +383,7 @@ END_VAR
 PropagateReport();]]></ST>
       </Implementation>
     </Method>
-    <Method Name="ReportFinished" Id="{685cdf62-5140-4613-a4f4-988c84b23715}">
+    <Method Name="ReportFinished" Id="{685cdf62-5140-4613-a4f4-988c84b23715}" FolderPath="internal\">
       <Declaration><![CDATA[METHOD ReportFinished : BOOL
 ]]></Declaration>
       <Implementation>
@@ -412,7 +412,7 @@ END_IF
 FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
   IF _PLCopenCommand.subscriber[i].command = 0 THEN
     _PLCopenCommand.subscriber[i].command := command;
-	_PLCopenCommand.subscriber[i].proxy := THIS^;
+	_PLCopenCommand.subscriber[i].delegate := THIS^;
     _PLCopenCommand.subscriberCount := _PLCopenCommand.subscriberCount + 1;
     Subscribe := TRUE;
     RETURN;
