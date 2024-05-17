@@ -27,13 +27,23 @@ END_VAR
         <ST><![CDATA[
 TEST('EmptyCall');
 
-caller.Start(command);
+//caller.Start(command);
 
 AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
 
 caller.Reset();
 
-AssertFalse(Condition := caller.Done, Message := 'Done must be false after complete');
+AssertTrue(Condition := caller.Done, Message := 'Done must be false after complete');//By default, this FUB is done if there is no work to do
+AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after complete');
+AssertFalse(Condition := caller.Error, Message := 'Error must be false after complete');
+
+
+caller.Fallback := PLCopenStatusBase.NOT_ENABLED;
+AssertFalse(Condition := caller.Done, Message := 'Caller must be done for once cycle');
+
+caller.Reset();
+
+AssertFalse(Condition := caller.Done, Message := 'Done must be false after complete');//With enable false, this FUB is not done if there is no work to do
 AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after complete');
 AssertFalse(Condition := caller.Error, Message := 'Error must be false after complete');
 
@@ -51,7 +61,8 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-TEST('One Command');
+
+TEST('One Command Default');
 
 caller.Start(Command);
 AssertTrue(Condition := caller.Busy, Message := 'Caller must be busy for once cycle');
@@ -65,9 +76,29 @@ AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cy
 
 caller.Reset();
 
-AssertFalse(Condition := caller.Done, Message := 'Done must be false after complete');
-AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after complete');
-AssertFalse(Condition := caller.Error, Message := 'Error must be false after complete');
+AssertTrue(Condition := caller.Done, Message := 'Done must be true after reset by default');
+AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after reset');
+AssertFalse(Condition := caller.Error, Message := 'Error must be false after reset');
+
+TEST_FINISHED();
+
+TEST('One Command Fallback');
+caller.Fallback := PLCopenStatusBase.NOT_ENABLED;
+caller.Start(Command);
+AssertTrue(Condition := caller.Busy, Message := 'Caller must be busy for once cycle');
+
+AssertTrue(Condition := command.Consume, Message := 'Consume should be true after call');
+AssertFalse(Condition := command.Consume, Message := 'Consume should only be true once');
+
+command.Finished();
+
+AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
+
+caller.Reset();
+
+AssertFalse(Condition := caller.Done, Message := 'Done must be false after reset');
+AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after reset');
+AssertFalse(Condition := caller.Error, Message := 'Error must be false after reset');
 
 TEST_FINISHED();
 ]]></ST>

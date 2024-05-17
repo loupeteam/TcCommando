@@ -4,8 +4,7 @@
     <Declaration><![CDATA[
 FUNCTION_BLOCK PLCopenCallGroup IMPLEMENTS IPLCopenCaller
 VAR_INPUT
-END_VAR
-VAR_OUTPUT
+  Fallback : PLCopenStatusBase;
 END_VAR
 VAR
   _callGroup : PLCopenCallGroupType;
@@ -49,7 +48,7 @@ END_VAR
       <Implementation>
         <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-IF _callGroup._isBusy THEN
+IF _callGroup._working THEN
 	//If it's not in the list
 	FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
 	  IF _callGroup._commands[_commandIndex].Command <> 0 THEN
@@ -70,17 +69,41 @@ IF _callGroup._isBusy THEN
 	_callGroup._isError := FALSE;
 	_callGroup._isAbort := FALSE;
 	_callGroup._isDone := FALSE;
+    _callGroup._isBusy := FALSE;
 	
 	IF _anyError OR _callGroup._syncError THEN
 	  _callGroup._isError := TRUE;
-	  _callGroup._isBusy := FALSE;
 	ELSIF _anyAbort OR _callGroup._syncAbort THEN
 	  _callGroup._isAbort := TRUE;
-	  _callGroup._isBusy := FALSE;
 	ELSIF NOT _anyBusy THEN
 	  _callGroup._isDone := TRUE;
-	  _callGroup._isBusy := FALSE;
+	 ELSE
+ 		_callGroup._isBusy := TRUE;
 	END_IF
+	_callGroup._working := _callGroup._isBusy;
+ELSE
+	_callGroup._isError := FALSE;
+	_callGroup._isAbort := FALSE;
+	_callGroup._isDone := FALSE;
+	_callGroup._isBusy := FALSE;
+	CASE Fallback OF
+		PLCopenStatusBase.ABORTED:
+		  _callGroup._isAbort := TRUE;
+
+		PLCopenStatusBase.BUSY,
+		PLCopenStatusBase.ENABLED_WAITING:
+			_callGroup._isBusy := TRUE;
+
+		PLCopenStatusBase.ERR_OK:
+			_callGroup._isDone := TRUE;		
+
+		PLCopenStatusBase.NOT_ENABLED:
+			;
+		PLCopenStatusBase.ERROR:
+			_callGroup._isError := TRUE;		
+		ELSE		
+			_callGroup._isError := TRUE;				
+	END_CASE
 END_IF]]></ST>
       </Implementation>
     </Method>
@@ -180,7 +203,7 @@ FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
   IF _callGroup._commands[_commandIndex].Command = Command THEN
     _callGroup._commands[_commandIndex].Start(Command);
     Start := PLCopenStatusBase.BUSY;
-	_callGroup._isBusy := TRUE;
+	_callGroup._working := TRUE;
     RETURN;
   END_IF
 END_FOR
@@ -190,7 +213,7 @@ FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
   IF _callGroup._commands[_commandIndex].Command = 0 THEN
     _callGroup._commands[_commandIndex].Start(Command);
     Start := PLCopenStatusBase.BUSY;
-	_callGroup._isBusy := TRUE;
+	_callGroup._working := TRUE;
     RETURN;
   END_IF
 END_FOR
