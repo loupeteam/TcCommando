@@ -140,8 +140,7 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
-IF _callGroup.Execute AND NOT _callGroup.Execute_ THEN
+        <ST><![CDATA[IF _callGroup.Execute AND NOT _callGroup.Execute_ THEN
 	Start(Command);	
 END_IF
 _callGroup.Execute_ := _callGroup.Execute_;
@@ -149,7 +148,7 @@ _callGroup.Execute_ := _callGroup.Execute_;
 CheckStatus();
 
 IF NOT Execute AND NOT _callGroup._working AND NOT _callGroup.responseRequired THEN
-	Reset();
+	ResetStatus();
 END_IF
 _callGroup.responseRequired := FALSE;]]></ST>
       </Implementation>
@@ -239,8 +238,8 @@ _callGroup.Fallback := Fallback;]]></ST>
         </Implementation>
       </Set>
     </Property>
-    <Method Name="Reset" Id="{cd896665-6c8b-4e15-8c06-75a5a8e469f2}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Reset : BOOL
+    <Method Name="ResetStatus" Id="{cd896665-6c8b-4e15-8c06-75a5a8e469f2}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD ResetStatus : BOOL
 VAR
   _commandIndex : INT;
 END_VAR
@@ -250,7 +249,7 @@ END_VAR
 
 //If it's not in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-  _callGroup._commands[_commandIndex].Reset();
+  _callGroup._commands[_commandIndex].ResetStatus();
 END_FOR
 
 _callGroup._isBusy := FALSE;

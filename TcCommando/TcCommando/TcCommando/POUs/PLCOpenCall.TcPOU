@@ -119,8 +119,8 @@ IF (Execute AND NOT _PLCopenCallInternal._execute) THEN
 END_IF
 
 // If this call get aborted, handle it
-IF (_PLCopenCallInternal._remote.abort) THEN
-  _PLCopenCallInternal._remote.abort := 0;
+IF (_PLCopenCallInternal._remote.Abort) THEN
+  _PLCopenCallInternal._remote.Abort := 0;
   _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_ABORTED;
 END_IF
 
@@ -333,8 +333,8 @@ END_VAR
         </Implementation>
       </Set>
     </Property>
-    <Method Name="Reset" Id="{5ea1194b-610a-4d48-bac7-dee9cee2d7d6}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Reset : BOOL
+    <Method Name="ResetStatus" Id="{5ea1194b-610a-4d48-bac7-dee9cee2d7d6}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD ResetStatus : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
@@ -345,7 +345,7 @@ THIS^._PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
 THIS^.Cyclic();
 //Second call to clear
 THIS^.Cyclic();
-Reset := FALSE;
+ResetStatus := FALSE;
 ]]></ST>
       </Implementation>
     </Method>

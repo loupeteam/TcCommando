@@ -99,7 +99,7 @@ END_VAR]]></Declaration>
         <ST><![CDATA[
 Caller.Command := Command;
 IF __QUERYINTERFACE(Caller, cyclic) THEN
-//	cyclic.Cyclic();
+	cyclic.Cyclic();
 END_IF
 Caller.Execute := FALSE;
 

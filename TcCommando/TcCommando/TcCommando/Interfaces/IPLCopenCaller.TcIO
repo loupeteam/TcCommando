@@ -59,8 +59,8 @@ END_VAR
         <Declaration><![CDATA[]]></Declaration>
       </Set>
     </Property>
-    <Method Name="Reset" Id="{81b3fc3a-1372-0b12-38fe-bd388ba1f607}">
-      <Declaration><![CDATA[METHOD Reset : BOOL
+    <Method Name="ResetStatus" Id="{81b3fc3a-1372-0b12-38fe-bd388ba1f607}">
+      <Declaration><![CDATA[METHOD ResetStatus : BOOL
 ]]></Declaration>
     </Method>
     <Method Name="Start" Id="{7a017d66-fa84-0857-07d1-72205def583f}">

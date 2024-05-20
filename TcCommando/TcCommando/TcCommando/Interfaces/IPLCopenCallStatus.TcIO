@@ -3,8 +3,8 @@
   <Itf Name="IPLCopenCallStatus" Id="{60f3b750-fcda-423b-b14b-4ab6a5b83007}">
     <Declaration><![CDATA[INTERFACE IPLCopenCallStatus EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
-    <Property Name="abort" Id="{e3fd7230-b538-4c9e-9d21-fdf83ee0041b}">
-      <Declaration><![CDATA[PROPERTY abort : bool]]></Declaration>
+    <Property Name="Abort" Id="{e3fd7230-b538-4c9e-9d21-fdf83ee0041b}">
+      <Declaration><![CDATA[PROPERTY Abort : bool]]></Declaration>
       <Get Name="Get" Id="{c13334cc-4ce3-4ae4-ba07-5566ef4ed077}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>

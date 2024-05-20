@@ -24,7 +24,7 @@ END_VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[abort := _PLCopenCallInternal.abort;]]></ST>
+          <ST><![CDATA[Abort := _PLCopenCallInternal.abort;]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{3bc2a4d4-a0df-4a5d-87f3-0a319ab86ebb}">
@@ -32,7 +32,7 @@ END_VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[_PLCopenCallInternal.abort := abort;]]></ST>
+          <ST><![CDATA[_PLCopenCallInternal.abort := Abort;]]></ST>
         </Implementation>
       </Set>
     </Property>

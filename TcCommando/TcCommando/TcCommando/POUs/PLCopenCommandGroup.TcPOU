@@ -17,9 +17,9 @@ END_IF
     </Implementation>
     <Folder Name="API" Id="{b4cb7c13-7345-44ed-a6a5-26d1ff59917e}" />
     <Folder Name="internal" Id="{bc5dbaf1-a59e-45ac-ba7f-2fe65e0965ac}" />
-    <Property Name="abort" Id="{1481c1bf-dd08-458a-bff7-86f233f6eeac}" FolderPath="internal\">
+    <Property Name="Abort" Id="{1481c1bf-dd08-458a-bff7-86f233f6eeac}" FolderPath="internal\">
       <Declaration><![CDATA[{warning 'add property implementation'}
-PROPERTY abort : BOOL
+PROPERTY Abort : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{595e4f9c-a6b2-49c1-89ff-f9a8181dbc2a}">
         <Declaration><![CDATA[VAR
@@ -33,12 +33,12 @@ FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
 
 	IF _PLCopenCommand.subscriber[i].command = 0 THEN
 	
-	  _abort := _abort OR _PLCopenCommand.subscriber[i].abort;
+	  _abort := _abort OR _PLCopenCommand.subscriber[i].Abort;
 	
 	END_IF
 
 END_FOR
-abort := _abort;]]></ST>
+Abort := _abort;]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{8a526a1f-79ec-413f-b67f-f9efc0af12a6}">
@@ -49,7 +49,7 @@ END_VAR
         <Implementation>
           <ST><![CDATA[FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
 	
-	_PLCopenCommand.subscriber[i].abort := abort;
+	_PLCopenCommand.subscriber[i].Abort := Abort;
 
 END_FOR
 ]]></ST>
