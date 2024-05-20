@@ -3,8 +3,8 @@
   <DUT Name="PLCopenRemoteInternal" Id="{6734d06c-d81e-43fb-9b4f-7b69935b56e2}">
     <Declaration><![CDATA[TYPE PLCopenRemoteInternal :
 STRUCT
-	abort : BOOL;
-	status : PLCopenStatusBase;
+	Abort : BOOL;
+	Status : PLCopenStatusBase;
 END_STRUCT
 END_TYPE
 ]]></Declaration>

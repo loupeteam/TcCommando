@@ -8,74 +8,95 @@ VAR_INPUT
 END_VAR
 VAR
   _PLCopenCallInternal : PLCopenRemoteInternal;
-  status : IPLCopenCallStatus;
   _delegate : IPLCopenCallRemote;
   _nullRemote : PLCopenNullRemote;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[
+]]></ST>
     </Implementation>
     <Property Name="Abort" Id="{c7641c67-ae0d-4596-b708-3691eb9c1d20}">
-      <Declaration><![CDATA[PROPERTY Abort : BOOL
+      <Declaration><![CDATA[
+PROPERTY Abort : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{59c0b979-29c2-4ad1-b323-896aa956b7b1}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[Abort := _PLCopenCallInternal.abort;]]></ST>
+          <ST><![CDATA[
+Abort := _PLCopenCallInternal.Abort;
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{3bc2a4d4-a0df-4a5d-87f3-0a319ab86ebb}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[_PLCopenCallInternal.abort := Abort;]]></ST>
+          <ST><![CDATA[
+_PLCopenCallInternal.Abort := Abort;
+]]></ST>
         </Implementation>
       </Set>
     </Property>
     <Property Name="Delegate" Id="{bce0543c-2a05-0c7a-3389-99dd8eec4ed4}">
-      <Declaration><![CDATA[PROPERTY Delegate : IPLCopenCallRemote]]></Declaration>
+      <Declaration><![CDATA[
+PROPERTY Delegate : IPLCopenCallRemote
+]]></Declaration>
       <Get Name="Get" Id="{06008cca-71d3-05a3-20b6-395d0133b4b2}">
         <Declaration><![CDATA[
 VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[IF _delegate <> 0 THEN
-	Delegate := _delegate;
+          <ST><![CDATA[
+IF _delegate <> 0 THEN
+  Delegate := _delegate;
 ELSE
-	Delegate := _nullRemote;
-END_IF]]></ST>
+  Delegate := _nullRemote;
+END_IF
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{b5e3a340-0eb0-04ac-1f26-d0ac42dcb271}">
-        <Declaration><![CDATA[]]></Declaration>
+        <Declaration><![CDATA[
+]]></Declaration>
         <Implementation>
-          <ST><![CDATA[_delegate := Delegate;]]></ST>
+          <ST><![CDATA[
+_delegate := Delegate;
+]]></ST>
         </Implementation>
       </Set>
     </Property>
     <Property Name="RemoteStatus" Id="{27ee096e-7abf-4323-b731-6523795b731f}">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY RemoteStatus : PLCopenStatusBase
 ]]></Declaration>
       <Get Name="Get" Id="{e2b3ab12-0ad9-4b99-adc0-fc57a956ef6f}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[RemoteStatus := _PLCopenCallInternal.status;]]></ST>
+          <ST><![CDATA[
+RemoteStatus := _PLCopenCallInternal.Status;
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{1a539f5d-b4b2-467b-8226-4bf0c3488566}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[_PLCopenCallInternal.status := RemoteStatus;]]></ST>
+          <ST><![CDATA[
+_PLCopenCallInternal.Status := RemoteStatus;
+]]></ST>
         </Implementation>
       </Set>
     </Property>
@@ -87,7 +108,7 @@ METHOD ReportAborted : BOOL
         <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-_PLCopenCallInternal.abort := TRUE;
+_PLCopenCallInternal.Abort := TRUE;
 Delegate.ReportAborted();
 ]]></ST>
       </Implementation>
@@ -106,18 +127,19 @@ END_VAR
 CASE ID OF
   //Any of these statuses are invalid to return as an error.
   //Override to error
-  	PLCopenStatusBase.BUSY,
-	PLCopenStatusBase.ENABLED_WAITING,
-	PLCopenStatusBase.ERR_OK:
-    _PLCopenCallInternal.status := PLCopenStatusBase.ERROR;
+  PLCopenStatusBase.BUSY,
+    PLCopenStatusBase.ENABLED_WAITING,
+    PLCopenStatusBase.ERR_OK:
+    _PLCopenCallInternal.Status := PLCopenStatusBase.ERROR;
 ELSE
   //Any other status can be passed through
-  _PLCopenCallInternal.status := ID;
+  _PLCopenCallInternal.Status := ID;
 END_CASE
 
 IF delegate <> 0 THEN
-	delegate.ReportErrored(_PLCopenCallInternal.status);
-END_IF]]></ST>
+  delegate.ReportErrored(_PLCopenCallInternal.Status);
+END_IF
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="ReportFinished" Id="{cf5564a2-2dcb-446f-9ce1-2b34ce737728}">
@@ -128,11 +150,12 @@ METHOD ReportFinished : BOOL
         <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-_PLCopenCallInternal.status := PLCopenStatusBase.ERR_OK;
+_PLCopenCallInternal.Status := PLCopenStatusBase.ERR_OK;
 
 IF delegate <> 0 THEN
-	delegate.ReportFinished();
-END_IF]]></ST>
+  delegate.ReportFinished();
+END_IF
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="Start" Id="{4e7a139b-9cbd-4971-b8b3-78113352ebfb}">
@@ -143,7 +166,8 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[ _PLCopenCallInternal.status := PLCopenStatusBase.ENABLED_WAITING;
+        <ST><![CDATA[
+_PLCopenCallInternal.Status := PLCopenStatusBase.ENABLED_WAITING;
 command.ExecuteWithStatus(THIS^);
 ]]></ST>
       </Implementation>

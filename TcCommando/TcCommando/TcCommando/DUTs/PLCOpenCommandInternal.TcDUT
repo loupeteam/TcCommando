@@ -4,12 +4,12 @@
     <Declaration><![CDATA[TYPE
 PLCopenCommandInternal :
 STRUCT
-  _Execute : BOOL;
-  _Trig : BOOL;
-  _status : PLCopenStatusBase;
-  _remote : IPLCopenCallRemote;
-  _nullRemote : PLCopenNullRemote;
-  _commandGroups : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF IPLCopenGroup;
+  Execute : BOOL;
+  Trig : BOOL;
+  Status : PLCopenStatusBase;
+  Remote : IPLCopenCallRemote;
+  NullRemote : PLCopenNullRemote;
+  CommandGroups : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF IPLCopenGroup;
 END_STRUCT
 END_TYPE
 ]]></Declaration>

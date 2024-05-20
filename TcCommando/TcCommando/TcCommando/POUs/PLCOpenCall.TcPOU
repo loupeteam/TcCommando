@@ -1,32 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenCall" Id="{16877e71-b30e-4975-8b7d-5ec1774f2055}" SpecialFunc="None">
-    <Declaration><![CDATA[
-FUNCTION_BLOCK PLCopenCall IMPLEMENTS IPLCopenCaller, ICyclic
-VAR_INPUT
-END_VAR
-VAR_OUTPUT
-END_VAR
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCall IMPLEMENTS IPLCopenCaller, ICyclic
 VAR
-  _PLCopenCallInternal : PLCopenCallInternal;
+  _PLCopenCall : PLCopenCallInternal;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+      <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 Cyclic();
-
-// TODO: 
-//	What happens if the user doesn't call the cyclic?
-//	When do the statuses get reset?]]></ST>
+]]></ST>
     </Implementation>
     <Folder Name="API" Id="{81b669e9-53d1-43c3-adb5-dd314cabfeda}" />
     <Folder Name="internal" Id="{3ca49896-8361-42f2-89ba-941a123d684d}" />
     <Property Name="Busy" Id="{cf0c79ab-c265-06c8-24b4-62a6689a62ca}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
-PROPERTY Busy : BOOL]]></Declaration>
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
+PROPERTY Busy : BOOL
+]]></Declaration>
       <Get Name="Get" Id="{d3b6feb1-7a50-0e26-362b-67ad77045f12}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
@@ -36,7 +32,7 @@ END_VAR
 CheckStatus();
 
 //Check if we are busy
-Busy := _PLCopenCallInternal.Busy;
+Busy := _PLCopenCall.Busy;
 ]]></ST>
         </Implementation>
       </Get>
@@ -44,12 +40,6 @@ Busy := _PLCopenCallInternal.Busy;
     <Method Name="CheckStatus" Id="{9995d239-7d4d-0db8-208e-cdd0cab76b95}" FolderPath="internal\">
       <Declaration><![CDATA[
 METHOD PRIVATE CheckStatus : BOOL
-VAR
-  _commandIndex : INT;
-  _anyAbort : BOOL;
-  _anyBusy : BOOL;
-  _anyError : BOOL;
-END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
@@ -57,28 +47,36 @@ END_VAR
       </Implementation>
     </Method>
     <Property Name="Command" Id="{ec88ee78-d3d9-04db-024e-c284b41bc783}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY Command : IPLCopenCommand
 ]]></Declaration>
       <Get Name="Get" Id="{d09cf0a9-c771-04f8-02f5-be448d232b25}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[Command := _PLCopenCallInternal.Command;]]></ST>
+          <ST><![CDATA[
+Command := _PLCopenCall.Command;
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{52c1b543-f900-0cfb-05d1-811fe8704e9d}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[_PLCopenCallInternal.Command := Command;]]></ST>
+          <ST><![CDATA[
+_PLCopenCall.Command := Command;
+]]></ST>
         </Implementation>
       </Set>
     </Property>
     <Property Name="CommandAborted" Id="{e75eea2f-57f3-0f3b-2d5e-17d007ee4a24}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY CommandAborted : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{dda65603-34b7-0326-3983-c29aa7f0d3a4}">
@@ -92,7 +90,7 @@ END_VAR
 
 CheckStatus();
 
-CommandAborted := _PLCopenCallInternal.CommandAborted;
+CommandAborted := _PLCopenCall.CommandAborted;
 ]]></ST>
         </Implementation>
       </Get>
@@ -105,109 +103,111 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //Capture edges
 IF NOT Execute THEN
-  _PLCopenCallInternal._execute := FALSE;
+  _PLCopenCall.Execute_ := FALSE;
 END_IF
 
 // Start a new command on edge
-IF (Execute AND NOT _PLCopenCallInternal._execute) THEN
-  _PLCopenCallInternal._execute := TRUE;
-  _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_NEW_COMMAND;
+IF (Execute AND NOT _PLCopenCall.Execute_) THEN
+  _PLCopenCall.Execute_ := TRUE;
+  _PLCopenCall.State := PLCopenCallState.PLCOPEN_FUB_NEW_COMMAND;
 END_IF
 
 // If this call get aborted, handle it
-IF (_PLCopenCallInternal._remote.Abort) THEN
-  _PLCopenCallInternal._remote.Abort := 0;
-  _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_ABORTED;
+IF (_PLCopenCall.Remote.Abort) THEN
+  _PLCopenCall.Remote.Abort := 0;
+  _PLCopenCall.State := PLCopenCallState.PLCOPEN_FUB_ABORTED;
 END_IF
 
-_PLCopenCallInternal._self := THIS^._PLCopenCallInternal._remote;
+_PLCopenCall.Self_ := THIS^._PLCopenCall.Remote;
 
 // Use a "while not break" to enable multiple passes on the state machine,
 // to do as much as possible in a single call	
 _break := FALSE;
 
 WHILE _break = FALSE DO
-  CASE (_PLCopenCallInternal._state) OF
+  CASE (_PLCopenCall.State) OF
 
     // IDLE
     PLCopenCallState.PLCOPEN_FUB_IDLE:
       Status := PLCopenStatusBase.NOT_ENABLED;
-      _PLCopenCallInternal.Busy := FALSE;
-      _PLCopenCallInternal.Done := FALSE;
-      _PLCopenCallInternal.Error := FALSE;
-      _PLCopenCallInternal.CommandAborted := FALSE;
+      _PLCopenCall.Busy := FALSE;
+      _PLCopenCall.Done := FALSE;
+      _PLCopenCall.Error := FALSE;
+      _PLCopenCall.CommandAborted := FALSE;
       _break := TRUE;
 
     // Start a new command
     PLCopenCallState.PLCOPEN_FUB_NEW_COMMAND:
       Status := PLCopenStatusBase.BUSY;
-      _PLCopenCallInternal._Remote.RemoteStatus := PLCopenStatusBase.BUSY;
-      _PLCopenCallInternal.Busy := TRUE;
-      _PLCopenCallInternal.Done := FALSE;
-      _PLCopenCallInternal.Error := FALSE;
-      _PLCopenCallInternal.CommandAborted := FALSE;
+      _PLCopenCall.Remote.RemoteStatus := PLCopenStatusBase.BUSY;
+      _PLCopenCall.Busy := TRUE;
+      _PLCopenCall.Done := FALSE;
+      _PLCopenCall.Error := FALSE;
+      _PLCopenCall.CommandAborted := FALSE;
 
       // If this call is the current command:
       // 1. don't need feedback (TODO why? because it is being aborted?)
       // 2. this call doesn't get the abort
       // so remove this FUB before calling abort previous
-      IF _PLCopenCallInternal._Command <> 0 THEN
-        IF _PLCopenCallInternal._Command.Remote = _PLCopenCallInternal._self THEN
-          _PLCopenCallInternal._Command.Remote := 0;
+      IF _PLCopenCall.Command_ <> 0 THEN
+        IF _PLCopenCall.Command_.Remote = _PLCopenCall.Self_ THEN
+          _PLCopenCall.Command_.Remote := 0;
         END_IF
       END_IF
 
       // Get the new command
-      _PLCopenCallInternal._Command := Command;
+      _PLCopenCall.Command_ := Command;
 
-      IF _PLCopenCallInternal._Command <> 0 THEN
-        _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_ABORT_OLD;
+      IF _PLCopenCall.Command_ <> 0 THEN
+        _PLCopenCall.State := PLCopenCallState.PLCOPEN_FUB_ABORT_OLD;
         // No _break
       ELSE
-        _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_WORKING;
-        _PLCopenCallInternal._Remote.RemoteStatus := Fallback;
+        _PLCopenCall.State := PLCopenCallState.PLCOPEN_FUB_WORKING;
+        _PLCopenCall.Remote.RemoteStatus := Fallback;
         _break := TRUE;
       END_IF
     // No _break
 
     // Abort any commands that were active using the same PLCopen state
     PLCopenCallState.PLCOPEN_FUB_ABORT_OLD:
-      _PLCopenCallInternal._Command.AbortPreviousCommands(_PLCopenCallInternal._Command);
+      _PLCopenCall.Command_.AbortPreviousCommands(_PLCopenCall.Command_);
 
-      _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_SET_COMMAND;
+      _PLCopenCall.State := PLCopenCallState.PLCOPEN_FUB_SET_COMMAND;
     //no break;
 
     // Start the command
     PLCopenCallState.PLCOPEN_FUB_SET_COMMAND:
-      _PLCopenCallInternal._Command.ExecuteWithStatus( _PLCopenCallInternal._self );
+      _PLCopenCall.Command_.ExecuteWithStatus(_PLCopenCall.Self_);
 
-      _PLCopenCallInternal.Busy := TRUE;
-      _PLCopenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_WORKING;
+      _PLCopenCall.Busy := TRUE;
+      _PLCopenCall.State := PLCOpenCallState.PLCOPEN_FUB_WORKING;
       _break := TRUE;
     // No _break?
 
     //Wait for the command to be finished
     PLCopenCallState.PLCOPEN_FUB_WORKING:
-      _PLCopenCallInternal.Busy := TRUE;
+      _PLCopenCall.Busy := TRUE;
       // No _break
 
-      IF (_PLCopenCallInternal._Remote.RemoteStatus <> PLCopenStatusBase.BUSY AND _PLCopenCallInternal._Remote.RemoteStatus <> PLCopenStatusBase.ENABLED_WAITING)
+      IF (_PLCopenCall.Remote.RemoteStatus <> PLCopenStatusBase.BUSY
+            AND _PLCopenCall.Remote.RemoteStatus <> PLCopenStatusBase.ENABLED_WAITING)
         THEN
-        Status := _PLCopenCallInternal._Remote.RemoteStatus;
-        _PLCopenCallInternal.Busy := FALSE;
+        Status := _PLCopenCall.Remote.RemoteStatus;
+        _PLCopenCall.Busy := FALSE;
 
         IF (Status = 0) THEN
-          _PLCopenCallInternal.Done := TRUE;
+          _PLCopenCall.Done := TRUE;
 
         ELSE
-          _PLCopenCallInternal.Error := TRUE;
+          _PLCopenCall.Error := TRUE;
         END_IF
 
-        _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
+        _PLCopenCall.State := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
         // No _break
       ELSE
         _break := TRUE;
@@ -215,36 +215,36 @@ WHILE _break = FALSE DO
 
     PLCopenCallState.PLCOPEN_FUB_CLEANUP:
       // Remove self from the source command
-      IF _PLCopenCallInternal._Command <> 0 THEN
-        _PLCopenCallInternal._Command.Remote := 0;
-        _PLCopenCallInternal._Command := 0;
+      IF _PLCopenCall.Command_ <> 0 THEN
+        _PLCopenCall.Command_.Remote := 0;
+        _PLCopenCall.Command_ := 0;
       END_IF
 
-      _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_DONE;
+      _PLCopenCall.State := PLCopenCallState.PLCOPEN_FUB_DONE;
       // Break to force at least 1 cycle with statuses
       _break := TRUE;
 
     PLCopenCallState.PLCOPEN_FUB_DONE:
 
       IF (NOT Execute) THEN
-        _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_IDLE;
+        _PLCopenCall.State := PLCopenCallState.PLCOPEN_FUB_IDLE;
         Status := PLCopenStatusBase.NOT_ENABLED;
-        _PLCopenCallInternal.Busy := FALSE;
-        _PLCopenCallInternal.Done := FALSE;
-        _PLCopenCallInternal.Error := FALSE;
-        _PLCopenCallInternal.CommandAborted := FALSE;
+        _PLCopenCall.Busy := FALSE;
+        _PLCopenCall.Done := FALSE;
+        _PLCopenCall.Error := FALSE;
+        _PLCopenCall.CommandAborted := FALSE;
       END_IF
 
       _break := TRUE;
 
     PLCopenCallState.PLCOPEN_FUB_ABORTED:
       Status := PLCopenStatusBase.ABORTED;
-      _PLCopenCallInternal.Busy := FALSE;
-      _PLCopenCallInternal.Done := FALSE;
-      _PLCopenCallInternal.Error := FALSE;
-      _PLCopenCallInternal.CommandAborted := TRUE;
-      _PLCopenCallInternal._command := 0;
-      _PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_DONE;
+      _PLCopenCall.Busy := FALSE;
+      _PLCopenCall.Done := FALSE;
+      _PLCopenCall.Error := FALSE;
+      _PLCopenCall.CommandAborted := TRUE;
+      _PLCopenCall.Command_ := 0;
+      _PLCopenCall.State := PLCopenCallState.PLCOPEN_FUB_DONE;
       _break := TRUE;
 
   END_CASE
@@ -253,7 +253,8 @@ END_WHILE
       </Implementation>
     </Method>
     <Property Name="Done" Id="{daaa5575-b6f6-0081-0ade-9d334e2ddaec}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY Done : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{52977fbf-d3ec-0b64-26ca-6fdeafd08239}">
@@ -266,13 +267,14 @@ PROPERTY Done : BOOL
 CheckStatus();
 
 //Check if we are done
-Done := _PLCopenCallInternal.Done;
+Done := _PLCopenCall.Done;
 ]]></ST>
         </Implementation>
       </Get>
     </Property>
     <Property Name="Error" Id="{84e87513-beea-0896-2a38-2a206620126f}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY Error : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{ef247b85-248a-0489-15fa-eb4b157b7926}">
@@ -286,61 +288,77 @@ END_VAR
 
 CheckStatus();
 
-Error := _PLCopenCallInternal.Error;
+Error := _PLCopenCall.Error;
 ]]></ST>
         </Implementation>
       </Get>
     </Property>
     <Property Name="Execute" Id="{a78c99c3-b18e-086f-1082-bce7c39d822a}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY Execute : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{eeb56ea0-7d3a-0968-16b2-b1406e1a7743}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[Execute := _PLCopenCallInternal.Execute;]]></ST>
+          <ST><![CDATA[
+Execute := _PLCopenCall.Execute;
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{92d72e6e-ba65-00ed-2f9f-9b3ceac447e7}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[_PLCopenCallInternal.Execute := Execute;]]></ST>
+          <ST><![CDATA[
+_PLCopenCall.Execute := Execute;
+]]></ST>
         </Implementation>
       </Set>
     </Property>
     <Property Name="Fallback" Id="{3c6500cf-cc58-024f-3997-89de867a5053}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY Fallback : PLCopenStatusBase
 ]]></Declaration>
       <Get Name="Get" Id="{5ddf0448-1b88-093f-2a51-c08ca75838c3}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[Fallback := _PLCopenCallInternal.Fallback;]]></ST>
+          <ST><![CDATA[
+Fallback := _PLCopenCall.Fallback;
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{b0b70d31-13fe-0aa6-2399-dc8f494d46fb}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[_PLCopenCallInternal.Fallback := Fallback;]]></ST>
+          <ST><![CDATA[
+_PLCopenCall.Fallback := Fallback;
+]]></ST>
         </Implementation>
       </Set>
     </Property>
     <Method Name="ResetStatus" Id="{5ea1194b-610a-4d48-bac7-dee9cee2d7d6}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD ResetStatus : BOOL
+      <Declaration><![CDATA[
+METHOD ResetStatus : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 THIS^.Execute := FALSE;
-THIS^._PLCopenCallInternal._state := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
+THIS^._PLCopenCall.State := PLCopenCallState.PLCOPEN_FUB_CLEANUP;
 //One call to cleanup
 THIS^.Cyclic();
 //Second call to clear
@@ -350,13 +368,15 @@ ResetStatus := FALSE;
       </Implementation>
     </Method>
     <Method Name="Start" Id="{da1eb03e-04f1-0a6d-2bb9-8cc131c7f295}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Start : PLCopenStatusBase
+      <Declaration><![CDATA[
+METHOD Start : PLCopenStatusBase
 VAR_INPUT
   Command : IPLCopenCommand;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //Call with false to force an edge
 //	This will also Abort the previous command if it exists
@@ -366,26 +386,35 @@ THIS^.Cyclic();
 THIS^.Command := Command;
 THIS^.Execute := TRUE;
 THIS^.Cyclic();
-Start := THIS^.Status;]]></ST>
+Start := THIS^.Status;
+]]></ST>
       </Implementation>
     </Method>
     <Property Name="Status" Id="{0a5e3653-b223-07a3-19f3-f50b0fb1098e}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
-PROPERTY   Status :  PLCopenStatusBase;]]></Declaration>
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
+PROPERTY Status : PLCopenStatusBase;
+]]></Declaration>
       <Get Name="Get" Id="{b752b811-6263-00d0-059f-e7a75d89737e}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[Status := _PLCopenCallInternal.Status;]]></ST>
+          <ST><![CDATA[
+Status := _PLCopenCall.Status;
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{ee3cfff8-3a5e-0caf-195e-3849c82ce615}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[_PLCopenCallInternal.Status := Status;]]></ST>
+          <ST><![CDATA[
+_PLCopenCall.Status := Status;
+]]></ST>
         </Implementation>
       </Set>
     </Property>

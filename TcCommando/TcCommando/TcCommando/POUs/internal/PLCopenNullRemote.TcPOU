@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenNullRemote" Id="{73061230-7a8e-410b-ae26-c14eb801f0aa}" SpecialFunc="None">
-    <Declaration><![CDATA[
+    <Declaration><![CDATA[{attribute 'no-analysis'}
 FUNCTION_BLOCK PLCopenNullRemote IMPLEMENTS IPLCopenCallRemote
 ]]></Declaration>
     <Implementation>
@@ -10,22 +10,21 @@ FUNCTION_BLOCK PLCopenNullRemote IMPLEMENTS IPLCopenCallRemote
 ]]></ST>
     </Implementation>
     <Property Name="RemoteStatus" Id="{84bb0023-487f-4833-ab3a-6bf154688ca2}">
-      <Declaration><![CDATA[PROPERTY RemoteStatus : PLCopenStatusBase
+      <Declaration><![CDATA[
+PROPERTY RemoteStatus : PLCopenStatusBase
 ]]></Declaration>
       <Get Name="Get" Id="{3030317c-e694-4f80-994c-f5a95fac3c12}">
-        <Declaration><![CDATA[VAR
-END_VAR
-]]></Declaration>
+        <Declaration><![CDATA[]]></Declaration>
         <Implementation>
-          <ST><![CDATA[]]></ST>
+          <ST><![CDATA[
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{072515d1-b207-49fe-b993-f97b9c3f49cf}">
-        <Declaration><![CDATA[VAR
-END_VAR
-]]></Declaration>
+        <Declaration><![CDATA[]]></Declaration>
         <Implementation>
-          <ST><![CDATA[]]></ST>
+          <ST><![CDATA[
+]]></ST>
         </Implementation>
       </Set>
     </Property>
@@ -40,7 +39,7 @@ METHOD ReportAborted : BOOL
       </Implementation>
     </Method>
     <Method Name="ReportErrored" Id="{97c3ac24-72bd-4b21-93c4-11f805822d38}">
-      <Declaration><![CDATA[
+      <Declaration><![CDATA[{attribute 'no-analysis'}
 METHOD ReportErrored : BOOL
 VAR_INPUT
   ID : INT;

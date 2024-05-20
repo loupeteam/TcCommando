@@ -1,32 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <DUT Name="PLCopenCallGroupType" Id="{d3dcb7f9-fdae-4639-b5ca-cb80fdcb3095}">
-    <Declaration><![CDATA[
-TYPE
+    <Declaration><![CDATA[TYPE
 PLCopenCallGroupType :
 STRUCT
   Execute : BOOL;
   Execute_ : BOOL;
   Command : IPLCopenCommand;
   Fallback : PLCopenStatusBase;
-  responseRequired : BOOL;
-  _startStep : ENUM; //The step when doStep was called
-  _currentStep : ENUM;
-  _lastRequestNumber : DINT;
-  _onEntry : BOOL;
-  _onExit : BOOL;
-  _isDone : BOOL;
-  _isAbort : BOOL;
-  _isError : BOOL;
-  _isBusy : BOOL;
-  _finished : BOOL;
-  _working : BOOL;
-  _statusChecked : BOOL;
-  _numberActiveCommands : INT;
-  _commands : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF PLCopenCall;
-  _syncAbort : BOOL;
-  _syncError : BOOL;
-  _syncDone : BOOL;
+  ResponseRequired : BOOL;
+  isDone : BOOL;
+  isAbort : BOOL;
+  isError : BOOL;
+  isBusy : BOOL;
+  isWorking : BOOL;
+  Commands : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF PLCopenCall;
+  SyncAbort : BOOL;
+  SyncError : BOOL;
 END_STRUCT
 END_TYPE
 ]]></Declaration>

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="TESTPRG" Id="{da7b43c9-38b1-4c6f-a60e-db64ccc086f5}" SpecialFunc="None">
-    <Declaration><![CDATA[
+    <Declaration><![CDATA[{attribute 'no-analysis'}
 PROGRAM TESTPRG
 VAR
   plcopenCommandTest : PLCopenCommand_Test;

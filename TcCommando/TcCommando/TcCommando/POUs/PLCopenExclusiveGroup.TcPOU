@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenExclusiveGroup" Id="{a76b1f90-0a80-460a-90df-c4011f390707}" SpecialFunc="None">
-    <Declaration><![CDATA[{attribute 'call_after_init'}
+    <Declaration><![CDATA[
+{attribute 'call_after_init'}
 FUNCTION_BLOCK PLCopenExclusiveGroup IMPLEMENTS IPLCopenGroup
 VAR_INPUT
   commands : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF IPLCopenCommand;

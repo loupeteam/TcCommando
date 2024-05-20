@@ -1,12 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenCallGroup" Id="{cba9c738-238a-4f8b-b4d1-3486de669f1d}" SpecialFunc="None">
-    <Declaration><![CDATA[
-FUNCTION_BLOCK PLCopenCallGroup IMPLEMENTS IPLCopenCaller, ICyclic
-VAR_INPUT
-END_VAR
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCallGroup IMPLEMENTS IPLCopenCaller, ICyclic
 VAR
-  _callGroup : PLCopenCallGroupType;
+  _PLCopenCallGroup : PLCopenCallGroupType;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -14,19 +11,18 @@ END_VAR
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 Cyclic();
-
-//TODO:
-//	The question is WHEN should the statuses be reset?
-//	This function block doesn't require any cyclic code, except possibly to do reset, 
-//	   but when should that happen?]]></ST>
+]]></ST>
     </Implementation>
     <Folder Name="API" Id="{fb09183a-54f7-047a-3485-8e6859a5d681}" />
     <Folder Name="internal" Id="{beafbdd8-261d-0a4b-0a06-801311af234c}" />
     <Property Name="Busy" Id="{365e6aa2-05a5-093c-3b46-fde57ca4eb8a}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
-PROPERTY Busy : BOOL]]></Declaration>
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
+PROPERTY Busy : BOOL
+]]></Declaration>
       <Get Name="Get" Id="{708104a0-2307-0952-0586-659817ab29e1}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
@@ -36,7 +32,7 @@ END_VAR
 CheckStatus();
 
 //Check if we are busy
-Busy := _callGroup._isBusy;
+Busy := _PLCopenCallGroup.isBusy;
 ]]></ST>
         </Implementation>
       </Get>
@@ -54,66 +50,76 @@ END_VAR
       <Implementation>
         <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-IF _callGroup._working THEN
-	//If it's not in the list
-	FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-	  IF _callGroup._commands[_commandIndex].Command <> 0 THEN
-		_callGroup._commands[_commandIndex]();
-	
-		IF _callGroup._commands[_commandIndex].CommandAborted THEN
-		  _anyAbort := TRUE;
-		ELSIF _callGroup._commands[_commandIndex].Error THEN
-		  _anyError := TRUE;
-		ELSIF _callGroup._commands[_commandIndex].Busy THEN
-		  _anyBusy := TRUE;
-		ELSE
-		  _callGroup._commands[_commandIndex].Command := 0;
-		END_IF
-	  END_IF
-	END_FOR
-	
-	_callGroup._isError := FALSE;
-	_callGroup._isAbort := FALSE;
-	_callGroup._isDone := FALSE;
-    _callGroup._isBusy := FALSE;
-	
-	IF _anyError OR _callGroup._syncError THEN
-	  _callGroup._isError := TRUE;
-	ELSIF _anyAbort OR _callGroup._syncAbort THEN
-	  _callGroup._isAbort := TRUE;
-	ELSIF NOT _anyBusy THEN
-	  _callGroup._isDone := TRUE;
-	 ELSE
- 		_callGroup._isBusy := TRUE;
-	END_IF
-	_callGroup._working := _callGroup._isBusy;
-	_callGroup.responseRequired := NOT _callGroup._working; 
-END_IF]]></ST>
+IF _PLCopenCallGroup.isWorking THEN
+  //If it's not in the list
+  FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+    IF _PLCopenCallGroup.Commands[_commandIndex].Command <> 0 THEN
+      _PLCopenCallGroup.Commands[_commandIndex]();
+
+      IF _PLCopenCallGroup.Commands[_commandIndex].CommandAborted THEN
+        _anyAbort := TRUE;
+      ELSIF _PLCopenCallGroup.Commands[_commandIndex].Error THEN
+        _anyError := TRUE;
+      ELSIF _PLCopenCallGroup.Commands[_commandIndex].Busy THEN
+        _anyBusy := TRUE;
+      ELSE
+        _PLCopenCallGroup.Commands[_commandIndex].Command := 0;
+      END_IF
+    END_IF
+  END_FOR
+
+  _PLCopenCallGroup.isError := FALSE;
+  _PLCopenCallGroup.isAbort := FALSE;
+  _PLCopenCallGroup.isDone := FALSE;
+  _PLCopenCallGroup.isBusy := FALSE;
+
+  IF _anyError OR _PLCopenCallGroup.SyncError THEN
+    _PLCopenCallGroup.isError := TRUE;
+  ELSIF _anyAbort OR _PLCopenCallGroup.SyncAbort THEN
+    _PLCopenCallGroup.isAbort := TRUE;
+  ELSIF NOT _anyBusy THEN
+    _PLCopenCallGroup.isDone := TRUE;
+  ELSE
+    _PLCopenCallGroup.isBusy := TRUE;
+  END_IF
+
+  _PLCopenCallGroup.isWorking := _PLCopenCallGroup.isBusy;
+  _PLCopenCallGroup.ResponseRequired := NOT _PLCopenCallGroup.isWorking;
+END_IF
+]]></ST>
       </Implementation>
     </Method>
     <Property Name="Command" Id="{fa0f69ac-85dc-00a4-0cad-44d44190802f}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY Command : IPLCopenCommand
 ]]></Declaration>
       <Get Name="Get" Id="{984f681b-543a-0172-01ba-c89d2fef703a}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[Command := _callGroup.Command;]]></ST>
+          <ST><![CDATA[
+Command := _PLCopenCallGroup.Command;
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{3212ff15-8498-0513-2b07-8b704407d4c2}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[_callGroup.Command := Command;]]></ST>
+          <ST><![CDATA[
+_PLCopenCallGroup.Command := Command;
+]]></ST>
         </Implementation>
       </Set>
     </Property>
     <Property Name="CommandAborted" Id="{96e569b0-457f-4c6e-bec1-643c895a8b9c}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY CommandAborted : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{17cd4830-83fc-4522-8782-e508fda2b93d}">
@@ -127,7 +133,7 @@ END_VAR
 
 CheckStatus();
 
-CommandAborted := _callGroup._isAbort;
+CommandAborted := _PLCopenCallGroup.isAbort;
 ]]></ST>
         </Implementation>
       </Get>
@@ -140,21 +146,26 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF _callGroup.Execute AND NOT _callGroup.Execute_ THEN
-	Start(Command);	
+        <ST><![CDATA[
+IF _PLCopenCallGroup.Execute AND NOT _PLCopenCallGroup.Execute_ THEN
+  Start(Command);
 END_IF
-_callGroup.Execute_ := _callGroup.Execute_;
+
+_PLCopenCallGroup.Execute_ := _PLCopenCallGroup.Execute_;
 
 CheckStatus();
 
-IF NOT Execute AND NOT _callGroup._working AND NOT _callGroup.responseRequired THEN
-	ResetStatus();
+IF NOT Execute AND NOT _PLCopenCallGroup.isWorking AND NOT _PLCopenCallGroup.ResponseRequired THEN
+  ResetStatus();
 END_IF
-_callGroup.responseRequired := FALSE;]]></ST>
+
+_PLCopenCallGroup.ResponseRequired := FALSE;
+]]></ST>
       </Implementation>
     </Method>
     <Property Name="Done" Id="{c890f33c-6dc4-4031-a7ae-121d8a0f3c09}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY Done : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{c8d0c1b7-b1e0-412a-9a10-7c15d2555f02}">
@@ -167,13 +178,14 @@ PROPERTY Done : BOOL
 CheckStatus();
 
 //Check if we are done
-Done := _callGroup._isDone;
+Done := _PLCopenCallGroup.isDone;
 ]]></ST>
         </Implementation>
       </Get>
     </Property>
     <Property Name="Error" Id="{28f1d1b2-fabc-44c9-968e-b0937bbe9074}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY Error : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{24b146e6-8584-4378-a902-a6d936d8a944}">
@@ -187,75 +199,87 @@ END_VAR
 
 CheckStatus();
 
-Error := _callGroup._isError;
+Error := _PLCopenCallGroup.isError;
 ]]></ST>
         </Implementation>
       </Get>
     </Property>
     <Property Name="Execute" Id="{5b87be21-8583-098a-0e78-5d86100d0b66}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY Execute : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{55c6ca61-00bc-039c-05ec-8621ba44fd24}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[Execute := _callGroup.Execute;
+          <ST><![CDATA[
+Execute := _PLCopenCallGroup.Execute;
 ]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{19e2cc11-de45-09ee-00d8-2da2e470d535}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[_callGroup.Execute := Execute;
+          <ST><![CDATA[
+_PLCopenCallGroup.Execute := Execute;
 ]]></ST>
         </Implementation>
       </Set>
     </Property>
     <Property Name="Fallback" Id="{c49006de-6901-01d6-031b-19d0084e3e00}" FolderPath="API\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
 PROPERTY Fallback : PLCopenStatusBase
 ]]></Declaration>
       <Get Name="Get" Id="{99054aaf-f072-017a-0235-378b837d26e3}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
           <ST><![CDATA[
-Fallback := _callGroup.Fallback;]]></ST>
+Fallback := _PLCopenCallGroup.Fallback;
+]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{f05c3337-3397-06e7-3671-8ccaa2a61aad}">
-        <Declaration><![CDATA[VAR
+        <Declaration><![CDATA[
+VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
           <ST><![CDATA[
-_callGroup.Fallback := Fallback;]]></ST>
+_PLCopenCallGroup.Fallback := Fallback;
+]]></ST>
         </Implementation>
       </Set>
     </Property>
     <Method Name="ResetStatus" Id="{cd896665-6c8b-4e15-8c06-75a5a8e469f2}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD ResetStatus : BOOL
+      <Declaration><![CDATA[
+METHOD ResetStatus : BOOL
 VAR
   _commandIndex : INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //If it's not in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-  _callGroup._commands[_commandIndex].ResetStatus();
+  _PLCopenCallGroup.Commands[_commandIndex].ResetStatus();
 END_FOR
 
-_callGroup._isBusy := FALSE;
-_callGroup._isAbort := FALSE;
-_callGroup._isDone := FALSE;
-_callGroup._isError := FALSE;
+_PLCopenCallGroup.isBusy := FALSE;
+_PLCopenCallGroup.isAbort := FALSE;
+_PLCopenCallGroup.isDone := FALSE;
+_PLCopenCallGroup.isError := FALSE;
 ]]></ST>
       </Implementation>
     </Method>
@@ -275,20 +299,20 @@ END_VAR
 
 // Check if it's already in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-  IF _callGroup._commands[_commandIndex].Command = Command THEN
-    _callGroup._commands[_commandIndex].Start(Command);
+  IF _PLCopenCallGroup.Commands[_commandIndex].Command = Command THEN
+    _PLCopenCallGroup.Commands[_commandIndex].Start(Command);
     Start := PLCopenStatusBase.BUSY;
-	_callGroup._working := TRUE;
+    _PLCopenCallGroup.isWorking := TRUE;
     RETURN;
   END_IF
 END_FOR
 
 // If it's not in the list
 FOR _commandIndex := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-  IF _callGroup._commands[_commandIndex].Command = 0 THEN
-    _callGroup._commands[_commandIndex].Start(Command);
+  IF _PLCopenCallGroup.Commands[_commandIndex].Command = 0 THEN
+    _PLCopenCallGroup.Commands[_commandIndex].Start(Command);
     Start := PLCopenStatusBase.BUSY;
-	_callGroup._working := TRUE;
+    _PLCopenCallGroup.isWorking := TRUE;
     RETURN;
   END_IF
 END_FOR

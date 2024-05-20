@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="Example" Id="{45624f9c-54ce-022c-10aa-cb07990b8aec}" SpecialFunc="None">
-    <Declaration><![CDATA[PROGRAM Example
+    <Declaration><![CDATA[{attribute 'no-analysis'}
+PROGRAM Example
 VAR
 	SingleCaller : PLCopenCall;
 	SingleCallerMulti : PLCopenCall;
@@ -13,9 +14,6 @@ VAR
 	SingleCommand2 : PLCopenCommand;
 	MultiCommand : PLCopenCommandGroup;
 
-	asyncCommand : PLCopenCall;
-		
-	
 	init : BOOL;
 
 	t : ARRAY[0..9] OF TON;
@@ -93,13 +91,13 @@ VAR_INPUT
 	Command : IPLCopenCommand;
 END_VAR
 VAR 
-	cyclic : ICyclic;
+	i_cyclic : ICyclic;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[
 Caller.Command := Command;
-IF __QUERYINTERFACE(Caller, cyclic) THEN
-	cyclic.Cyclic();
+IF __QUERYINTERFACE(Caller, i_cyclic) THEN
+	i_cyclic.Cyclic();
 END_IF
 Caller.Execute := FALSE;
 

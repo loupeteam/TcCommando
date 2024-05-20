@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCOpenCallGroup_Test" Id="{1b543c78-0b2c-0039-37ba-d5585a1070fe}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PLCOpenCallGroup_Test EXTENDS TcUnit.FB_TestSuite
+    <Declaration><![CDATA[{attribute 'no-analysis'}
+FUNCTION_BLOCK PLCOpenCallGroup_Test EXTENDS TcUnit.FB_TestSuite
 VAR_INPUT
 END_VAR
 VAR_OUTPUT

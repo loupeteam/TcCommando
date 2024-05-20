@@ -4,22 +4,19 @@
     <Declaration><![CDATA[TYPE
 PLCopenCallInternal :
 STRUCT
-  execute : BOOL;
+  Execute : BOOL;
+  Execute_ : BOOL;
   Command : IPLCopenCommand;
+  Command_ : IPLCopenCommand;
   Fallback : PLCopenStatusBase;
   Busy : BOOL;
   Done : BOOL;
   Error : BOOL;
   CommandAborted : BOOL;
   Status : PLCopenStatusBase;
-
-
-  _state : PLCopenCallState;
-  _Command : IPLCopenCommand;
-  _execute : BOOL;
-  _break : BOOL;
-  _self : IPLCopenCallRemote;
-  _remote : PLCopenRemote;
+  State : PLCopenCallState;
+  Self_ : IPLCopenCallRemote;
+  Remote : PLCopenRemote;
 END_STRUCT
 END_TYPE
 ]]></Declaration>

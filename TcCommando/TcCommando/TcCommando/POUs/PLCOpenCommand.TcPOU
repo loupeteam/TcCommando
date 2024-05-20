@@ -11,8 +11,8 @@ END_VAR
       <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-IF _PLCopenCommand._status <> PLCopenStatusBase.BUSY AND NOT Execute THEN
-  _PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
+IF _PLCopenCommand.Status <> PLCopenStatusBase.BUSY AND NOT Execute THEN
+  _PLCopenCommand.Status := PLCopenStatusBase.NOT_ENABLED;
 END_IF
 ]]></ST>
     </Implementation>
@@ -31,7 +31,7 @@ END_VAR
         <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-_PLCopenCommand._status := PLCopenStatusBase.ABORTED;
+_PLCopenCommand.Status := PLCopenStatusBase.ABORTED;
 
 Remote.ReportAborted();
 Remote := 0;
@@ -59,8 +59,8 @@ Remote := 0;
 
 //Abort any related commands
 FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-  IF _PLCopenCommand._commandGroups[i] <> 0 THEN
-    _PLCopenCommand._commandGroups[i].AbortPreviousCommands(newCommand);
+  IF _PLCopenCommand.CommandGroups[i] <> 0 THEN
+    _PLCopenCommand.CommandGroups[i].AbortPreviousCommands(newCommand);
   END_IF
 END_FOR
 ]]></ST>
@@ -88,17 +88,16 @@ VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-Consume := _PLCopenCommand._Execute;
+Consume := _PLCopenCommand.Execute;
 
-IF _PLCopenCommand._Execute THEN
+IF _PLCopenCommand.Execute THEN
   //	THIS^.AbortPreviousCommands( THIS^ );//This is meant to abort if the command comes locally
-  _PLCopenCommand._status := PLCopenStatusBase.BUSY;
+  _PLCopenCommand.Status := PLCopenStatusBase.BUSY;
 END_IF
 
-_PLCopenCommand._Execute := FALSE;
+_PLCopenCommand.Execute := FALSE;
 ]]></ST>
         </Implementation>
       </Get>
@@ -120,10 +119,10 @@ CASE ID OF
   PLCopenStatusBase.BUSY,
     PLCopenStatusBase.ENABLED_WAITING,
     PLCopenStatusBase.ERR_OK:
-    _PLCopenCommand._status := PLCopenStatusBase.ERROR;
+    _PLCopenCommand.Status := PLCopenStatusBase.ERROR;
 ELSE
   //Any other status can be passed through
-  _PLCopenCommand._status := ID;
+  _PLCopenCommand.Status := ID;
 END_CASE
 
 Remote.ReportErrored(ID);
@@ -142,10 +141,9 @@ VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-Execute := _PLCopenCommand._Execute;
+Execute := _PLCopenCommand.Execute;
 ]]></ST>
         </Implementation>
       </Get>
@@ -155,39 +153,38 @@ VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+          <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //We are already executing
-IF _PLCopenCommand._Trig = TRUE AND Execute = TRUE THEN
+IF _PLCopenCommand.Trig = TRUE AND Execute = TRUE THEN
 
   ; //Do nothing
   //Trigger an execute
-ELSIF _PLCopenCommand._Trig = FALSE AND Execute = TRUE THEN
-  _PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
-  _PLCopenCommand._Execute := TRUE;
+ELSIF _PLCopenCommand.Trig = FALSE AND Execute = TRUE THEN
+  _PLCopenCommand.Status := PLCopenStatusBase.ENABLED_WAITING;
+  _PLCopenCommand.Execute := TRUE;
 
   THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
 
   // We were executing, but resetting it to false;
   // Just resetting execute to false all the time is OK
 ELSIF Execute = FALSE THEN
-  _PLCopenCommand._Execute := FALSE;
+  _PLCopenCommand.Execute := FALSE;
 END_IF
 ]]></ST>
         </Implementation>
       </Set>
     </Property>
     <Method Name="ExecuteWithStatus" Id="{1464deb5-0ed6-4f94-88a3-65d78513e8e5}" FolderPath="API\Caller\">
-      <Declaration><![CDATA[METHOD ExecuteWithStatus : BOOL
+      <Declaration><![CDATA[
+METHOD ExecuteWithStatus : BOOL
 VAR_INPUT
   remote : IPLCopenCallRemote;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
-_PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
-_PLCopenCommand._Execute := TRUE;
+        <ST><![CDATA[_PLCopenCommand.Status := PLCopenStatusBase.ENABLED_WAITING;
+_PLCopenCommand.Execute := TRUE;
 THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
 THIS^.Remote := remote;
 ]]></ST>
@@ -205,23 +202,20 @@ END_VAR
         <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-_PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
+_PLCopenCommand.Status := PLCopenStatusBase.NOT_ENABLED;
 ]]></ST>
       </Implementation>
     </Method>
     <Method Name="Finished" Id="{bd7fbae3-272f-4620-a9e2-ef86e3120b6b}" FolderPath="API\Implimentation\">
       <Declaration><![CDATA[
 METHOD Finished : BOOL
-VAR_INST
-  derived : BOOL;
-END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-IF _PLCopenCommand._status = PLCopenStatusBase.BUSY THEN
-  _PLCopenCommand._status := PLCopenStatusBase.ERR_OK;
+IF _PLCopenCommand.Status = PLCopenStatusBase.BUSY THEN
+  _PLCopenCommand.Status := PLCopenStatusBase.ERR_OK;
 END_IF
 
 Remote.ReportFinished();
@@ -269,8 +263,8 @@ END_VAR
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-  IF _PLCopenCommand._commandGroups[i] = 0 THEN
-    _PLCopenCommand._commandGroups[i] := group;
+  IF _PLCopenCommand.CommandGroups[i] = 0 THEN
+    _PLCopenCommand.CommandGroups[i] := group;
     EXIT;
   END_IF
 END_FOR
@@ -290,10 +284,10 @@ END_VAR
           <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-IF _PLCopenCommand._remote <> 0 THEN
-  Remote := _PLCopenCommand._remote;
+IF _PLCopenCommand.Remote <> 0 THEN
+  Remote := _PLCopenCommand.Remote;
 ELSE
-  Remote := _PLCopenCommand._nullRemote;
+  Remote := _PLCopenCommand.NullRemote;
 END_IF
 ]]></ST>
         </Implementation>
@@ -307,7 +301,7 @@ END_VAR
           <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-_PLCopenCommand._remote := Remote;
+_PLCopenCommand.Remote := Remote;
 ]]></ST>
         </Implementation>
       </Set>
@@ -326,7 +320,7 @@ END_VAR
           <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-status := _PLCopenCommand._status;
+status := _PLCopenCommand.Status;
 ]]></ST>
         </Implementation>
       </Get>

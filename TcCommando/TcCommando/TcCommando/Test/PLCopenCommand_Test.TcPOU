@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenCommand_Test" Id="{0f0750ea-d1ee-4a18-8aa2-27762e9d8df2}" SpecialFunc="None">
-    <Declaration><![CDATA[
+    <Declaration><![CDATA[{attribute 'no-analysis'}
 FUNCTION_BLOCK PLCopenCommand_Test EXTENDS TcUnit.FB_TestSuite
 VAR_INPUT
 END_VAR
