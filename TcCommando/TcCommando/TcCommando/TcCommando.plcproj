@@ -83,13 +83,16 @@
     <Compile Include="Interfaces\IPLCopenConsumer.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Interfaces\IPLCopenFull.TcIO">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Interfaces\IPLCopenGroup.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\internal\PLCopenNullRemote.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\internal\PLCopenRemote.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\PLCopenCall.TcPOU">
@@ -104,13 +107,7 @@
     <Compile Include="POUs\PLCopenCommandGroup.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\PLCopenExlusionGroup.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\PLCopenNullRemote.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\PLCopenRemote.TcPOU">
+    <Compile Include="POUs\PLCopenExclusiveGroup.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Test\PLCopenCall_Test.TcPOU">
@@ -134,6 +131,7 @@
     <Folder Include="GVLs" />
     <Folder Include="Interfaces" />
     <Folder Include="Example" />
+    <Folder Include="POUs\internal" />
     <Folder Include="Test" />
     <Folder Include="POUs" />
   </ItemGroup>

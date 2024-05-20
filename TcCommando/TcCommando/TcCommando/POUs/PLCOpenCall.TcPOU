@@ -105,8 +105,7 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+        <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
 //Capture edges
 IF NOT Execute THEN
@@ -184,7 +183,7 @@ WHILE _break = FALSE DO
 
     // Start the command
     PLCopenCallState.PLCOPEN_FUB_SET_COMMAND:
-      _PLCopenCallInternal._Command.RemoteExecute( _PLCopenCallInternal._self );
+      _PLCopenCallInternal._Command.ExecuteWithStatus( _PLCopenCallInternal._self );
 
       _PLCopenCallInternal.Busy := TRUE;
       _PLCopenCallInternal._state := PLCOpenCallState.PLCOPEN_FUB_WORKING;

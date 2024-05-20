@@ -144,7 +144,7 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[ _PLCopenCallInternal.status := PLCopenStatusBase.ENABLED_WAITING;
-command.RemoteExecute(THIS^);
+command.ExecuteWithStatus(THIS^);
 ]]></ST>
       </Implementation>
     </Method>

@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenCallGroup" Id="{cba9c738-238a-4f8b-b4d1-3486de669f1d}" SpecialFunc="None">
     <Declaration><![CDATA[
-FUNCTION_BLOCK PLCopenCallGroup IMPLEMENTS IPLCopenCaller
+FUNCTION_BLOCK PLCopenCallGroup IMPLEMENTS IPLCopenCaller, ICyclic
 VAR_INPUT
 END_VAR
 VAR
@@ -13,6 +13,7 @@ END_VAR
       <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
+Cyclic();
 
 //TODO:
 //	The question is WHEN should the statuses be reset?
@@ -86,32 +87,7 @@ IF _callGroup._working THEN
  		_callGroup._isBusy := TRUE;
 	END_IF
 	_callGroup._working := _callGroup._isBusy;
-ELSE
-	//TODO: Is this really the behavior we want?
-	//	the question is WHEN should the statuses be reset?
-	
-	_callGroup._isError := FALSE;
-	_callGroup._isAbort := FALSE;
-	_callGroup._isDone := FALSE;
-	_callGroup._isBusy := FALSE;
-	CASE Fallback OF
-		PLCopenStatusBase.ABORTED:
-		  _callGroup._isAbort := TRUE;
-
-		PLCopenStatusBase.BUSY,
-		PLCopenStatusBase.ENABLED_WAITING:
-			_callGroup._isBusy := TRUE;
-
-		PLCopenStatusBase.ERR_OK:
-			_callGroup._isDone := TRUE;		
-
-		PLCopenStatusBase.NOT_ENABLED:
-			;
-		PLCopenStatusBase.ERROR:
-			_callGroup._isError := TRUE;		
-		ELSE		
-			_callGroup._isError := TRUE;				
-	END_CASE
+	_callGroup.responseRequired := NOT _callGroup._working; 
 END_IF]]></ST>
       </Implementation>
     </Method>
@@ -156,6 +132,28 @@ CommandAborted := _callGroup._isAbort;
         </Implementation>
       </Get>
     </Property>
+    <Method Name="Cyclic" Id="{edd04e9d-160e-0eeb-25d3-4b76ed5bbe64}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD Cyclic : BOOL
+VAR
+
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF _callGroup.Execute AND NOT _callGroup.Execute_ THEN
+	Start(Command);	
+END_IF
+_callGroup.Execute_ := _callGroup.Execute_;
+
+CheckStatus();
+
+IF NOT Execute AND NOT _callGroup._working AND NOT _callGroup.responseRequired THEN
+	Reset();
+END_IF
+_callGroup.responseRequired := FALSE;]]></ST>
+      </Implementation>
+    </Method>
     <Property Name="Done" Id="{c890f33c-6dc4-4031-a7ae-121d8a0f3c09}" FolderPath="API\">
       <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
 PROPERTY Done : BOOL
@@ -213,11 +211,7 @@ END_VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[IF Execute AND NOT _callGroup.Execute  THEN
-	Start(Command);	
-END_IF
-
-_callGroup.Execute := Execute;
+          <ST><![CDATA[_callGroup.Execute := Execute;
 ]]></ST>
         </Implementation>
       </Set>

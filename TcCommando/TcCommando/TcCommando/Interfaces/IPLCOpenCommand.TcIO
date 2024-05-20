@@ -22,6 +22,13 @@ PROPERTY Execute : BOOL
         <Declaration><![CDATA[]]></Declaration>
       </Set>
     </Property>
+    <Method Name="ExecuteWithStatus" Id="{848c1c0e-acc8-4bf6-badb-32bdb38afd6e}">
+      <Declaration><![CDATA[METHOD ExecuteWithStatus : BOOL
+VAR_INPUT
+  remote : IPLCopenCallRemote;
+END_VAR
+]]></Declaration>
+    </Method>
     <Property Name="Remote" Id="{57e041e0-47dd-412b-8e3f-60bcf4f3351e}">
       <Declaration><![CDATA[{warning 'add property implementation'}
 PROPERTY Remote : IPLCopenCallRemote
@@ -33,13 +40,5 @@ PROPERTY Remote : IPLCopenCallRemote
         <Declaration><![CDATA[]]></Declaration>
       </Set>
     </Property>
-    <Method Name="RemoteExecute" Id="{848c1c0e-acc8-4bf6-badb-32bdb38afd6e}">
-      <Declaration><![CDATA[
-METHOD RemoteExecute : BOOL
-VAR_INPUT
-  remote : IPLCopenCallRemote;
-END_VAR
-]]></Declaration>
-    </Method>
   </Itf>
 </TcPlcObject>

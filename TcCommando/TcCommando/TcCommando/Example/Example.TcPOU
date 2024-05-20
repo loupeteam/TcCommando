@@ -13,6 +13,9 @@ VAR
 	SingleCommand2 : PLCopenCommand;
 	MultiCommand : PLCopenCommandGroup;
 
+	asyncCommand : PLCopenCall;
+		
+	
 	init : BOOL;
 
 	t : ARRAY[0..9] OF TON;
@@ -36,6 +39,10 @@ IF executeMultiCall1 THEN
 	MultiCaller1.Start(SingleCommand1);
 	MultiCaller1.Start(SingleCommand2);
 END_IF
+
+//MultiCaller1();
+//MultiCaller1.Execute := FALSE;
+
 IF executeMultiCall2 THEN
 	executeMultiCall2  := FALSE;
 	MultiCaller2.Start(SingleCommand1);
@@ -47,11 +54,36 @@ Call(SingleCallerMulti, MultiCommand);
 Call(MultiCaller1, SingleCommand1);
 Call(MultiCaller2, SingleCommand2);
 
-
-
 FinishAfterTimeout(SingleCommand1);
 FinishAfterTimeout(singleCommand2);
 command(MultiCommand);
+(*
+CASE seq.doStep() OF
+	0:
+		IF seq.onEntry() THEN
+//			axis1.power( seq );
+//			axis2.power( seq );
+//			axis3.power( seq );
+			temp.startHeating(asyncCommand);
+		END_IF
+			
+		seq.onSuccess(1);
+		
+	1: 
+		IF seq.onEntry() THEN
+			axis1.start( seq );
+			axis2.start( seq );
+		END_IF
+			
+		seq.onSuccess(2);		
+	2:
+		IF asyncCommand.Done THEN
+			requestStep(3);
+		END_IF		
+		
+END_CASE
+*)
+
 ]]></ST>
     </Implementation>
     <Method Name="Call" Id="{2ac8c54c-fba6-01b2-3cc3-82e30c1a971c}">
@@ -67,7 +99,7 @@ END_VAR]]></Declaration>
         <ST><![CDATA[
 Caller.Command := Command;
 IF __QUERYINTERFACE(Caller, cyclic) THEN
-	cyclic.Cyclic();
+//	cyclic.Cyclic();
 END_IF
 Caller.Execute := FALSE;
 
@@ -102,13 +134,12 @@ END_VAR]]></Declaration>
         <ST><![CDATA[t REF= ton();
 
 IF cmd.Consume THEN
-
 	t(IN:=FALSE);	
 	t(IN:=TRUE);	
-	
+ELSE
+	t();	
 END_IF
 
-t();
 IF t.Q THEN	
 	t.IN:= FALSE;
 	cmd.Finished();

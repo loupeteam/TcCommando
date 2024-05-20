@@ -16,9 +16,12 @@ IF _PLCopenCommand._status <> PLCopenStatusBase.BUSY AND NOT Execute THEN
 END_IF
 ]]></ST>
     </Implementation>
-    <Folder Name="API" Id="{0587c0fb-5387-4c8e-ab33-b65a12ba1fe4}" />
+    <Folder Name="API" Id="{0587c0fb-5387-4c8e-ab33-b65a12ba1fe4}">
+      <Folder Name="Caller" Id="{457cf466-aa4d-04a4-2625-f04157795f32}" />
+      <Folder Name="Implimentation" Id="{738e59a5-8247-0c0b-2423-1157465a3a18}" />
+    </Folder>
     <Folder Name="internal" Id="{49c08f52-caae-4692-bd2e-016738f72df3}" />
-    <Method Name="Aborted" Id="{d2af0695-906b-4a1e-be1b-8d6698087918}" FolderPath="API\">
+    <Method Name="Aborted" Id="{d2af0695-906b-4a1e-be1b-8d6698087918}" FolderPath="API\Implimentation\">
       <Declaration><![CDATA[
 METHOD Aborted : BOOL
 VAR_INPUT
@@ -35,7 +38,7 @@ Remote := 0;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="AbortPreviousCommands" Id="{72a4612a-7755-4ff4-a80f-b8e7a7020c17}" FolderPath="API\">
+    <Method Name="AbortPreviousCommands" Id="{72a4612a-7755-4ff4-a80f-b8e7a7020c17}" FolderPath="internal\">
       <Declaration><![CDATA[
 METHOD AbortPreviousCommands : BOOL
 VAR_INPUT
@@ -75,7 +78,7 @@ BaseSize := SIZEOF(THIS^);
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="Consume" Id="{2ef92d9e-be31-4204-86c4-dd6ebc3c6354}" FolderPath="API\">
+    <Property Name="Consume" Id="{2ef92d9e-be31-4204-86c4-dd6ebc3c6354}" FolderPath="API\Implimentation\">
       <Declaration><![CDATA[
 PROPERTY Consume : BOOL
 ]]></Declaration>
@@ -100,7 +103,7 @@ _PLCopenCommand._Execute := FALSE;
         </Implementation>
       </Get>
     </Property>
-    <Method Name="Errored" Id="{e4afdd7d-e3d4-4bb8-9a5c-f28bb8c767d0}" FolderPath="API\">
+    <Method Name="Errored" Id="{e4afdd7d-e3d4-4bb8-9a5c-f28bb8c767d0}" FolderPath="API\Implimentation\">
       <Declaration><![CDATA[
 METHOD Errored : BOOL
 VAR_INPUT
@@ -128,7 +131,7 @@ Remote := 0;
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="Execute" Id="{cf9e92fe-da22-4c8e-b19d-8971f1bd24dd}" FolderPath="API\">
+    <Property Name="Execute" Id="{cf9e92fe-da22-4c8e-b19d-8971f1bd24dd}" FolderPath="API\Caller\">
       <Declaration><![CDATA[
 {attribute 'monitoring' := 'call'}
 PROPERTY Execute : BOOL
@@ -175,6 +178,21 @@ END_IF
         </Implementation>
       </Set>
     </Property>
+    <Method Name="ExecuteWithStatus" Id="{1464deb5-0ed6-4f94-88a3-65d78513e8e5}" FolderPath="API\Caller\">
+      <Declaration><![CDATA[METHOD ExecuteWithStatus : BOOL
+VAR_INPUT
+  remote : IPLCopenCallRemote;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+_PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
+_PLCopenCommand._Execute := TRUE;
+THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
+THIS^.Remote := remote;
+]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="FB_init" Id="{b4349aad-b544-4b1e-a56d-39ff17892797}" FolderPath="internal\">
       <Declaration><![CDATA[
 METHOD FB_init : BOOL
@@ -191,7 +209,7 @@ _PLCopenCommand._status := PLCopenStatusBase.NOT_ENABLED;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Finished" Id="{bd7fbae3-272f-4620-a9e2-ef86e3120b6b}" FolderPath="API\">
+    <Method Name="Finished" Id="{bd7fbae3-272f-4620-a9e2-ef86e3120b6b}" FolderPath="API\Implimentation\">
       <Declaration><![CDATA[
 METHOD Finished : BOOL
 VAR_INST
@@ -294,23 +312,7 @@ _PLCopenCommand._remote := Remote;
         </Implementation>
       </Set>
     </Property>
-    <Method Name="RemoteExecute" Id="{1464deb5-0ed6-4f94-88a3-65d78513e8e5}" FolderPath="API\">
-      <Declaration><![CDATA[
-METHOD RemoteExecute : BOOL
-VAR_INPUT
-  remote : IPLCopenCallRemote;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-_PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
-_PLCopenCommand._Execute := TRUE;
-THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
-THIS^.Remote := remote;
-]]></ST>
-      </Implementation>
-    </Method>
-    <Property Name="Status" Id="{3390b090-03b4-43fa-b62c-451c749fc114}" FolderPath="API\">
+    <Property Name="Status" Id="{3390b090-03b4-43fa-b62c-451c749fc114}" FolderPath="API\Caller\">
       <Declaration><![CDATA[
 {attribute 'monitoring' := 'call'}
 PROPERTY Status : PLCopenStatusBase

@@ -6,8 +6,10 @@ TYPE
 PLCopenCallGroupType :
 STRUCT
   Execute : BOOL;
+  Execute_ : BOOL;
   Command : IPLCopenCommand;
   Fallback : PLCopenStatusBase;
+  responseRequired : BOOL;
   _startStep : ENUM; //The step when doStep was called
   _currentStep : ENUM;
   _lastRequestNumber : DINT;
@@ -17,6 +19,7 @@ STRUCT
   _isAbort : BOOL;
   _isError : BOOL;
   _isBusy : BOOL;
+  _finished : BOOL;
   _working : BOOL;
   _statusChecked : BOOL;
   _numberActiveCommands : INT;

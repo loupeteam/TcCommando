@@ -28,12 +28,14 @@ END_VAR
 TEST('EmptyCall');
 
 //caller.Start(command);
-
+caller.Execute := TRUE;
+caller();
+caller.Execute := FALSE;
 AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
 
-caller.Reset();
+caller();
 
-AssertTrue(Condition := caller.Done, Message := 'Done must be false after complete');//By default, this FUB is done if there is no work to do
+AssertFalse(Condition := caller.Done, Message := 'Done must be false after complete');//By default, this FUB is done if there is no work to do
 AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after complete');
 AssertFalse(Condition := caller.Error, Message := 'Error must be false after complete');
 
@@ -41,7 +43,7 @@ AssertFalse(Condition := caller.Error, Message := 'Error must be false after com
 caller.Fallback := PLCopenStatusBase.NOT_ENABLED;
 AssertFalse(Condition := caller.Done, Message := 'Caller must be done for once cycle');
 
-caller.Reset();
+caller();
 
 AssertFalse(Condition := caller.Done, Message := 'Done must be false after complete');//With enable false, this FUB is not done if there is no work to do
 AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after complete');
@@ -65,6 +67,7 @@ END_VAR
 TEST('One Command Default');
 
 caller.Start(Command);
+
 AssertTrue(Condition := caller.Busy, Message := 'Caller must be busy for once cycle');
 
 AssertTrue(Condition := command.Consume, Message := 'Consume should be true after call');
@@ -72,11 +75,15 @@ AssertFalse(Condition := command.Consume, Message := 'Consume should only be tru
 
 command.Finished();
 
+AssertTrue(Condition := caller.Done, Message := 'Caller must be done after finished');
+
+caller();
+
 AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
 
-caller.Reset();
+caller();
 
-AssertTrue(Condition := caller.Done, Message := 'Done must be true after reset by default');
+AssertFalse(Condition := caller.Done, Message := 'Done must be false after reset by default');
 AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after reset');
 AssertFalse(Condition := caller.Error, Message := 'Error must be false after reset');
 
@@ -94,7 +101,11 @@ command.Finished();
 
 AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
 
-caller.Reset();
+caller();
+
+AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
+
+caller();
 
 AssertFalse(Condition := caller.Done, Message := 'Done must be false after reset');
 AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after reset');

@@ -152,6 +152,35 @@ END_IF
         </Implementation>
       </Set>
     </Property>
+    <Method Name="ExecuteWithStatus" Id="{6a0caeff-e008-4e4e-8e10-5ac4e600e899}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD ExecuteWithStatus : BOOL
+VAR_INPUT
+  remote : IPLCopenCallRemote;
+END_VAR
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+_PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
+_PLCopenCommand._Execute := TRUE;
+THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
+
+IF _PLCopenCommand.subscriberCount = 0 THEN
+  remote.ReportFinished();
+ELSE
+  THIS^.Remote := remote;
+
+  FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+    IF _PLCopenCommand.subscriber[i].command <> 0 THEN		
+      _PLCopenCommand.subscriber[i].Start(_PLCopenCommand.subscriber[i].command);
+    END_IF
+  END_FOR
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="FB_init" Id="{62f8f380-4d47-4719-a2c7-a7f000597606}" FolderPath="internal\">
       <Declaration><![CDATA[
 METHOD FB_init : BOOL
@@ -272,36 +301,6 @@ _PLCopenCommand._remote := Remote;
         </Implementation>
       </Set>
     </Property>
-    <Method Name="RemoteExecute" Id="{6a0caeff-e008-4e4e-8e10-5ac4e600e899}" FolderPath="API\">
-      <Declaration><![CDATA[
-METHOD RemoteExecute : BOOL
-VAR_INPUT
-  remote : IPLCopenCallRemote;
-END_VAR
-VAR
-  i : INT;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-_PLCopenCommand._status := PLCopenStatusBase.ENABLED_WAITING;
-_PLCopenCommand._Execute := TRUE;
-THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
-
-IF _PLCopenCommand.subscriberCount = 0 THEN
-  remote.ReportFinished();
-ELSE
-  THIS^.Remote := remote;
-
-  FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-    IF _PLCopenCommand.subscriber[i].command <> 0 THEN		
-      _PLCopenCommand.subscriber[i].Start(_PLCopenCommand.subscriber[i].command);
-    END_IF
-  END_FOR
-END_IF
-]]></ST>
-      </Implementation>
-    </Method>
     <Property Name="RemoteStatus" Id="{205f74a8-fc38-44d9-b915-074d931a1a17}" FolderPath="internal\">
       <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
 PROPERTY RemoteStatus : PLCopenStatusBase
