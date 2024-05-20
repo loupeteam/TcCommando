@@ -6,6 +6,13 @@
 
 INTERFACE IPLCopenCommand EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
+    <Method Name="Aborted" Id="{1b1a158b-dbda-0bc9-3534-15c4ba7f466a}">
+      <Declaration><![CDATA[
+METHOD Aborted : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
     <Method Name="AbortPreviousCommands" Id="{118dd5ed-57aa-4c07-ad44-4088eeac9e5c}">
       <Declaration><![CDATA[
 METHOD AbortPreviousCommands : BOOL
@@ -26,6 +33,14 @@ PROPERTY Execute : BOOL
       <Declaration><![CDATA[METHOD ExecuteWithStatus : BOOL
 VAR_INPUT
   remote : IPLCopenCallRemote;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="RegisterGroup" Id="{45cf3e30-0fa8-484d-b8f9-6b142c5fee4d}">
+      <Declaration><![CDATA[
+METHOD RegisterGroup : BOOL
+VAR_INPUT
+  group : IPLCopenGroup;
 END_VAR
 ]]></Declaration>
     </Method>

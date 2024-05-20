@@ -6,7 +6,7 @@
 
 INTERFACE IPLCopenConsumer EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
-    <Method Name="Aborted" Id="{af9a5c81-514c-4798-9d65-13d6c4bcb53d}">
+    <Method Name="Aborted" Id="{c13e0269-f6af-093a-3e84-237aad3bcb62}">
       <Declaration><![CDATA[
 METHOD Aborted : BOOL
 VAR_INPUT
@@ -33,14 +33,6 @@ END_VAR
       <Declaration><![CDATA[
 METHOD Finished : BOOL
 VAR_INPUT
-END_VAR
-]]></Declaration>
-    </Method>
-    <Method Name="RegisterGroup" Id="{45cf3e30-0fa8-484d-b8f9-6b142c5fee4d}">
-      <Declaration><![CDATA[
-METHOD RegisterGroup : BOOL
-VAR_INPUT
-  group : IPLCopenGroup;
 END_VAR
 ]]></Declaration>
     </Method>

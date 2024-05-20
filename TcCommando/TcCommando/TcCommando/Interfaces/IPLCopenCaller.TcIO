@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <Itf Name="IPLCopenCaller" Id="{3539bad0-84c7-0f02-0e2d-9dcc4fb33c22}">
-    <Declaration><![CDATA[INTERFACE IPLCopenCaller EXTENDS __SYSTEM.IQueryInterface
+    <Declaration><![CDATA[INTERFACE IPLCopenCaller EXTENDS IPLCopenCall
 ]]></Declaration>
     <Property Name="Busy" Id="{35f172e6-8886-0779-260d-da1cf511c014}">
       <Declaration><![CDATA[PROPERTY Busy : BOOL]]></Declaration>
@@ -61,13 +61,6 @@ END_VAR
     </Property>
     <Method Name="ResetStatus" Id="{81b3fc3a-1372-0b12-38fe-bd388ba1f607}">
       <Declaration><![CDATA[METHOD ResetStatus : BOOL
-]]></Declaration>
-    </Method>
-    <Method Name="Start" Id="{7a017d66-fa84-0857-07d1-72205def583f}">
-      <Declaration><![CDATA[METHOD Start : PLCopenStatusBase
-VAR_INPUT
-  Command : IPLCopenCommand;
-END_VAR
 ]]></Declaration>
     </Method>
   </Itf>

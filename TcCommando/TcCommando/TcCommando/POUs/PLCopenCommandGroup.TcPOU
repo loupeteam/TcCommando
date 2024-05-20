@@ -63,6 +63,20 @@ END_FOR
         </Implementation>
       </Set>
     </Property>
+    <Method Name="Aborted" Id="{0a5747f8-ccf3-05ea-04f7-1d386080534a}" FolderPath="API\">
+      <Declaration><![CDATA[METHOD Aborted : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+_PLCopenCommandGroup.Status := PLCopenStatusBase.ABORTED;
+
+Remote.ReportAborted();
+Remote := 0;
+]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="AbortPreviousCommands" Id="{d96a3de2-9b29-447f-9cc6-35dbbf6dd762}" FolderPath="internal\">
       <Declaration><![CDATA[
 METHOD AbortPreviousCommands : BOOL
