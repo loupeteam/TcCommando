@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="OvenBasic" Id="{f06dffbc-4722-072d-2af9-eca0de705433}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK OvenBasic
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	_HeatCommand: PLCopenCommand;
+	_Temp : REAL;
+	_TempSetPoint : REAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Cyclic" Id="{cadd8092-5caa-0878-1061-812a85cdf4f3}">
+      <Declaration><![CDATA[METHOD Cyclic : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	//cmd : PLCopenCommand;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//cmd := HeatCommand;
+IF _HeatCommand.Consume THEN
+	TempSetPoint := 350; //set the oven temp set point
+END_IF
+
+regulateTemp();
+
+IF Temp = TempSetPoint THEN
+	_HeatCommand.Finished();//report status when command is done
+END_IF
+
+_HeatCommand.Execute := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="regulateTemp" Id="{e7b4fd20-002e-0a00-2400-c893399805ba}">
+      <Declaration><![CDATA[METHOD regulateTemp : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//warm up/cool down over time
+IF Temp < TempSetPoint THEN
+	Temp := Temp + 1;
+ELSIF Temp > TempSetPoint THEN
+	Temp := Temp - 1;
+END_IF
+
+regulateTemp := Temp = TempSetPoint;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="StartHeating" Id="{4682e446-3b47-0d83-307f-2a9af1f7b249}">
+      <Declaration><![CDATA[METHOD StartHeating : BOOL
+VAR_INPUT
+	status: IPLCopenCall;
+	//SetTemp : REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF status = 0 THEN
+	_HeatCommand.Execute := TRUE;
+ELSE
+	status.Start(_HeatCommand);
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Temp" Id="{8402adfa-4656-07d8-31e0-c7336fe48348}">
+      <Declaration><![CDATA[PROPERTY Temp : REAL]]></Declaration>
+      <Get Name="Get" Id="{42a4bc8c-c843-049d-0017-e2a236bdaf56}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Temp := _Temp;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{e439bc0f-f6df-0042-3b99-ff0e48f51203}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_Temp := Temp;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="TempSetPoint" Id="{72a1bc95-d7ae-06b1-349a-14c2e0298e28}">
+      <Declaration><![CDATA[PROPERTY TempSetPoint : REAL]]></Declaration>
+      <Get Name="Get" Id="{8fcf468c-17ca-0c09-27b2-079b919c78e2}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[TempSetPoint := _TempSetPoint;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{a23980ee-440c-0f77-3e3b-5060688a1c12}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_TempSetPoint := TempSetPoint;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <LineIds Name="OvenBasic">
+      <LineId Id="22" Count="0" />
+    </LineIds>
+    <LineIds Name="OvenBasic.Cyclic">
+      <LineId Id="7" Count="2" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="13" Count="3" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="OvenBasic.regulateTemp">
+      <LineId Id="17" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="OvenBasic.StartHeating">
+      <LineId Id="8" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="OvenBasic.Temp.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="OvenBasic.Temp.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="OvenBasic.TempSetPoint.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="OvenBasic.TempSetPoint.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

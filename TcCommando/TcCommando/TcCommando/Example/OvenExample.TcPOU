@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="OvenExample" Id="{b57ab83e-29e5-0abb-0aa3-87f8d2927bf3}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM OvenExample
+VAR
+	oven : OvenBasic;
+	heatCall : PLCopenCall;
+	startHeating : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[oven.cyclic();
+
+IF startHeating THEN
+	oven.StartHeating(heatCall);
+	startHeating := 0;
+END_IF
+
+heatCall();
+//heatCall.Execute := 0;
+
+IF heatCall.Done THEN
+	//do the next thing
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="OvenExample">
+      <LineId Id="5" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="22" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

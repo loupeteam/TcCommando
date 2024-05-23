@@ -58,6 +58,12 @@
     <Compile Include="Example\Example.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Example\OvenBasic.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Example\OvenExample.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GVLs\GVLTcCommando.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
