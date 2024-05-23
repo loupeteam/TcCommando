@@ -2,16 +2,22 @@
 <TcPlcObject Version="1.1.0.1">
   <DUT Name="PLCopenCallInternal" Id="{a493e5a4-f6ba-450d-b862-4481c25cddf0}">
     <Declaration><![CDATA[TYPE
-    PLCopenCallInternal :
-    STRUCT
-        _state : PLCopenCallState;
-        _Command : IPLCopenCommand;
-        _abort : BOOL;
-        _execute : BOOL;
-        _break : BOOL;
-        _RemoteStatus : PLCopenStatusBase;
-        _self : IPLCopenCall;
-    END_STRUCT
+PLCopenCallInternal :
+STRUCT
+  Execute : BOOL;
+  Execute_ : BOOL;
+  Command : IPLCopenCommand;
+  Command_ : IPLCopenCommand;
+  Fallback : PLCopenStatusBase;
+  Busy : BOOL;
+  Done : BOOL;
+  Error : BOOL;
+  CommandAborted : BOOL;
+  Status : PLCopenStatusBase;
+  State : PLCopenCallState;
+  Self_ : IPLCopenCallRemote;
+  Remote : PLCopenRemote;
+END_STRUCT
 END_TYPE
 ]]></Declaration>
   </DUT>

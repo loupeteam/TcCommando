@@ -2,15 +2,15 @@
 <TcPlcObject Version="1.1.0.1">
   <DUT Name="PLCopenCommandInternal" Id="{2586c15f-1927-4933-a282-856f73a5f588}">
     <Declaration><![CDATA[TYPE
-    PLCopenCommandInternal :
-    STRUCT
-        _Execute : BOOL;
-        _Trig : BOOL;
-        _status : PLCopenStatusBase;
-        _remote : IPLCopenCall;
-        _nullRemote : PLCopenNullRemote;
-        _commandGroups : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF IPLCopenGroup;
-    END_STRUCT
+PLCopenCommandInternal :
+STRUCT
+  Execute : BOOL;
+  Trig : BOOL;
+  Status : PLCopenStatusBase;
+  Remote : IPLCopenCallRemote;
+  NullRemote : PLCopenNullRemote;
+  CommandGroups : ARRAY[0..GVLTcCommando.MAX_RELATED_GROUPS] OF IPLCopenGroup;
+END_STRUCT
 END_TYPE
 ]]></Declaration>
   </DUT>

@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PLCopenCommandGroup" Id="{2e0402f9-bb03-4307-bd9d-f64d15557336}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCommandGroup EXTENDS PLCopenCommand IMPLEMENTS IPLCopenCallStatus, IPLCopenCallRemote
+VAR
+  _PLCopenCommandGroup : PLCopenCommandGroupInternal;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+SUPER^();
+]]></ST>
+    </Implementation>
+    <Folder Name="API" Id="{b4cb7c13-7345-44ed-a6a5-26d1ff59917e}" />
+    <Folder Name="internal" Id="{bc5dbaf1-a59e-45ac-ba7f-2fe65e0965ac}" />
+    <Property Name="Abort" Id="{1481c1bf-dd08-458a-bff7-86f233f6eeac}" FolderPath="internal\">
+      <Declaration><![CDATA[
+{warning 'add property implementation'}
+PROPERTY Abort : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{595e4f9c-a6b2-49c1-89ff-f9a8181dbc2a}">
+        <Declaration><![CDATA[
+VAR
+  i : INT;
+  _abort : BOOL;
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+_abort := FALSE;
+
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+
+  IF _PLCopenCommandGroup.Subscriber[i].command = 0 THEN
+
+    _abort := _abort OR _PLCopenCommandGroup.Subscriber[i].Abort;
+
+  END_IF
+
+END_FOR
+
+Abort := _abort;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{8a526a1f-79ec-413f-b67f-f9efc0af12a6}">
+        <Declaration><![CDATA[
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+
+  _PLCopenCommandGroup.Subscriber[i].Abort := Abort;
+
+END_FOR
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="ExecuteWithStatus" Id="{6a0caeff-e008-4e4e-8e10-5ac4e600e899}" FolderPath="API\">
+      <Declaration><![CDATA[
+METHOD ExecuteWithStatus : BOOL
+VAR_INPUT
+  remote : IPLCopenCallRemote;
+END_VAR
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+_PLCopenCommand.Status := PLCopenStatusBase.ENABLED_WAITING;
+_PLCopenCommand.Execute := TRUE;
+THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
+
+IF _PLCopenCommandGroup.SubscriberCount = 0 THEN
+  remote.ReportFinished();
+ELSE
+  THIS^.Remote := remote;
+
+  FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+    IF _PLCopenCommandGroup.Subscriber[i].command <> 0 THEN
+      _PLCopenCommandGroup.Subscriber[i].Start(_PLCopenCommandGroup.Subscriber[i].command);
+    END_IF
+  END_FOR
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="PropagateReport" Id="{06b6e849-94ee-4dda-9c26-96e1ae389029}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD PropagateReport : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE RemoteStatus OF
+  PLCopenStatusBase.BUSY,
+    PLCopenStatusBase.ENABLED_WAITING:
+    ; //Nothing to do
+  PLCopenStatusBase.ERR_OK:
+    remote.ReportFinished();
+    Remote := 0;
+    _PLCopenCommandGroup.Working := FALSE;
+ELSE
+  remote.ReportErrored(RemoteStatus);
+  Remote := 0;
+  _PLCopenCommandGroup.Working := FALSE;
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="RemoteStatus" Id="{205f74a8-fc38-44d9-b915-074d931a1a17}" FolderPath="internal\">
+      <Declaration><![CDATA[
+{attribute 'monitoring' := 'call'}
+PROPERTY RemoteStatus : PLCopenStatusBase
+]]></Declaration>
+      <Get Name="Get" Id="{9005f72b-5b68-4944-80e7-1a2d3dd95b2d}">
+        <Declaration><![CDATA[
+VAR
+  i : INT;
+  done : BOOL;
+  error : BOOL;
+  busy : BOOL;
+  errorID : PLCopenStatusBase;
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+  IF _PLCopenCommandGroup.Subscriber[i].command <> 0 THEN
+
+    CASE _PLCopenCommandGroup.Subscriber[i].RemoteStatus OF
+      //Any of these statuses are invalid to return as an error.
+      //Override to error
+      PLCopenStatusBase.BUSY,
+        PLCopenStatusBase.ENABLED_WAITING:
+        busy := TRUE;
+      PLCopenStatusBase.ERR_OK:
+        done := TRUE;
+    ELSE
+      //Any other status can be passed through
+      error := TRUE;
+      errorID := _PLCopenCommandGroup.Subscriber[i].RemoteStatus;
+    END_CASE
+  END_IF
+END_FOR
+
+IF error THEN
+  RemoteStatus := errorID;
+ELSIF busy THEN
+  RemoteStatus := PLCopenStatusBase.BUSY;
+ELSE
+  RemoteStatus := PLCopenStatusBase.ERR_OK;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{3cf642f5-d7a0-45cb-9562-4796c5a4284b}">
+        <Declaration><![CDATA[
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+
+  _PLCopenCommandGroup.Subscriber[i].RemoteStatus := RemoteStatus;
+
+END_FOR
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="ReportAborted" Id="{0ad81ece-f45c-4bfe-8275-0b88f20ba7f9}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD ReportAborted : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[remote.ReportAborted();
+Remote := 0;
+_PLCopenCommandGroup.Working := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReportErrored" Id="{64171600-801f-42eb-b53a-2c8820ca15b2}" FolderPath="internal\">
+      <Declaration><![CDATA[{attribute 'no-analysis'}
+METHOD ReportErrored : BOOL
+VAR_INPUT
+  ID : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+PropagateReport();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReportFinished" Id="{685cdf62-5140-4613-a4f4-988c84b23715}" FolderPath="internal\">
+      <Declaration><![CDATA[
+METHOD ReportFinished : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+PropagateReport();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Subscribe" Id="{f77bb195-a8c6-409a-8fef-a2a8a01adc97}" FolderPath="API\">
+      <Declaration><![CDATA[
+METHOD Subscribe : BOOL
+VAR_INPUT
+  command : IPLCopenCommand;
+END_VAR
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF _PLCopenCommandGroup.SubscriberCount > GVLTcCommando.MAX_RELATED_GROUPS THEN
+  //Throw an error
+  Subscribe := FALSE;
+  RETURN;
+END_IF
+
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+  IF _PLCopenCommandGroup.Subscriber[i].command = 0 THEN
+    _PLCopenCommandGroup.Subscriber[i].command := command;
+    _PLCopenCommandGroup.Subscriber[i].delegate := THIS^;
+    _PLCopenCommandGroup.SubscriberCount := _PLCopenCommandGroup.SubscriberCount + 1;
+    Subscribe := TRUE;
+    RETURN;
+  END_IF
+END_FOR
+
+//Throw an error
+Subscribe := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Unsubscribe" Id="{8b526c33-1564-429b-8718-fad28d62ba85}" FolderPath="API\">
+      <Declaration><![CDATA[
+METHOD Unsubscribe : BOOL
+VAR_INPUT
+  command : IPLCopenCommand;
+END_VAR
+VAR
+  i : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+  IF _PLCopenCommandGroup.Subscriber[i].command = command THEN
+    _PLCopenCommandGroup.SubscriberCount := _PLCopenCommandGroup.SubscriberCount - 1;
+    _PLCopenCommandGroup.Subscriber[i].command := 0;
+    Unsubscribe := TRUE;
+    RETURN;
+  END_IF
+END_FOR
+
+//Throw an error
+Unsubscribe := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

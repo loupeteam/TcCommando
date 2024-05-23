@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IPLCopenCallStatus" Id="{60f3b750-fcda-423b-b14b-4ab6a5b83007}">
+    <Declaration><![CDATA[INTERFACE IPLCopenCallStatus EXTENDS __SYSTEM.IQueryInterface
+]]></Declaration>
+    <Property Name="Abort" Id="{e3fd7230-b538-4c9e-9d21-fdf83ee0041b}">
+      <Declaration><![CDATA[PROPERTY Abort : bool]]></Declaration>
+      <Get Name="Get" Id="{c13334cc-4ce3-4ae4-ba07-5566ef4ed077}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{0f7f4071-2fa0-473a-b32d-6402c6d8e632}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Property Name="RemoteStatus" Id="{6834da51-f1de-4461-86ce-4cf82752cb59}">
+      <Declaration><![CDATA[PROPERTY RemoteStatus : PLCopenStatusBase]]></Declaration>
+      <Get Name="Get" Id="{50c02346-7f00-4c9c-8cf9-194c91ed90ea}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{9f4e0d74-b30f-4fda-8eeb-5e79f6183d14}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IPLCopenCall" Id="{f7958e5a-b87e-0290-18b9-18a7ee86d87d}">
+    <Declaration><![CDATA[INTERFACE IPLCopenCall EXTENDS __SYSTEM.IQueryInterface
+]]></Declaration>
+    <Method Name="Start" Id="{2089c624-b436-0a5a-1399-c3962d9edd84}">
+      <Declaration><![CDATA[METHOD Start : PLCopenStatusBase
+VAR_INPUT
+  Command : IPLCopenCommand;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

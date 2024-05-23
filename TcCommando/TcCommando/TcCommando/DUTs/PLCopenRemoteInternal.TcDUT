@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="PLCopenRemoteInternal" Id="{6734d06c-d81e-43fb-9b4f-7b69935b56e2}">
+    <Declaration><![CDATA[TYPE PLCopenRemoteInternal :
+STRUCT
+	Abort : BOOL;
+	Status : PLCopenStatusBase;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

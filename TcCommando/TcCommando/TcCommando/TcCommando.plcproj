@@ -19,7 +19,7 @@
     <Company>Loupe</Company>
     <Released>false</Released>
     <Title>TcCommando</Title>
-    <ProjectVersion>0.0.5</ProjectVersion>
+    <ProjectVersion>0.0.7</ProjectVersion>
     <Author>Loupe</Author>
     <CombineIds>true</CombineIds>
     <LibraryCategories>
@@ -43,29 +43,56 @@
     <Compile Include="DUTs\PLCopenCallState.TcTLEO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\PLCopenCommandGroupInternal.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\PLCopenCommandInternal.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\PLCopenRemoteInternal.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\PLCopenStatusBase.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Example\Example.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GVLs\GVLTcCommando.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
-    <Compile Include="Interfaces\IPLCopenBase.TcIO">
+    <Compile Include="Interfaces\ICyclic.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\IPLCopenCaller.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Interfaces\IPLCopenCall.TcIO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Interfaces\IPLCopenCallRemote.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\IPLCopenCallStatus.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interfaces\IPLCopenCommand.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\IPLCopenConsumer.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Interfaces\IPLCopenGroup.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\internal\PLCopenNullRemote.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\internal\PLCopenRemote.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\PLCopenCall.TcPOU">
@@ -80,10 +107,16 @@
     <Compile Include="POUs\PLCopenCommandGroup.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\PLCopenNullRemote.TcPOU">
+    <Compile Include="POUs\PLCopenExclusiveGroup.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Test\PLCopenCall_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Test\PLCOpenCommandGroup_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Test\PLCOpenCallGroup_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Test\TESTPRG.TcPOU">
@@ -97,6 +130,8 @@
     <Folder Include="DUTs" />
     <Folder Include="GVLs" />
     <Folder Include="Interfaces" />
+    <Folder Include="Example" />
+    <Folder Include="POUs\internal" />
     <Folder Include="Test" />
     <Folder Include="POUs" />
   </ItemGroup>
@@ -154,7 +189,7 @@
                   <d n="SubKeys" t="Hashtable" />
                   <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
                     <v>bActive</v>
-                    <v>False</v>
+                    <v>True</v>
                   </d>
                 </o>
                 <v>4</v>
@@ -163,7 +198,7 @@
                   <d n="SubKeys" t="Hashtable" />
                   <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
                     <v>bActive</v>
-                    <v>False</v>
+                    <v>True</v>
                   </d>
                 </o>
                 <v>33</v>
@@ -172,7 +207,7 @@
                   <d n="SubKeys" t="Hashtable" />
                   <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
                     <v>bActive</v>
-                    <v>False</v>
+                    <v>True</v>
                   </d>
                 </o>
                 <v>6</v>
@@ -181,7 +216,7 @@
                   <d n="SubKeys" t="Hashtable" />
                   <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
                     <v>bActive</v>
-                    <v>False</v>
+                    <v>True</v>
                   </d>
                 </o>
                 <v>27</v>
@@ -190,7 +225,7 @@
                   <d n="SubKeys" t="Hashtable" />
                   <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
                     <v>bActive</v>
-                    <v>False</v>
+                    <v>True</v>
                   </d>
                 </o>
                 <v>28</v>
@@ -199,7 +234,7 @@
                   <d n="SubKeys" t="Hashtable" />
                   <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
                     <v>bActive</v>
-                    <v>False</v>
+                    <v>True</v>
                   </d>
                 </o>
               </d>

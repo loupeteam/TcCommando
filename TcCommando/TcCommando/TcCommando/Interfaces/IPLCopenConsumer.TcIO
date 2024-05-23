@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="IPLCopenConsumer" Id="{6a7290ad-7ac6-41cc-ba9f-76967b5f2bc2}">
+    <Declaration><![CDATA[
+// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
+
+INTERFACE IPLCopenConsumer EXTENDS __SYSTEM.IQueryInterface
+]]></Declaration>
+    <Method Name="Aborted" Id="{c13e0269-f6af-093a-3e84-237aad3bcb62}">
+      <Declaration><![CDATA[
+METHOD Aborted : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="Consume" Id="{6ba5532d-76e4-4a60-b32b-48609e504b06}">
+      <Declaration><![CDATA[
+PROPERTY Consume : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{fc1cb8fe-825b-4bd0-8ac5-01ed01104e14}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="Errored" Id="{97e64f8a-ca69-4b1b-8dc4-ea125d2e68b1}">
+      <Declaration><![CDATA[
+METHOD Errored : BOOL
+VAR_INPUT
+  ID : INT;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="Finished" Id="{4dc5d1fd-a670-4a40-a328-0de89f694dac}">
+      <Declaration><![CDATA[
+METHOD Finished : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="Status" Id="{9266aac4-62d7-464d-baa9-484a50b91022}">
+      <Declaration><![CDATA[
+PROPERTY Status : PLCopenStatusBase
+]]></Declaration>
+      <Get Name="Get" Id="{96664bbd-85e9-4163-9d89-7e961369eeb2}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PLCOpenCallGroup_Test" Id="{1b543c78-0b2c-0039-37ba-d5585a1070fe}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'no-analysis'}
+FUNCTION_BLOCK PLCOpenCallGroup_Test EXTENDS TcUnit.FB_TestSuite
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+EmptyCall();
+OneCommand();
+]]></ST>
+    </Implementation>
+    <Method Name="EmptyCall" Id="{906cca04-d8b1-043a-35d8-63712f2aa233}">
+      <Declaration><![CDATA[
+METHOD EmptyCall
+VAR
+  caller : PLCopenCallGroup;
+  command : PLCopenCommand;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+TEST('EmptyCall');
+
+//caller.Start(command);
+caller.Execute := TRUE;
+caller();
+caller.Execute := FALSE;
+AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
+
+caller();
+
+AssertFalse(Condition := caller.Done, Message := 'Done must be false after complete');//By default, this FUB is done if there is no work to do
+AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after complete');
+AssertFalse(Condition := caller.Error, Message := 'Error must be false after complete');
+
+
+caller.Fallback := PLCopenStatusBase.NOT_ENABLED;
+AssertFalse(Condition := caller.Done, Message := 'Caller must be done for once cycle');
+
+caller();
+
+AssertFalse(Condition := caller.Done, Message := 'Done must be false after complete');//With enable false, this FUB is not done if there is no work to do
+AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after complete');
+AssertFalse(Condition := caller.Error, Message := 'Error must be false after complete');
+
+TEST_FINISHED();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="OneCommand" Id="{9b8750c4-5b71-068f-360a-68239122d003}">
+      <Declaration><![CDATA[
+METHOD OneCommand
+VAR
+  caller : PLCopenCallGroup;
+  command : PLCopenCommand;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+
+TEST('One Command Default');
+
+caller.Start(Command);
+
+AssertTrue(Condition := caller.Busy, Message := 'Caller must be busy for once cycle');
+
+AssertTrue(Condition := command.Consume, Message := 'Consume should be true after call');
+AssertFalse(Condition := command.Consume, Message := 'Consume should only be true once');
+
+command.Finished();
+
+AssertTrue(Condition := caller.Done, Message := 'Caller must be done after finished');
+
+caller();
+
+AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
+
+caller();
+
+AssertFalse(Condition := caller.Done, Message := 'Done must be false after reset by default');
+AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after reset');
+AssertFalse(Condition := caller.Error, Message := 'Error must be false after reset');
+
+TEST_FINISHED();
+
+TEST('One Command Fallback');
+caller.Fallback := PLCopenStatusBase.NOT_ENABLED;
+caller.Start(Command);
+AssertTrue(Condition := caller.Busy, Message := 'Caller must be busy for once cycle');
+
+AssertTrue(Condition := command.Consume, Message := 'Consume should be true after call');
+AssertFalse(Condition := command.Consume, Message := 'Consume should only be true once');
+
+command.Finished();
+
+AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
+
+caller();
+
+AssertTrue(Condition := caller.Done, Message := 'Caller must be done for once cycle');
+
+caller();
+
+AssertFalse(Condition := caller.Done, Message := 'Done must be false after reset');
+AssertFalse(Condition := caller.Busy, Message := 'Busy must be false after reset');
+AssertFalse(Condition := caller.Error, Message := 'Error must be false after reset');
+
+TEST_FINISHED();
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
