@@ -183,9 +183,11 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[_PLCopenCommand.Status := PLCopenStatusBase.ENABLED_WAITING;
+        <ST><![CDATA[
+_PLCopenCommand.Status := PLCopenStatusBase.ENABLED_WAITING;
 _PLCopenCommand.Execute := TRUE;
 THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
+
 THIS^.Remote := remote;
 ]]></ST>
       </Implementation>

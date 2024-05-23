@@ -43,7 +43,7 @@ END_FOR
     </Method>
     <Method Name="RegisterCommand" Id="{b8795d4b-447a-0ede-2740-227d6b3c572d}" FolderPath="internal\">
       <Declaration><![CDATA[METHOD RegisterCommand : BOOL
-VAR
+VAR_INPUT
 	command : IPLCopenCommand;
 END_VAR
 VAR

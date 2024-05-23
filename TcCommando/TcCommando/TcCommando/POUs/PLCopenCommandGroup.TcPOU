@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="PLCopenCommandGroup" Id="{2e0402f9-bb03-4307-bd9d-f64d15557336}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCommandGroup IMPLEMENTS IPLCopenCommand, IPLCopenCallStatus, IPLCopenCallRemote
+    <Declaration><![CDATA[FUNCTION_BLOCK PLCopenCommandGroup EXTENDS PLCopenCommand IMPLEMENTS IPLCopenCallStatus, IPLCopenCallRemote
 VAR
   _PLCopenCommandGroup : PLCopenCommandGroupInternal;
 END_VAR
@@ -9,9 +9,7 @@ END_VAR
     <Implementation>
       <ST><![CDATA[// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
-IF _PLCopenCommandGroup.Status <> PLCopenStatusBase.BUSY AND NOT Execute THEN
-  _PLCopenCommandGroup.Status := PLCopenStatusBase.NOT_ENABLED;
-END_IF
+SUPER^();
 ]]></ST>
     </Implementation>
     <Folder Name="API" Id="{b4cb7c13-7345-44ed-a6a5-26d1ff59917e}" />
@@ -63,117 +61,6 @@ END_FOR
         </Implementation>
       </Set>
     </Property>
-    <Method Name="Aborted" Id="{0a5747f8-ccf3-05ea-04f7-1d386080534a}" FolderPath="API\">
-      <Declaration><![CDATA[METHOD Aborted : BOOL
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-_PLCopenCommandGroup.Status := PLCopenStatusBase.ABORTED;
-
-Remote.ReportAborted();
-Remote := 0;
-]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="AbortPreviousCommands" Id="{d96a3de2-9b29-447f-9cc6-35dbbf6dd762}" FolderPath="internal\">
-      <Declaration><![CDATA[
-METHOD AbortPreviousCommands : BOOL
-VAR_INPUT
-  newCommand : IPLCopenCommand;
-END_VAR
-VAR
-  i : USINT;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-//If there is a remote, abort it here
-//Don't use this^.abort() because we don't want about ourselves
-Remote.ReportAborted();
-Remote := 0;
-
-//Abort any related commands
-FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-  IF _PLCopenCommandGroup.CommandGroups[i] <> 0 THEN
-    _PLCopenCommandGroup.CommandGroups[i].AbortPreviousCommands(newCommand);
-  END_IF
-END_FOR
-]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="BaseSize" Id="{1ac08a1f-f31c-4d4a-b4fd-493736322d9a}" FolderPath="internal\">
-      <Declaration><![CDATA[
-METHOD FINAL BaseSize : ULINT
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-BaseSize := SIZEOF(THIS^);
-]]></ST>
-      </Implementation>
-    </Method>
-    <Property Name="Execute" Id="{1eae2873-62e1-475a-b9ee-452bf611bce0}" FolderPath="API\">
-      <Declaration><![CDATA[
-{attribute 'monitoring' := 'call'}
-PROPERTY Execute : BOOL
-]]></Declaration>
-      <Get Name="Get" Id="{38852b17-c4a0-40d6-819f-d48e38c88c45}">
-        <Declaration><![CDATA[
-VAR
-END_VAR
-]]></Declaration>
-        <Implementation>
-          <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-Execute := _PLCopenCommandGroup.Execute;
-]]></ST>
-        </Implementation>
-      </Get>
-      <Set Name="Set" Id="{b688f25b-4595-4002-87f3-4230ee125cb8}">
-        <Declaration><![CDATA[
-VAR
-  i : INT;
-END_VAR
-]]></Declaration>
-        <Implementation>
-          <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-//We are already executing
-IF _PLCopenCommandGroup.Trig = TRUE AND Execute = TRUE THEN
-
-  ; //Do nothing
-  //Trigger an execute
-ELSIF _PLCopenCommandGroup.Trig = FALSE AND Execute = TRUE THEN
-  _PLCopenCommandGroup.Status := PLCopenStatusBase.ENABLED_WAITING;
-  _PLCopenCommandGroup.Execute := TRUE;
-
-  THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
-
-  THIS^.Remote.ReportFinished();
-
-  FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-    IF _PLCopenCommandGroup.Subscriber[i].command <> 0 THEN
-      _PLCopenCommandGroup.Subscriber[i].Start(_PLCopenCommandGroup.Subscriber[i].command);
-    END_IF
-  END_FOR
-
-  _PLCopenCommandGroup.Working := TRUE;
-  // We were executing, but resetting it to false;
-  // Just resetting execute to false all the time is OK
-ELSIF Execute = FALSE THEN
-  _PLCopenCommandGroup.Execute := FALSE;
-END_IF
-]]></ST>
-        </Implementation>
-      </Set>
-    </Property>
     <Method Name="ExecuteWithStatus" Id="{6a0caeff-e008-4e4e-8e10-5ac4e600e899}" FolderPath="API\">
       <Declaration><![CDATA[
 METHOD ExecuteWithStatus : BOOL
@@ -186,8 +73,8 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-_PLCopenCommandGroup.Status := PLCopenStatusBase.ENABLED_WAITING;
-_PLCopenCommandGroup.Execute := TRUE;
+_PLCopenCommand.Status := PLCopenStatusBase.ENABLED_WAITING;
+_PLCopenCommand.Execute := TRUE;
 THIS^.AbortPreviousCommands(THIS^); //This is meant to abort if the command comes locally	
 
 IF _PLCopenCommandGroup.SubscriberCount = 0 THEN
@@ -201,46 +88,6 @@ ELSE
     END_IF
   END_FOR
 END_IF
-]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="FB_init" Id="{62f8f380-4d47-4719-a2c7-a7f000597606}" FolderPath="internal\">
-      <Declaration><![CDATA[
-METHOD FB_init : BOOL
-VAR_INPUT
-  bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
-  bInCopyCode : BOOL; // if TRUE, the instance afterwards gets moved into the copy code (online change)
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-_PLCopenCommandGroup.Status := PLCopenStatusBase.NOT_ENABLED;
-]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="GetSize" Id="{5a0cbd23-ed35-43bd-b919-aad552d10f4e}" FolderPath="internal\">
-      <Declaration><![CDATA[
-METHOD GetSize : ULINT
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-GetSize := SIZEOF(THIS^);
-]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="GetThis" Id="{bf8128c0-8884-4b03-b2f5-d39929482dc2}" FolderPath="internal\">
-      <Declaration><![CDATA[
-METHOD GetThis : ULINT
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-GetThis := THIS;
 ]]></ST>
       </Implementation>
     </Method>
@@ -267,65 +114,6 @@ END_CASE
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="RegisterGroup" Id="{710eae99-01b3-4973-9293-78a0a5985158}" FolderPath="internal\">
-      <Declaration><![CDATA[
-METHOD RegisterGroup : BOOL
-VAR_INPUT
-  group : IPLCopenGroup;
-END_VAR
-
-VAR
-  i : INT;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
-  IF _PLCopenCommandGroup.CommandGroups[i] = 0 THEN
-    _PLCopenCommandGroup.CommandGroups[i] := group;
-    EXIT;
-  END_IF
-END_FOR
-]]></ST>
-      </Implementation>
-    </Method>
-    <Property Name="Remote" Id="{d9e5369b-028c-46f8-a89a-4ffb3dea3bf5}" FolderPath="internal\">
-      <Declaration><![CDATA[
-PROPERTY Remote : IPLCopenCallRemote
-]]></Declaration>
-      <Get Name="Get" Id="{f4cd0e9d-571a-44e1-97f8-88e611ce92e4}">
-        <Declaration><![CDATA[
-VAR
-END_VAR
-]]></Declaration>
-        <Implementation>
-          <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-IF _PLCopenCommandGroup.Remote <> 0 THEN
-  Remote := _PLCopenCommandGroup.Remote;
-ELSE
-  Remote := _PLCopenCommandGroup.NullRemote;
-END_IF
-]]></ST>
-        </Implementation>
-      </Get>
-      <Set Name="Set" Id="{390bfe16-8b18-464d-93ae-4b6c74d4d8c6}">
-        <Declaration><![CDATA[
-VAR
-END_VAR
-]]></Declaration>
-        <Implementation>
-          <ST><![CDATA[
-// Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
-
-_PLCopenCommandGroup.Remote := Remote;
-]]></ST>
-        </Implementation>
-      </Set>
-    </Property>
     <Property Name="RemoteStatus" Id="{205f74a8-fc38-44d9-b915-074d931a1a17}" FolderPath="internal\">
       <Declaration><![CDATA[
 {attribute 'monitoring' := 'call'}
