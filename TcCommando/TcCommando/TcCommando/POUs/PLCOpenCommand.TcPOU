@@ -262,6 +262,14 @@ END_VAR
         <ST><![CDATA[
 // Copyright (c) 2024 Loupe (https://loupe.team), provided under the MIT License.
 
+
+FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
+  IF _PLCopenCommand.CommandGroups[i] = group THEN
+	  //It's already in the list
+	  RETURN;
+  END_IF
+END_FOR
+
 FOR i := 0 TO GVLTcCommando.MAX_RELATED_GROUPS DO
   IF _PLCopenCommand.CommandGroups[i] = 0 THEN
     _PLCopenCommand.CommandGroups[i] := group;
