@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="HeatCommand" Id="{609cd9e9-f0c3-01ef-2b21-0fd9e152277f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK HeatCommand EXTENDS PLCopenCommand
+VAR_INPUT
+	TempSetPoint : REAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="HeatCommand">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

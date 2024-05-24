@@ -58,6 +58,9 @@
     <Compile Include="Example\Example.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Example\HeatCommand.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Example\OvenBasic.TcPOU">
       <SubType>Code</SubType>
     </Compile>

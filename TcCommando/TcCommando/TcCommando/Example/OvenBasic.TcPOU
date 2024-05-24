@@ -2,30 +2,21 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="OvenBasic" Id="{f06dffbc-4722-072d-2af9-eca0de705433}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK OvenBasic
-VAR_INPUT
-END_VAR
-VAR_OUTPUT
-END_VAR
 VAR
-	_HeatCommand: PLCopenCommand;
+	_HeatCommand: HeatCommand;
 	_Temp : REAL;
 	_TempSetPoint : REAL;
-END_VAR
-]]></Declaration>
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
     <Method Name="Cyclic" Id="{cadd8092-5caa-0878-1061-812a85cdf4f3}">
       <Declaration><![CDATA[METHOD Cyclic : BOOL
-VAR_INPUT
-END_VAR
-VAR
-	//cmd : PLCopenCommand;
-END_VAR]]></Declaration>
+]]></Declaration>
       <Implementation>
         <ST><![CDATA[//cmd := HeatCommand;
 IF _HeatCommand.Consume THEN
-	TempSetPoint := 350; //set the oven temp set point
+	TempSetPoint := _HeatCommand.TempSetPoint; //set the oven temp set point
 END_IF
 
 regulateTemp();
@@ -34,7 +25,7 @@ IF Temp = TempSetPoint THEN
 	_HeatCommand.Finished();//report status when command is done
 END_IF
 
-_HeatCommand.Execute := FALSE;
+_HeatCommand.Execute := 0;
 ]]></ST>
       </Implementation>
     </Method>
@@ -57,13 +48,15 @@ regulateTemp := Temp = TempSetPoint;]]></ST>
     <Method Name="StartHeating" Id="{4682e446-3b47-0d83-307f-2a9af1f7b249}">
       <Declaration><![CDATA[METHOD StartHeating : BOOL
 VAR_INPUT
+	temp : REAL;
 	status: IPLCopenCall;
-	//SetTemp : REAL;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF status = 0 THEN
-	_HeatCommand.Execute := TRUE;
+        <ST><![CDATA[_HeatCommand.TempSetPoint := temp;
+
+IF status = 0 THEN
+	_HeatCommand.Execute := 1;
 ELSE
 	status.Start(_HeatCommand);
 END_IF
@@ -133,6 +126,7 @@ END_VAR
       <LineId Id="11" Count="0" />
     </LineIds>
     <LineIds Name="OvenBasic.StartHeating">
+      <LineId Id="18" Count="1" />
       <LineId Id="8" Count="0" />
       <LineId Id="10" Count="0" />
       <LineId Id="15" Count="0" />
